@@ -63,9 +63,8 @@ public class CuckooFilterTest extends AbstractTest {
         CuckooFilter cuckooFilter = redisBloomClient.getCuckooFilter("cf_info");
         // drop if exits
         cuckooFilter.delete();
-        boolean result = cuckooFilter.reserve(100);
-        Assert.assertTrue(result);
+        Assert.assertTrue(cuckooFilter.reserve(100, 50));
         CuckooFilterInfo cuckooFilterInfo = cuckooFilter.getInfo();
-        Assert.assertTrue(cuckooFilterInfo.getSize().intValue() == 100);
+        Assert.assertTrue(cuckooFilterInfo.getBucketSize().intValue() == 50);
     }
 }
