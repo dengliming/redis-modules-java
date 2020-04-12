@@ -1,4 +1,4 @@
-![build](https://github.com/dengliming/redis-modules-java/workflows/build/badge.svg) [![license](https://img.shields.io/github/license/dengliming/redis-modules-java.svg)](/LICENSE)
+![build](https://github.com/dengliming/redis-modules-java/workflows/Java%20CI/badge.svg) [![license](https://img.shields.io/github/license/dengliming/redis-modules-java)](/LICENSE)
 
 Java Client libraries for redis-modules, based on [Redisson](https://github.com/redisson/redisson).
 
