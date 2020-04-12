@@ -24,9 +24,9 @@ import org.junit.Before;
  */
 public abstract class AbstractTest {
 
-    public static final String DEFAULT_HOST = System.getProperty("port", "localhost");
-    public static final int DEFAULT_PORT = Integer.valueOf(System.getProperty("port", "6379"));
-    public static final String DEFAULT_PASSWORD = System.getProperty("password", "");
+    public static final String DEFAULT_HOST = System.getProperty("redis.host", "localhost");
+    public static final int DEFAULT_PORT = Integer.valueOf(System.getProperty("redis.port", "6379"));
+    public static final String DEFAULT_PASSWORD = System.getProperty("redis.password", "");
 
     protected RedisBloomClient redisBloomClient;
 

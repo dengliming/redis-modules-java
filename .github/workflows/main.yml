@@ -18,4 +18,6 @@ jobs:
           java-version: 1.8
 
       - name: Build with Maven
+        env:
+          redis.host: rebloom
         run: mvn -B package --file pom.xml
