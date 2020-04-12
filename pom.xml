@@ -16,7 +16,7 @@
         <module>redisgears</module>
     </modules>
 
-    <name>redis-modules-java</name>
+    <name>Redis-Modules-Java</name>
     <url>http://www.example.com</url>
 
     <properties>
