@@ -17,9 +17,11 @@ package com.github.dengliming.redisbloom.protocol;
 
 import com.github.dengliming.redisbloom.model.BloomFilterInfo;
 import com.github.dengliming.redisbloom.model.CountMinSketchInfo;
+import com.github.dengliming.redisbloom.model.CuckooFilterInfo;
 import com.github.dengliming.redisbloom.model.TopKFilterInfo;
 import com.github.dengliming.redisbloom.protocol.decoder.BloomFilterDecoder;
 import com.github.dengliming.redisbloom.protocol.decoder.CountMinSketchDecoder;
+import com.github.dengliming.redisbloom.protocol.decoder.CuckooFilterDecoder;
 import com.github.dengliming.redisbloom.protocol.decoder.TopKFilterDecoder;
 import org.redisson.client.protocol.RedisCommand;
 import org.redisson.client.protocol.convertor.BooleanReplayConvertor;
@@ -56,7 +58,7 @@ public interface RedisCommands {
     RedisCommand<Integer> CF_COUNT = new RedisCommand<>("CF.COUNT", new IntegerReplayConvertor());
     RedisCommand<Void> CF_SCANDUMP = new RedisCommand<>("CF.SCANDUMP", new VoidReplayConvertor());
     RedisCommand<Void> CF_LOADDUMP = new RedisCommand<>("CF.LOADDUMP", new VoidReplayConvertor());
-    RedisCommand<CountMinSketchInfo> CF_INFO = new RedisCommand<>("CF.INFO", new ListMultiDecoder2(new CountMinSketchDecoder()));
+    RedisCommand<CuckooFilterInfo> CF_INFO = new RedisCommand<>("CF.INFO", new ListMultiDecoder2(new CuckooFilterDecoder()));
 
     RedisCommand<Boolean> CMS_INITBYDIM = new RedisCommand<>("CMS.INITBYDIM", new BooleanReplayConvertor());
     RedisCommand<Boolean> CMS_INITBYPROB = new RedisCommand<>("CMS.INITBYPROB", new BooleanReplayConvertor());

@@ -143,6 +143,6 @@ public class CountMinSketch extends RedissonObject {
     }
 
     public RFuture<CountMinSketchInfo> getInfoAsync() {
-        return commandExecutor.readAsync(getName(), codec, CMS_INFO);
+        return commandExecutor.readAsync(getName(), codec, CMS_INFO, getName());
     }
 }
