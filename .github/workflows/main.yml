@@ -9,8 +9,13 @@ jobs:
     services:
       rebloom:
         image: redislabs/rebloom:latest
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
         ports:
-          - 6379/tcp
+          - 6379:6379
 
     steps:
       - uses: actions/checkout@v2
@@ -21,3 +26,5 @@ jobs:
 
       - name: Build with Maven
         run: mvn -B package --file pom.xml
+        env:
+          REDIS_HOST: localhost
