@@ -9,6 +9,8 @@ jobs:
     services:
       rebloom:
         image: redislabs/rebloom:latest
+        ports:
+          - 6379/tcp
 
     steps:
       - uses: actions/checkout@v2
@@ -18,4 +20,4 @@ jobs:
           java-version: 1.8
 
       - name: Build with Maven
-        run: mvn -Dredis.host=rebloom -B package --file pom.xml
+        run: mvn -B package --file pom.xml
