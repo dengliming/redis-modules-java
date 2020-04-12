@@ -14,10 +14,7 @@ jobs:
           java-version: 1.8
           
       - name: Set up Redis with Module
-        uses: RedBeardLab/redis-action@1.2.2
-        with:
-          redis version: '5'
-          number of databases: 100
-          server arguments: '--loadmodule redisbloom.so'
+        uses: docker://redislabs/rebloom:latest
+
       - name: Build with Maven
         run: mvn -B package --file pom.xml
