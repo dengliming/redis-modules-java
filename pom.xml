@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.github.dengliming</groupId>
+    <groupId>io.github.dengliming.redismodule</groupId>
     <artifactId>redis-modules-java</artifactId>
     <packaging>pom</packaging>
     <version>1.0.0-SNAPSHOT</version>
@@ -14,6 +14,7 @@
         <module>redisai</module>
         <module>redistimeseries</module>
         <module>redisgears</module>
+        <module>commons</module>
     </modules>
 
     <name>Redis-Modules-Java</name>
@@ -43,4 +44,16 @@
         </dependencies>
     </dependencyManagement>
 
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>8</source>
+                    <target>8</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>
