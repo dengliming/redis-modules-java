@@ -13,6 +13,10 @@ Java Client libraries for redis-modules, based on [Redisson](https://github.com/
 * [...](https://redis.io/modules)
  
 ## Installing
+
+#### Build form source
+Execute ./mvnw clean install -DskipTests=true. The build process requires JDK8+.
+#### Maven repository
 TODO
 
 ## Usage example
