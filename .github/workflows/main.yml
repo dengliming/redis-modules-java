@@ -24,7 +24,7 @@ jobs:
           --health-timeout 5s
           --health-retries 5
         ports:
-          - 6380:6380
+          - 6379:6380
 
     steps:
       - uses: actions/checkout@v2
@@ -40,4 +40,4 @@ jobs:
         run: mvn test -pl redisbloom -DREDIS_HOST=localhost --file pom.xml
 
       - name: Test RediSearch
-        run: mvn test -pl redisearch -DREDIS_HOST=localhost -DREDIS_PORT=6379 --file pom.xml
+        run: mvn test -pl redisearch -DREDIS_HOST=localhost -DREDIS_PORT=6380 --file pom.xml
