@@ -24,7 +24,7 @@ jobs:
           java-version: 1.8
 
       - name: Build with Maven
-        run: mvn -B package -DskipTests=true --file pom.xml
+        run: mvn clean install -DskipTests=true --file pom.xml
 
       - name: Test RedisBloom
         run: mvn test -pl redisbloom --file pom.xml
