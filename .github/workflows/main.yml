@@ -27,12 +27,7 @@ jobs:
         run: mvn clean install -DskipTests=true --file pom.xml
 
       - name: Test RedisBloom
-        run: mvn test -pl redisbloom --file pom.xml
-        env:
-          REDIS_HOST: localhost
+        run: mvn test -pl redisbloom -DREDIS_HOST=localhost --file pom.xml
 
       - name: Test RediSearch
-        run: mvn test -pl redisearch --file pom.xml
-        env:
-          REDIS_HOST: localhost
-          REDIS_PORT: 6380
+        run: mvn test -pl redisearch -DREDIS_HOST=localhost -DREDIS_PORT=6380 --file pom.xml
