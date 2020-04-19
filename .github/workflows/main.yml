@@ -23,16 +23,16 @@ jobs:
         with:
           java-version: 1.8
 
-      - name: Test RedisBloom
-          run: mvn test --file pom.xml -pl redisbloom
-          env:
-            REDIS_HOST: localhost
-
-      - name: Test RediSearch
-          run: mvn test --file pom.xml -pl redisearch
-          env:
-            REDIS_HOST: localhost
-            REDIS_PORT: 6380
-
       - name: Build with Maven
         run: mvn -B package -DskipTests=true --file pom.xml
+
+      - name: Test RedisBloom
+        run: mvn test -pl redisbloom --file pom.xml
+        env:
+          REDIS_HOST: localhost
+
+      - name: Test RediSearch
+        run: mvn test -pl redisearch --file pom.xml
+        env:
+          REDIS_HOST: localhost
+          REDIS_PORT: 6380
