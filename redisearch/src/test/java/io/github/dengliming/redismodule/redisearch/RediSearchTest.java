@@ -42,7 +42,6 @@ public class RediSearchTest extends AbstractTest {
         RediSearch rediSearch = rediSearchClient.getRediSearch("index1");
         assertTrue(rediSearch.createIndex(new Schema().addField(new TextField("title"))));
         Object index = rediSearch.loadIndex();
-        System.out.println(index);
     }
 
     @Test
