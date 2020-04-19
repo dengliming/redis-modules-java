@@ -21,6 +21,7 @@ import io.github.dengliming.redismodule.common.util.RAssert;
 import org.redisson.RedissonObject;
 import org.redisson.api.RFuture;
 import org.redisson.client.codec.Codec;
+import org.redisson.client.codec.StringCodec;
 import org.redisson.command.CommandAsyncExecutor;
 
 import java.util.List;
@@ -144,6 +145,6 @@ public class TopKFilter extends RedissonObject {
     }
 
     public RFuture<TopKFilterInfo> getInfoAsync() {
-        return commandExecutor.readAsync(getName(), codec, TOPK_INFO, getName());
+        return commandExecutor.readAsync(getName(), StringCodec.INSTANCE, TOPK_INFO, getName());
     }
 }

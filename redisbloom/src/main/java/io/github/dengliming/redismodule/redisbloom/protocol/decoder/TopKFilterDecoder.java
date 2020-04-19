@@ -35,6 +35,6 @@ public class TopKFilterDecoder implements MultiDecoder<TopKFilterInfo> {
     @Override
     public TopKFilterInfo decode(List<Object> parts, State state) {
         return new TopKFilterInfo(((Long) parts.get(1)).intValue(), ((Long) parts.get(3)).intValue(),
-                ((Long) parts.get(5)).intValue(), (Double) parts.get(7));
+                ((Long) parts.get(5)).intValue(), Double.parseDouble((String) parts.get(7)));
     }
 }

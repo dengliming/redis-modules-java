@@ -29,18 +29,14 @@ public class BloomFilterTest extends AbstractTest {
 
     @Test
     public void testReserve() {
-        BloomFilter bloomFilter = redisBloomClient.getBloomFilter("bf_reserve");
-        // drop if exits
-        bloomFilter.delete();
+        BloomFilter bloomFilter = redisBloomClient.getRBloomFilter("bf_reserve");
         boolean result = bloomFilter.create(0.1d, 100);
         Assert.assertTrue(result);
     }
 
     @Test
     public void testAdd() {
-        BloomFilter bloomFilter = redisBloomClient.getBloomFilter("bf_add");
-        // drop if exits
-        bloomFilter.delete();
+        BloomFilter bloomFilter = redisBloomClient.getRBloomFilter("bf_add");
         Assert.assertTrue(bloomFilter.create(0.1d, 100));
         List<Boolean> results = bloomFilter.madd(new String[] {"a", "b", "c"});
         Assert.assertTrue(results != null && results.size() == 3);
@@ -49,9 +45,7 @@ public class BloomFilterTest extends AbstractTest {
 
     @Test
     public void testInsert() {
-        BloomFilter bloomFilter = redisBloomClient.getBloomFilter("bf_insert");
-        // drop if exits
-        bloomFilter.delete();
+        BloomFilter bloomFilter = redisBloomClient.getRBloomFilter("bf_insert");
         Assert.assertTrue(bloomFilter.create(0.1d, 100));
         List<Boolean> result = bloomFilter.insert(new InsertArgs(), "a");
         Assert.assertNotNull(result);
@@ -60,9 +54,7 @@ public class BloomFilterTest extends AbstractTest {
 
     @Test
     public void testInfo() {
-        BloomFilter bloomFilter = redisBloomClient.getBloomFilter("bf_info");
-        // drop if exits
-        bloomFilter.delete();
+        BloomFilter bloomFilter = redisBloomClient.getRBloomFilter("bf_info");
         boolean result = bloomFilter.create(0.1d, 100);
         Assert.assertTrue(result);
         BloomFilterInfo bloomFilterInfo = bloomFilter.getInfo();

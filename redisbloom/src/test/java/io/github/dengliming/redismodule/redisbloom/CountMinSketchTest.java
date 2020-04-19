@@ -31,21 +31,15 @@ public class CountMinSketchTest extends AbstractTest {
     @Test
     public void testReserve() {
         CountMinSketch countMinSketch = redisBloomClient.getCountMinSketch("cms_reserve");
-        // drop if exits
-        countMinSketch.delete();
         Assert.assertTrue(countMinSketch.create(0.1d, 0.2d));
 
         CountMinSketch countMinSketch2 = redisBloomClient.getCountMinSketch("cms_reserve2");
-        // drop if exits
-        countMinSketch2.delete();
         Assert.assertTrue(countMinSketch2.create(10, 2));
     }
 
     @Test
     public void testAdd() {
         CountMinSketch countMinSketch = redisBloomClient.getCountMinSketch("cms_add");
-        // drop if exits
-        countMinSketch.delete();
         Assert.assertTrue(countMinSketch.create(10, 10));
         Map<String, Integer> itemIncrement = new HashMap<>();
         itemIncrement.put("a", 3);
@@ -59,8 +53,6 @@ public class CountMinSketchTest extends AbstractTest {
     @Test
     public void testInfo() {
         CountMinSketch countMinSketch = redisBloomClient.getCountMinSketch("cms_info");
-        // drop if exits
-        countMinSketch.delete();
         Assert.assertTrue(countMinSketch.create(5, 10));
         CountMinSketchInfo countMinSketchInfo = countMinSketch.getInfo();
         Assert.assertTrue(countMinSketchInfo.getWidth() == 5);

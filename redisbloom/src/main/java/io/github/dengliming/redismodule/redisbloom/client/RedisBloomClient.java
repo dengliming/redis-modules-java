@@ -24,55 +24,33 @@ import org.redisson.client.protocol.RedisCommands;
 import org.redisson.command.CommandAsyncExecutor;
 import org.redisson.config.Config;
 
-import java.util.concurrent.TimeUnit;
-
 /**
  * @author dengliming
  */
-public class RedisBloomClient {
+public class RedisBloomClient extends Redisson {
 
-    private Redisson client;
-
-    public RedisBloomClient() {
-        this("redis://127.0.0.1:6379");
+    public RedisBloomClient(Config config) {
+        super(config);
     }
 
-    public RedisBloomClient(String address) {
-        Config config = new Config();
-        config.useSingleServer().setAddress(address);
-        this.client = (Redisson) Redisson.create(config);
-    }
-
-    public BloomFilter getBloomFilter(String name) {
-        return new BloomFilter(client.getConnectionManager().getCommandExecutor(), name);
+    public BloomFilter getRBloomFilter(String name) {
+        return new BloomFilter(getConnectionManager().getCommandExecutor(), name);
     }
 
     public CountMinSketch getCountMinSketch(String name) {
-        return new CountMinSketch(client.getConnectionManager().getCommandExecutor(), name);
+        return new CountMinSketch(getConnectionManager().getCommandExecutor(), name);
     }
 
     public CuckooFilter getCuckooFilter(String name) {
-        return new CuckooFilter(client.getConnectionManager().getCommandExecutor(), name);
+        return new CuckooFilter(getConnectionManager().getCommandExecutor(), name);
     }
 
     public TopKFilter getTopKFilter(String name) {
-        return new TopKFilter(client.getConnectionManager().getCommandExecutor(), name);
-    }
-
-    public void shutdown() {
-        client.shutdown();
-    }
-
-    public void shutdown(long quietPeriod, long timeout, TimeUnit unit) {
-        client.shutdown(quietPeriod, timeout, unit);
+        return new TopKFilter(getConnectionManager().getCommandExecutor(), name);
     }
 
     public Void flushall() {
-        CommandAsyncExecutor commandExecutor = client.getConnectionManager().getCommandExecutor();
+        CommandAsyncExecutor commandExecutor = getConnectionManager().getCommandExecutor();
         return commandExecutor.get(commandExecutor.writeAllAsync(RedisCommands.FLUSHALL));
-    }
-
-    public Redisson getClient() {
-        return client;
     }
 }

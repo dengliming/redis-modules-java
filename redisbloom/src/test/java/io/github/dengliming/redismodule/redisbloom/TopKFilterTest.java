@@ -15,7 +15,7 @@
  */
 package io.github.dengliming.redismodule.redisbloom;
 
-import io.github.dengliming.redismodule.redisbloom.model.BloomFilterInfo;
+import io.github.dengliming.redismodule.redisbloom.model.TopKFilterInfo;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -32,19 +32,13 @@ public class TopKFilterTest extends AbstractTest {
     @Test
     public void testReserve() {
         TopKFilter topKFilter = redisBloomClient.getTopKFilter("topk_reserve");
-        // drop if exits
-        topKFilter.delete();
-        boolean result = topKFilter.reserve(10, 2000, 7, 0.925d);
-        Assert.assertTrue(result);
+        Assert.assertTrue(topKFilter.reserve(10, 2000, 7, 0.925d));
     }
 
     @Test
     public void testAdd() {
         TopKFilter topKFilter = redisBloomClient.getTopKFilter("topk_add");
-        // drop if exits
-        topKFilter.delete();
-        boolean result = topKFilter.reserve(1, 2000, 7, 0.925d);
-        Assert.assertTrue(result);
+        Assert.assertTrue(topKFilter.reserve(1, 2000, 7, 0.925d));
         topKFilter.add("test");
         List<Boolean> itemExits = topKFilter.query("test");
         Assert.assertTrue(itemExits != null && itemExits.size() == 1 && itemExits.get(0));
@@ -58,12 +52,9 @@ public class TopKFilterTest extends AbstractTest {
 
     @Test
     public void testInfo() {
-        BloomFilter bloomFilter = redisBloomClient.getBloomFilter("topk_info");
-        // drop if exits
-        bloomFilter.delete();
-        boolean result = bloomFilter.create(0.1d, 100);
-        Assert.assertTrue(result);
-        BloomFilterInfo bloomFilterInfo = bloomFilter.getInfo();
-        Assert.assertTrue(bloomFilterInfo.getCapacity().intValue() == 100);
+        TopKFilter topKFilter = redisBloomClient.getTopKFilter("topk_info");
+        Assert.assertTrue(topKFilter.reserve(10, 2000, 7, 0.925d));
+        TopKFilterInfo topKFilterInfo = topKFilter.getInfo();
+        Assert.assertTrue(topKFilterInfo.getDepth().intValue() == 7);
     }
 }

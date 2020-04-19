@@ -18,6 +18,7 @@ package io.github.dengliming.redismodule.redisbloom;
 import io.github.dengliming.redismodule.redisbloom.client.RedisBloomClient;
 import org.junit.After;
 import org.junit.Before;
+import org.redisson.config.Config;
 
 /**
  * @author dengliming
@@ -32,7 +33,10 @@ public abstract class AbstractTest {
 
     @Before
     public void init() {
-        redisBloomClient = new RedisBloomClient("redis://" + DEFAULT_HOST + ":" + DEFAULT_PORT);
+        Config config = new Config();
+        config.useSingleServer().setAddress("redis://" + DEFAULT_HOST + ":" + DEFAULT_PORT);
+        redisBloomClient = new RedisBloomClient(config);
+        redisBloomClient.flushall();
     }
 
     @After

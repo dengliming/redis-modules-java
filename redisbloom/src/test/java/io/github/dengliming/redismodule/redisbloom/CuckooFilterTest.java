@@ -29,17 +29,12 @@ public class CuckooFilterTest extends AbstractTest {
     @Test
     public void testReserve() {
         CuckooFilter cuckooFilter = redisBloomClient.getCuckooFilter("cf_reserve");
-        // drop if exits
-        cuckooFilter.delete();
-        boolean result = cuckooFilter.reserve(100);
-        Assert.assertTrue(result);
+        Assert.assertTrue(cuckooFilter.reserve(100));
     }
 
     @Test
     public void testAdd() {
         CuckooFilter cuckooFilter = redisBloomClient.getCuckooFilter("cf_add");
-        // drop if exits
-        cuckooFilter.delete();
         Assert.assertTrue(cuckooFilter.reserve(100));
         Assert.assertTrue(cuckooFilter.add("a"));
         Assert.assertTrue(cuckooFilter.exists("a"));
@@ -51,8 +46,6 @@ public class CuckooFilterTest extends AbstractTest {
     @Test
     public void testInsert() {
         CuckooFilter cuckooFilter = redisBloomClient.getCuckooFilter("cf_insert");
-        // drop if exits
-        cuckooFilter.delete();
         List<Boolean> result = cuckooFilter.insert(-1L, false, "a");
         Assert.assertNotNull(result);
         Assert.assertTrue(result.get(0));
@@ -61,8 +54,6 @@ public class CuckooFilterTest extends AbstractTest {
     @Test
     public void testInfo() {
         CuckooFilter cuckooFilter = redisBloomClient.getCuckooFilter("cf_info");
-        // drop if exits
-        cuckooFilter.delete();
         Assert.assertTrue(cuckooFilter.reserve(100, 50));
         CuckooFilterInfo cuckooFilterInfo = cuckooFilter.getInfo();
         Assert.assertTrue(cuckooFilterInfo.getBucketSize().intValue() == 50);
