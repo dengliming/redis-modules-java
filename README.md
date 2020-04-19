@@ -4,10 +4,10 @@ Java Client libraries for redis-modules, based on [Redisson](https://github.com/
 
 ## Support
 * [RedisBloom](https://oss.redislabs.com/redisbloom/) 
+* [RediSearch](https://oss.redislabs.com/redisearch/)
 
 ## TODO
 * [RedisAI](https://oss.redislabs.com/redisai/)
-* [RediSearch](https://oss.redislabs.com/redisearch/)
 * [RedisGears](https://oss.redislabs.com/redisgears/)
 * [RedisTimeSeries](https://oss.redislabs.com/redistimeseries/)
 * [...](https://redis.io/modules)

@@ -15,8 +15,13 @@
  */
 package io.github.dengliming.redismodule.redisearch.client;
 
+import io.github.dengliming.redismodule.redisearch.RediSearch;
 import org.redisson.Redisson;
+import org.redisson.client.protocol.RedisCommands;
+import org.redisson.command.CommandAsyncExecutor;
 import org.redisson.config.Config;
+
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author dengliming
@@ -31,8 +36,28 @@ public class RediSearchClient {
 
     public RediSearchClient(String address) {
         Config config = new Config();
-        config.useSingleServer().setAddress(address);
+        config.useSingleServer().setAddress(address).setRetryAttempts(0).setTimeout(60000);
         this.client = (Redisson) Redisson.create(config);
     }
 
+    public RediSearch getRediSearch(String name) {
+        return new RediSearch(client.getConnectionManager().getCommandExecutor(), name);
+    }
+
+    public void shutdown() {
+        client.shutdown();
+    }
+
+    public void shutdown(long quietPeriod, long timeout, TimeUnit unit) {
+        client.shutdown(quietPeriod, timeout, unit);
+    }
+
+    public Void flushall() {
+        CommandAsyncExecutor commandExecutor = client.getConnectionManager().getCommandExecutor();
+        return commandExecutor.get(commandExecutor.writeAllAsync(RedisCommands.FLUSHALL));
+    }
+
+    public Redisson getClient() {
+        return client;
+    }
 }

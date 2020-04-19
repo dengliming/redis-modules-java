@@ -15,6 +15,8 @@
  */
 package io.github.dengliming.redismodule.redisearch.schema;
 
+import io.github.dengliming.redismodule.redisearch.index.Phonetic;
+
 /**
  * @author dengliming
  */
@@ -49,5 +51,17 @@ public class TextField extends Field {
         this.weight = weight;
         this.noStem = noStem;
         this.phonetic = phonetic;
+    }
+
+    public double getWeight() {
+        return weight;
+    }
+
+    public boolean isNoStem() {
+        return noStem;
+    }
+
+    public Phonetic getPhonetic() {
+        return phonetic;
     }
 }

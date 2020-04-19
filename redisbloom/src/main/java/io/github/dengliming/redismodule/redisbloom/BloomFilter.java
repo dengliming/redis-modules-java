@@ -102,7 +102,7 @@ public class BloomFilter extends RedissonObject {
     public RFuture<List<Boolean>> existsMultiAsync(String... items) {
         RAssert.notNull(items, "Items must not be null");
 
-        return commandExecutor.readAsync(getName(), codec, BF_MEXISTS,  ArgsUtil.append(getName(), items));
+        return commandExecutor.readAsync(getName(), codec, BF_MEXISTS, ArgsUtil.append(getName(), items));
     }
 
     /**

@@ -15,39 +15,30 @@
  */
 package io.github.dengliming.redismodule.redisearch.schema;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * @author dengliming
  */
-public class Field {
-    private String name;
-    private boolean sortable;
-    private boolean noIndex;
-    private FieldType fieldType;
+public class Schema {
 
-    public Field(String name, FieldType type, boolean sortable) {
-        this(name, type, sortable, false);
+    private final List<Field> fields;
+
+    public Schema() {
+        this(new ArrayList<>());
     }
 
-    public Field(String name, FieldType fieldType, boolean sortable, boolean noIndex) {
-        this.name = name;
-        this.fieldType = fieldType;
-        this.sortable = sortable;
-        this.noIndex = noIndex;
+    public Schema(List<Field> fields) {
+        this.fields = fields;
     }
 
-    public String getName() {
-        return name;
+    public Schema addField(Field field) {
+        fields.add(field);
+        return this;
     }
 
-    public boolean isSortable() {
-        return sortable;
-    }
-
-    public boolean isNoIndex() {
-        return noIndex;
-    }
-
-    public FieldType getFieldType() {
-        return fieldType;
+    public List<Field> getFields() {
+        return fields;
     }
 }

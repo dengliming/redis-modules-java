@@ -26,17 +26,17 @@ import java.util.Map;
  */
 public final class ArgsUtil {
 
-    public static String[] append(String key, String... items) {
+    public static Object[] append(Object key, Object... items) {
         RAssert.notNull(key, "Key must not be null");
         RAssert.notEmpty(items, "Items must not be empty");
 
-        String[] args = new String[items.length + 1];
+        Object[] args = new Object[items.length + 1];
         args[0] = key;
         System.arraycopy(items, 0, args, 1, items.length);
         return args;
     }
 
-    public static Object[] append(String key, Map<?, ?> params) {
+    public static Object[] append(Object key, Map<?, ?> params) {
         RAssert.notNull(key, "Key must not be null");
         RAssert.notEmpty(params, "Params must not be empty");
 

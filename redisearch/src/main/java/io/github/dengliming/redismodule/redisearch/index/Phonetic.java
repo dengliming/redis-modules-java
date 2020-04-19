@@ -13,30 +13,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.dengliming.redismodule.redisearch.schema;
+package io.github.dengliming.redismodule.redisearch.index;
 
 /**
  * @author dengliming
  */
-public class TagField extends Field {
+public enum Phonetic {
+    /**
+     * Double Metaphone for English
+     */
+    DM_EN("dm:en"),
+    /**
+     * Double Metaphone for French
+     */
+    DM_FR("dm:fr"),
+    /**
+     * Double Metaphone for Portuguese
+     */
+    DM_PT("dm:pt"),
+    /**
+     * Double Metaphone for Spanish
+     */
+    DM_ES("dm:es");
 
-    private static final String DEFAULT_SEPARATOR = ",";
-    private final String separator;
+    private String matcher;
 
-    public TagField(String name) {
-        this(name, DEFAULT_SEPARATOR);
-    }
-
-    public TagField(String name, String separator) {
-        this(name, DEFAULT_SEPARATOR, false);
-    }
-
-    public TagField(String name, String separator, boolean sortable) {
-        super(name, FieldType.TAG, sortable);
-        this.separator = separator;
-    }
-
-    public String getSeparator() {
-        return separator;
+    Phonetic(String matcher) {
+        this.matcher = matcher;
     }
 }

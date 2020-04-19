@@ -13,30 +13,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.dengliming.redismodule.redisearch.schema;
+package io.github.dengliming.redismodule.redisearch.index;
 
 /**
  * @author dengliming
  */
-public class TagField extends Field {
+public class Suggestion {
 
-    private static final String DEFAULT_SEPARATOR = ",";
-    private final String separator;
+    private final String term;
+    private final double score;
+    private final String payload;
 
-    public TagField(String name) {
-        this(name, DEFAULT_SEPARATOR);
+    public Suggestion(String term, double score, String payload) {
+        this.term = term;
+        this.score = score;
+        this.payload = payload;
     }
 
-    public TagField(String name, String separator) {
-        this(name, DEFAULT_SEPARATOR, false);
+    public String getTerm() {
+        return term;
     }
 
-    public TagField(String name, String separator, boolean sortable) {
-        super(name, FieldType.TAG, sortable);
-        this.separator = separator;
+    public double getScore() {
+        return score;
     }
 
-    public String getSeparator() {
-        return separator;
+    public String getPayload() {
+        return payload;
     }
 }

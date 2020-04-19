@@ -13,30 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.dengliming.redismodule.redisearch.schema;
+package io.github.dengliming.redismodule.redisearch.index;
 
 /**
+ * The supported languages
+ *
  * @author dengliming
  */
-public class TagField extends Field {
+public enum RSLanguage {
 
-    private static final String DEFAULT_SEPARATOR = ",";
-    private final String separator;
-
-    public TagField(String name) {
-        this(name, DEFAULT_SEPARATOR);
-    }
-
-    public TagField(String name, String separator) {
-        this(name, DEFAULT_SEPARATOR, false);
-    }
-
-    public TagField(String name, String separator, boolean sortable) {
-        super(name, FieldType.TAG, sortable);
-        this.separator = separator;
-    }
-
-    public String getSeparator() {
-        return separator;
-    }
+    ARABIC, DANISH, DUTCH, ENGLISH, FINNISH, FRENCH, GERMAN, HUNGARIAN,
+    ITALIAN, NORWEGIAN, PORTUGUESE, ROMANIAN, RUSSIAN, SPANISH, SWEDISH, TAMIL, TURKISH,
+    /**
+     * available starting at version 0.99.0
+     */
+    CHINESE;
 }

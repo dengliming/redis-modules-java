@@ -20,6 +20,8 @@ import io.github.dengliming.redismodule.redisbloom.CountMinSketch;
 import io.github.dengliming.redismodule.redisbloom.CuckooFilter;
 import io.github.dengliming.redismodule.redisbloom.TopKFilter;
 import org.redisson.Redisson;
+import org.redisson.client.protocol.RedisCommands;
+import org.redisson.command.CommandAsyncExecutor;
 import org.redisson.config.Config;
 
 import java.util.concurrent.TimeUnit;
@@ -63,5 +65,14 @@ public class RedisBloomClient {
 
     public void shutdown(long quietPeriod, long timeout, TimeUnit unit) {
         client.shutdown(quietPeriod, timeout, unit);
+    }
+
+    public Void flushall() {
+        CommandAsyncExecutor commandExecutor = client.getConnectionManager().getCommandExecutor();
+        return commandExecutor.get(commandExecutor.writeAllAsync(RedisCommands.FLUSHALL));
+    }
+
+    public Redisson getClient() {
+        return client;
     }
 }

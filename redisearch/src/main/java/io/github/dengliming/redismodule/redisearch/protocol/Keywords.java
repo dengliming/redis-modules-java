@@ -13,23 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.dengliming.redismodule.redisearch.schema;
-
-import java.util.List;
+package io.github.dengliming.redismodule.redisearch.protocol;
 
 /**
  * @author dengliming
  */
-public class IndexSchema {
-
-    public final List<Field> fields;
-
-    public IndexSchema(List<Field> fields) {
-        this.fields = fields;
-    }
-
-    public IndexSchema addField(Field field) {
-        fields.add(field);
-        return this;
-    }
+public enum Keywords {
+    MAXTEXTFIELDS, TEMPORARY, NOOFFSETS, NOHL, FUZZY, WITHSCORES, WITHPAYLOADS, MAX, PAYLOAD, INCR, LANGUAGE, REPLACE,
+    DD, FIELDS, IF, NOSAVE, KEEPDOCS, NOINDEX, SORTABLE, PHONETIC, NOSTEM, WEIGHT, SEPARATOR, ADD, SCHEMA, STOPWORDS, NOFREQS, NOFIELDS, ;
 }

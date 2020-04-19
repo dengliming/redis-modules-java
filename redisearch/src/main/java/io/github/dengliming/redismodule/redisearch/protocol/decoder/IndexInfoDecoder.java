@@ -13,32 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.dengliming.redismodule.redisearch.schema;
+package io.github.dengliming.redismodule.redisearch.protocol.decoder;
+
+import io.github.dengliming.redismodule.redisearch.index.IndexInfo;
+import org.redisson.client.handler.State;
+import org.redisson.client.protocol.Decoder;
+import org.redisson.client.protocol.decoder.MultiDecoder;
+
+import java.util.List;
 
 /**
  * @author dengliming
  */
-public enum Phonetic {
-    /**
-     * Double Metaphone for English
-     */
-    DM_EN("dm:en"),
-    /**
-     * Double Metaphone for French
-     */
-    DM_FR("dm:fr"),
-    /**
-     * Double Metaphone for Portuguese
-     */
-    DM_PT("dm:pt"),
-    /**
-     * Double Metaphone for Spanish
-     */
-    DM_ES("dm:es");
+public class IndexInfoDecoder implements MultiDecoder<IndexInfo> {
 
-    private String matcher;
-
-    Phonetic(String matcher) {
-        this.matcher = matcher;
+    @Override
+    public Decoder<Object> getDecoder(int paramNum, State state) {
+        return null;
     }
+
+    @Override
+    public IndexInfo decode(List<Object> parts, State state) {
+        // TODO
+        return null;
+    }
+
 }

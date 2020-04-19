@@ -13,30 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.dengliming.redismodule.redisearch.schema;
+package io.github.dengliming.redismodule.redisearch.index;
 
 /**
  * @author dengliming
  */
-public class TagField extends Field {
+public enum ConfigOption {
+    NOGC("NOGC"),
+    MINPREFIX("MINPREFIX"),
+    MAXEXPANSIONS("MAXEXPANSIONS"),
+    TIMEOUT("TIMEOUT"),
+    ON_TIMEOUT("ON_TIMEOUT"),
+    MIN_PHONETIC_TERM_LEN("MIN_PHONETIC_TERM_LEN");
 
-    private static final String DEFAULT_SEPARATOR = ",";
-    private final String separator;
+    private String keyword;
 
-    public TagField(String name) {
-        this(name, DEFAULT_SEPARATOR);
+    ConfigOption(String keyword) {
+        this.keyword = keyword;
     }
 
-    public TagField(String name, String separator) {
-        this(name, DEFAULT_SEPARATOR, false);
-    }
-
-    public TagField(String name, String separator, boolean sortable) {
-        super(name, FieldType.TAG, sortable);
-        this.separator = separator;
-    }
-
-    public String getSeparator() {
-        return separator;
+    public String getKeyword() {
+        return keyword;
     }
 }
