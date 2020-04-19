@@ -36,7 +36,7 @@ public class RediSearchClient {
 
     public RediSearchClient(String address) {
         Config config = new Config();
-        config.useSingleServer().setAddress(address);
+        config.useSingleServer().setAddress(address).setConnectionMinimumIdleSize(1);
         this.client = (Redisson) Redisson.create(config);
     }
 
