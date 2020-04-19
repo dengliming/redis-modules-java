@@ -22,7 +22,6 @@ import io.github.dengliming.redismodule.redisearch.index.*;
 import io.github.dengliming.redismodule.redisearch.schema.Schema;
 import io.github.dengliming.redismodule.redisearch.schema.TextField;
 import org.junit.Test;
-import org.redisson.Redisson;
 import org.redisson.api.RMap;
 
 import java.util.HashMap;
@@ -50,8 +49,7 @@ public class RediSearchTest extends AbstractTest {
         assertTrue(rediSearch.createIndex(new Schema().addField(new TextField("title"))));
         Map<String, Object> fields = new HashMap<>();
         fields.put("title", "hello world");
-        Redisson redisson = rediSearchClient.getClient();
-        RMap<String, Object> map = redisson.getMap("foo");
+        RMap<String, Object> map = rediSearchClient.getMap("foo");
         map.putAll(fields);
         assertTrue(rediSearch.addHash("foo", 1, RSLanguage.ENGLISH));
     }

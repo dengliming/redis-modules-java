@@ -21,43 +21,21 @@ import org.redisson.client.protocol.RedisCommands;
 import org.redisson.command.CommandAsyncExecutor;
 import org.redisson.config.Config;
 
-import java.util.concurrent.TimeUnit;
-
 /**
  * @author dengliming
  */
-public class RediSearchClient {
+public class RediSearchClient extends Redisson {
 
-    private Redisson client;
-
-    public RediSearchClient() {
-        this("redis://127.0.0.1:6379");
-    }
-
-    public RediSearchClient(String address) {
-        Config config = new Config();
-        config.useSingleServer().setAddress(address).setConnectionMinimumIdleSize(1);
-        this.client = (Redisson) Redisson.create(config);
+    public RediSearchClient(Config config) {
+        super(config);
     }
 
     public RediSearch getRediSearch(String name) {
-        return new RediSearch(client.getConnectionManager().getCommandExecutor(), name);
-    }
-
-    public void shutdown() {
-        client.shutdown();
-    }
-
-    public void shutdown(long quietPeriod, long timeout, TimeUnit unit) {
-        client.shutdown(quietPeriod, timeout, unit);
+        return new RediSearch(getConnectionManager().getCommandExecutor(), name);
     }
 
     public Void flushall() {
-        CommandAsyncExecutor commandExecutor = client.getConnectionManager().getCommandExecutor();
+        CommandAsyncExecutor commandExecutor = getConnectionManager().getCommandExecutor();
         return commandExecutor.get(commandExecutor.writeAllAsync(RedisCommands.FLUSHALL));
-    }
-
-    public Redisson getClient() {
-        return client;
     }
 }

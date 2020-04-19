@@ -18,13 +18,14 @@ package io.github.dengliming.redismodule.redisearch;
 import io.github.dengliming.redismodule.redisearch.client.RediSearchClient;
 import org.junit.After;
 import org.junit.Before;
+import org.redisson.config.Config;
 
 /**
  * @author dengliming
  */
 public abstract class AbstractTest {
 
-    public static final String DEFAULT_HOST = System.getProperty("REDIS_HOST", "192.168.50.16");
+    public static final String DEFAULT_HOST = System.getProperty("REDIS_HOST", "127.0.0.1");
     public static final int DEFAULT_PORT = Integer.valueOf(System.getProperty("REDIS_PORT", "6379"));
     public static final String DEFAULT_PASSWORD = System.getProperty("REDIS_PASSWORD", "");
 
@@ -32,7 +33,9 @@ public abstract class AbstractTest {
 
     @Before
     public void init() {
-        rediSearchClient = new RediSearchClient("redis://" + DEFAULT_HOST + ":" + DEFAULT_PORT);
+        Config config = new Config();
+        config.useSingleServer().setAddress("redis://" + DEFAULT_HOST + ":" + DEFAULT_PORT);
+        rediSearchClient = new RediSearchClient(config);
         rediSearchClient.flushall();
     }
 
