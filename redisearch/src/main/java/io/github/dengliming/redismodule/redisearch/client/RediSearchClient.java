@@ -36,7 +36,7 @@ public class RediSearchClient {
 
     public RediSearchClient(String address) {
         Config config = new Config();
-        config.useSingleServer().setAddress(address).setRetryAttempts(0).setTimeout(60000);
+        config.useSingleServer().setAddress(address);
         this.client = (Redisson) Redisson.create(config);
     }
 
