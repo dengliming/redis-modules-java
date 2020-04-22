@@ -13,14 +13,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.dengliming.redismodule.redisearch.protocol;
+package io.github.dengliming.redismodule.redisearch.search;
+
+import io.github.dengliming.redismodule.redisearch.protocol.Keywords;
+
+import java.util.List;
 
 /**
  * @author dengliming
  */
-public enum Keywords {
-    MAXTEXTFIELDS, TEMPORARY, NOOFFSETS, NOHL, FUZZY, WITHSCORES, WITHPAYLOADS, MAX, PAYLOAD, INCR, LANGUAGE, REPLACE,
-    DD, FIELDS, IF, NOSAVE, KEEPDOCS, NOINDEX, SORTABLE, PHONETIC, NOSTEM, WEIGHT, SEPARATOR, ADD, SCHEMA, STOPWORDS, NOFREQS, NOFIELDS,
-    NOCONTENT, VERBATIM, NOSTOPWORDS, WITHSORTKEYS, FILTER, GEOFILTER, INKEYS, INFIELDS, RETURN, SUMMARIZE, FRAGS, LEN,
-    HIGHLIGHT, TAGS, SLOP, INORDER, EXPANDER, SCORER, EXPLAINSCORE, SORTBY, LIMIT;
+public class Page {
+
+    public final static int DEFAULT_OFFSET = 0;
+    public final static int DEFAULT_NUM = 10;
+    public int offset = DEFAULT_OFFSET;
+    public int num = DEFAULT_NUM;
+
+    public Page(int offset, int num) {
+        this.offset = offset;
+        this.num = num;
+    }
+
+    public void build(List<Object> args) {
+        args.add(Keywords.LIMIT);
+        args.add(offset);
+        args.add(num);
+    }
 }

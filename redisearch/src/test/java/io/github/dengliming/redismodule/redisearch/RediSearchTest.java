@@ -19,8 +19,10 @@ import io.github.dengliming.redismodule.redisearch.index.ConfigOption;
 import io.github.dengliming.redismodule.redisearch.index.DocumentOptions;
 import io.github.dengliming.redismodule.redisearch.index.RSLanguage;
 import io.github.dengliming.redismodule.redisearch.index.*;
-import io.github.dengliming.redismodule.redisearch.schema.Schema;
-import io.github.dengliming.redismodule.redisearch.schema.TextField;
+import io.github.dengliming.redismodule.redisearch.index.schema.Schema;
+import io.github.dengliming.redismodule.redisearch.index.schema.TextField;
+import io.github.dengliming.redismodule.redisearch.search.SearchOptions;
+import io.github.dengliming.redismodule.redisearch.search.SearchResult;
 import org.junit.Test;
 import org.redisson.api.RMap;
 
@@ -28,8 +30,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * @author dengliming
@@ -82,10 +83,32 @@ public class RediSearchTest extends AbstractTest {
 
     @Test
     public void testConfig() {
-        RediSearch rediSearch = rediSearchClient.getRediSearch("testDocument");
+        RediSearch rediSearch = rediSearchClient.getRediSearch("testConfig");
         assertTrue(rediSearch.setConfig(ConfigOption.TIMEOUT, "1000"));
         Map<String, String> configs = rediSearch.getConfig(ConfigOption.TIMEOUT);
         assertNotNull(configs);
         assertTrue("1000".equals(configs.get(ConfigOption.TIMEOUT.name())));
     }
+
+    @Test
+    public void testSearch() {
+        RediSearch rediSearch = rediSearchClient.getRediSearch("testSearch");
+        assertTrue(rediSearch.createIndex(new Schema().addField(new TextField("title")).addField(new TextField("content"))));
+        Map<String, Object> fields = new HashMap<>();
+        fields.put("title", "Hi");
+        fields.put("content", "OOOO");
+        assertTrue(rediSearch.addDocument(new Document(String.format("doc1"), 1.0d, fields), new DocumentOptions()));
+
+        Map<String, Object> fields2 = new HashMap<>();
+        fields2.put("title", "Hi guy");
+        fields2.put("content", "hello world");
+        assertTrue(rediSearch.addDocument(new Document(String.format("doc2"), 0.2d, fields2), new DocumentOptions()));
+
+        SearchResult searchResult = rediSearch.search("Hi", new SearchOptions());
+        assertEquals(2, searchResult.getTotal());
+
+        searchResult = rediSearch.search("OOOO", new SearchOptions().noStopwords().language(RSLanguage.ENGLISH));
+        assertEquals(1, searchResult.getTotal());
+    }
 }
+

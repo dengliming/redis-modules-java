@@ -15,6 +15,10 @@
  */
 package io.github.dengliming.redismodule.redisearch.index;
 
+import io.github.dengliming.redismodule.redisearch.protocol.Keywords;
+
+import java.util.List;
+
 /**
  * @author dengliming
  */
@@ -24,13 +28,6 @@ public class SuggestionOptions {
     private boolean withScores;
     private boolean withPayloads;
     private int maxNum;
-
-    public SuggestionOptions(Builder builder) {
-        this.fuzzy = builder.fuzzy;
-        this.withScores = builder.withScores;
-        this.withPayloads = builder.withPayloads;
-        this.maxNum = builder.maxNum;
-    }
 
     public boolean isFuzzy() {
         return fuzzy;
@@ -48,38 +45,39 @@ public class SuggestionOptions {
         return maxNum;
     }
 
-    public static class Builder {
+    public SuggestionOptions fuzzy() {
+        this.fuzzy = true;
+        return this;
+    }
 
-        private boolean fuzzy;
-        private boolean withScores;
-        private boolean withPayloads;
-        private int maxNum;
+    public SuggestionOptions withScores() {
+        this.withScores = true;
+        return this;
+    }
 
-        private Builder() {
+    public SuggestionOptions withPayloads() {
+        this.withPayloads = true;
+        return this;
+    }
+
+    public SuggestionOptions maxNum(int num) {
+        this.maxNum = num;
+        return this;
+    }
+
+    public void build(List<Object> args) {
+        if (isFuzzy()) {
+            args.add(Keywords.FUZZY.name());
         }
-
-        public Builder fuzzy() {
-            this.fuzzy = true;
-            return this;
+        if (isWithScores()) {
+            args.add(Keywords.WITHSCORES.name());
         }
-
-        public Builder withScores() {
-            this.withScores = true;
-            return this;
+        if (isWithPayloads()) {
+            args.add(Keywords.WITHPAYLOADS.name());
         }
-
-        public Builder withPayloads() {
-            this.withPayloads = true;
-            return this;
-        }
-
-        public Builder maxNum(int num) {
-            this.maxNum = num;
-            return this;
-        }
-
-        public SuggestionOptions build() {
-            return new SuggestionOptions(this);
+        if (getMaxNum() > 0) {
+            args.add(Keywords.MAX.name());
+            args.add(getMaxNum());
         }
     }
 }

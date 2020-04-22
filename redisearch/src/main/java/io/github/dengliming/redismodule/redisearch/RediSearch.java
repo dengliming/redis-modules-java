@@ -19,10 +19,12 @@ import io.github.dengliming.redismodule.common.util.ArgsUtil;
 import io.github.dengliming.redismodule.common.util.RAssert;
 import io.github.dengliming.redismodule.redisearch.index.*;
 import io.github.dengliming.redismodule.redisearch.protocol.Keywords;
-import io.github.dengliming.redismodule.redisearch.schema.Field;
-import io.github.dengliming.redismodule.redisearch.schema.Schema;
-import io.github.dengliming.redismodule.redisearch.schema.TagField;
-import io.github.dengliming.redismodule.redisearch.schema.TextField;
+import io.github.dengliming.redismodule.redisearch.index.schema.Field;
+import io.github.dengliming.redismodule.redisearch.index.schema.Schema;
+import io.github.dengliming.redismodule.redisearch.index.schema.TagField;
+import io.github.dengliming.redismodule.redisearch.index.schema.TextField;
+import io.github.dengliming.redismodule.redisearch.search.SearchOptions;
+import io.github.dengliming.redismodule.redisearch.search.SearchResult;
 import org.redisson.RedissonObject;
 import org.redisson.api.RFuture;
 import org.redisson.client.codec.Codec;
@@ -47,6 +49,12 @@ public class RediSearch extends RedissonObject {
         this(commandExecutor.getConnectionManager().getCodec(), commandExecutor, name);
     }
 
+    /**
+     * Creates an index with the given spec
+     *
+     * @param schema
+     * @return
+     */
     public boolean createIndex(Schema schema) {
         return this.createIndex(schema, IndexOptions.defaultOptions());
     }
@@ -61,30 +69,7 @@ public class RediSearch extends RedissonObject {
 
         List<Object> args = new ArrayList<>();
         args.add(getName());
-        if (indexOptions.isMaxTextFields()) {
-            args.add(Keywords.MAXTEXTFIELDS.name());
-        }
-        if (indexOptions.getExpire() > 0) {
-            args.add(Keywords.TEMPORARY.name());
-            args.add(indexOptions.getExpire());
-        }
-        if (indexOptions.isNoOffsets()) {
-            args.add(Keywords.NOOFFSETS.name());
-        }
-        if (indexOptions.isNoHL()) {
-            args.add(Keywords.NOHL.name());
-        }
-        if (indexOptions.isNoFields()) {
-            args.add(Keywords.NOFIELDS.name());
-        }
-        if (indexOptions.isNoFreqs()) {
-            args.add(Keywords.NOFREQS.name());
-        }
-        if (indexOptions.getStopwords() != null) {
-            args.add(Keywords.STOPWORDS.name());
-            args.add(indexOptions.getStopwords().size());
-            args.addAll(indexOptions.getStopwords());
-        }
+        indexOptions.build(args);
         args.add(Keywords.SCHEMA.name());
         schema.getFields().forEach(field -> appendFieldArgs(args, field));
         return commandExecutor.writeAsync(getName(), codec, FT_CREATE, args.toArray());
@@ -137,6 +122,11 @@ public class RediSearch extends RedissonObject {
         }
     }
 
+    /**
+     * Deletes all the keys associated with the index.
+     *
+     * @return
+     */
     public boolean dropIndex() {
         return dropIndex(false);
     }
@@ -160,6 +150,12 @@ public class RediSearch extends RedissonObject {
         return commandExecutor.readAsync(getName(), StringCodec.INSTANCE, FT_INFO, getName());
     }
 
+    /**
+     * Adds a document to the index.
+     *
+     * @param document
+     * @return
+     */
     public boolean addDocument(Document document) {
         return addDocument(document, new DocumentOptions());
     }
@@ -176,27 +172,11 @@ public class RediSearch extends RedissonObject {
         args.add(getName());
         args.add(document.getId());
         args.add(document.getScore());
-        if (options.isNoSave()) {
-            args.add(Keywords.NOSAVE.name());
-        }
-        if (options.getReplacePolicy() != null) {
-            args.add(Keywords.REPLACE.name());
-            if (options.getReplacePolicy() != DocumentOptions.ReplacePolicy.NONE) {
-                args.add(options.getReplacePolicy().name());
-            }
-        }
-        if (options.getLanguage() != null) {
-            args.add(Keywords.LANGUAGE.name());
-            args.add(options.getLanguage().name().toLowerCase());
-        }
         if (document.getPayload() != null) {
             args.add(Keywords.PAYLOAD.name());
             args.add(document.getPayload());
         }
-        if (options.getReplaceCondition() != null) {
-            args.add(Keywords.IF.name());
-            args.add(options.getReplaceCondition());
-        }
+        options.build(args);
         args.add(Keywords.FIELDS.name());
         document.getFields().forEach((k, v) -> {
             args.add(k);
@@ -205,6 +185,12 @@ public class RediSearch extends RedissonObject {
         return commandExecutor.writeAsync(getName(), codec, FT_ADD, args.toArray());
     }
 
+    /**
+     * Returns the full contents of a document.
+     *
+     * @param docId
+     * @return
+     */
     public Map<String, Object> getDocument(String docId) {
         return get(getDocumentAsync(docId));
     }
@@ -215,6 +201,12 @@ public class RediSearch extends RedissonObject {
         return commandExecutor.readAsync(getName(), StringCodec.INSTANCE, FT_GET, getName(), docId);
     }
 
+    /**
+     * Returns the full contents of multiple documents.
+     *
+     * @param docIds
+     * @return
+     */
     public List<Map<String, Object>> getDocuments(String... docIds) {
         return get(getDocumentsAsync(docIds));
     }
@@ -225,6 +217,12 @@ public class RediSearch extends RedissonObject {
         return commandExecutor.readAsync(getName(), StringCodec.INSTANCE, FT_MGET, ArgsUtil.append(getName(), docIds));
     }
 
+    /**
+     * Deletes a document from the index.
+     *
+     * @param docId
+     * @return
+     */
     public boolean deleteDocument(String docId) {
         return this.deleteDocument(docId, false);
     }
@@ -242,6 +240,13 @@ public class RediSearch extends RedissonObject {
         return commandExecutor.writeAsync(getName(), codec, FT_DEL, getName(), docId);
     }
 
+    /**
+     * Adds a document to the index from an existing HASH key in Redis.
+     *
+     * @param docId
+     * @param score
+     * @return
+     */
     public boolean addHash(String docId, double score) {
         return this.addHash(docId, score, null);
     }
@@ -342,6 +347,13 @@ public class RediSearch extends RedissonObject {
         return commandExecutor.readAsync(getName(), codec, FT_CONFIG_HELP, option.getKeyword());
     }
 
+    /**
+     * Adds terms to a dictionary.
+     *
+     * @param dictName
+     * @param terms
+     * @return
+     */
     public int addDict(String dictName, String... terms) {
         return get(addDictAsync(dictName, terms));
     }
@@ -353,6 +365,13 @@ public class RediSearch extends RedissonObject {
         return commandExecutor.writeAsync(getName(), codec, FT_DICTADD, ArgsUtil.append(dictName, terms));
     }
 
+    /**
+     * Deletes terms from a dictionary.
+     *
+     * @param dictName
+     * @param terms
+     * @return
+     */
     public int deleteDict(String dictName, String... terms) {
         return get(deleteDictAsync(dictName, terms));
     }
@@ -364,6 +383,12 @@ public class RediSearch extends RedissonObject {
         return commandExecutor.writeAsync(getName(), codec, FT_DICTDEL, ArgsUtil.append(dictName, terms));
     }
 
+    /**
+     * Dumps all terms in the given dictionary.
+     *
+     * @param dictName
+     * @return
+     */
     public List<String> dumpDict(String dictName) {
         return get(dumpDictAsync(dictName));
     }
@@ -374,6 +399,12 @@ public class RediSearch extends RedissonObject {
         return commandExecutor.writeAsync(getName(), codec, FT_DICTDUMP, dictName);
     }
 
+    /**
+     * Adds a synonym group.
+     *
+     * @param terms
+     * @return
+     */
     public long addSynonym(String... terms) {
         return get(addSynonymAsync(terms));
     }
@@ -384,6 +415,13 @@ public class RediSearch extends RedissonObject {
         return commandExecutor.writeAsync(getName(), codec, FT_SYNADD, ArgsUtil.append(getName(), terms));
     }
 
+    /**
+     * Updates a synonym group.
+     *
+     * @param synonymGroupId
+     * @param terms
+     * @return
+     */
     public boolean updateSynonym(long synonymGroupId, String... terms) {
         return get(updateSynonymAsync(synonymGroupId, terms));
     }
@@ -394,6 +432,11 @@ public class RediSearch extends RedissonObject {
         return commandExecutor.writeAsync(getName(), codec, FT_SYNUPDATE, getName(), ArgsUtil.append(synonymGroupId, terms));
     }
 
+    /**
+     * Dumps the contents of a synonym group.
+     *
+     * @return
+     */
     public boolean dumpSynonyms() {
         return get(dumpSynonymsAsync());
     }
@@ -402,6 +445,12 @@ public class RediSearch extends RedissonObject {
         return commandExecutor.writeAsync(getName(), codec, FT_SYNUPDATE, getName());
     }
 
+    /**
+     * Returns the distinct tags indexed in a Tag field.
+     *
+     * @param fieldName
+     * @return
+     */
     public List<String> getTagVals(String fieldName) {
         return get(getTagValsAsync(fieldName));
     }
@@ -412,6 +461,12 @@ public class RediSearch extends RedissonObject {
         return commandExecutor.readAsync(getName(), codec, FT_TAGVALS, getName(), fieldName);
     }
 
+    /**
+     * Adds a suggestion string to an auto-complete suggestion dictionary.
+     *
+     * @param suggestion
+     * @return
+     */
     public int addSuggestion(Suggestion suggestion) {
         return addSuggestion(suggestion, false);
     }
@@ -437,6 +492,11 @@ public class RediSearch extends RedissonObject {
         return commandExecutor.writeAsync(getName(), codec, FT_SUGADD, args.toArray());
     }
 
+    /**
+     * Gets the size of an auto-complete suggestion dictionary
+     *
+     * @return
+     */
     public int getSuggestionLength() {
         return get(getSuggestionLengthAsync());
     }
@@ -445,6 +505,12 @@ public class RediSearch extends RedissonObject {
         return commandExecutor.readAsync(getName(), codec, FT_SUGLEN, getName());
     }
 
+    /**
+     * Deletes a string from a suggestion index.
+     *
+     * @param term
+     * @return
+     */
     public boolean deleteSuggestion(String term) {
         return get(deleteSuggestionAsync(term));
     }
@@ -455,6 +521,13 @@ public class RediSearch extends RedissonObject {
         return commandExecutor.readAsync(getName(), codec, FT_SUGDEL, getName(), term);
     }
 
+    /**
+     * Gets completion suggestions for a prefix.
+     *
+     * @param prefix
+     * @param options
+     * @return
+     */
     public List<Suggestion> getSuggestion(String prefix, SuggestionOptions options) {
         return get(getSuggestionAsync(prefix, options));
     }
@@ -466,21 +539,29 @@ public class RediSearch extends RedissonObject {
         List<Object> args = new ArrayList<>();
         args.add(getName());
         args.add(prefix);
-        if (options.isFuzzy()) {
-            args.add(Keywords.FUZZY.name());
-        }
-        if (options.isWithScores()) {
-            args.add(Keywords.WITHSCORES.name());
-        }
-        if (options.isWithPayloads()) {
-            args.add(Keywords.WITHPAYLOADS.name());
-        }
-        if (options.getMaxNum() > 0) {
-            args.add(Keywords.MAX.name());
-            args.add(options.getMaxNum());
-        }
+        options.build(args);
         return commandExecutor.readAsync(getName(), codec, FT_SUGGET, args.toArray());
     }
 
+    /**
+     * Searches the index with a textual query, returning either documents or just ids.
+     *
+     * @param query
+     * @param searchOptions
+     * @return
+     */
+    public SearchResult search(String query, SearchOptions searchOptions) {
+        return get(searchAsync(query, searchOptions));
+    }
 
+    public RFuture<SearchResult> searchAsync(String query, SearchOptions searchOptions) {
+        RAssert.notNull(query, "query must be not null");
+        RAssert.notNull(searchOptions, "SearchOptions must be not null");
+
+        List<Object> args = new ArrayList<>();
+        args.add(getName());
+        args.add(query);
+        searchOptions.build(args);
+        return commandExecutor.readAsync(getName(), StringCodec.INSTANCE, FT_SEARCH, args.toArray());
+    }
 }

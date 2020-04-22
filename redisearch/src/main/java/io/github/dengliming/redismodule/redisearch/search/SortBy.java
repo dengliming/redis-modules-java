@@ -13,30 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.dengliming.redismodule.redisearch.schema;
+package io.github.dengliming.redismodule.redisearch.search;
+
+import io.github.dengliming.redismodule.redisearch.protocol.Keywords;
+import org.redisson.api.SortOrder;
+
+import java.util.List;
 
 /**
  * @author dengliming
  */
-public class TagField extends Field {
+public class SortBy {
 
-    private static final String DEFAULT_SEPARATOR = ",";
-    private final String separator;
+    private final String field;
+    private final SortOrder order;
 
-    public TagField(String name) {
-        this(name, DEFAULT_SEPARATOR);
+    public SortBy(String field, SortOrder order) {
+        this.field = field;
+        this.order = order;
     }
 
-    public TagField(String name, String separator) {
-        this(name, DEFAULT_SEPARATOR, false);
-    }
-
-    public TagField(String name, String separator, boolean sortable) {
-        super(name, FieldType.TAG, sortable);
-        this.separator = separator;
-    }
-
-    public String getSeparator() {
-        return separator;
+    public void build(List<Object> args) {
+        args.add(Keywords.SORTBY);
+        args.add(field);
+        args.add(order.name());
     }
 }

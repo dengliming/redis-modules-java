@@ -15,6 +15,8 @@
  */
 package io.github.dengliming.redismodule.redisearch.index;
 
+import io.github.dengliming.redismodule.redisearch.protocol.Keywords;
+
 import java.util.List;
 
 /**
@@ -42,51 +44,84 @@ public class IndexOptions {
         return maxTextFields;
     }
 
-    public void setMaxTextFields(boolean maxTextFields) {
-        this.maxTextFields = maxTextFields;
+    public IndexOptions maxTextFields() {
+        this.maxTextFields = true;
+        return this;
     }
 
     public boolean isNoOffsets() {
         return noOffsets;
     }
 
-    public void setNoOffsets(boolean noOffsets) {
-        this.noOffsets = noOffsets;
+    public IndexOptions noOffsets() {
+        this.noOffsets = true;
+        return this;
     }
 
     public boolean isNoFreqs() {
         return noFreqs;
     }
 
-    public void setNoFreqs(boolean noFreqs) {
-        this.noFreqs = noFreqs;
+    public IndexOptions noFreqs() {
+        this.noFreqs = true;
+        return this;
     }
 
     public boolean isNoFields() {
         return noFields;
     }
 
-    public void setNoFields(boolean noFields) {
-        this.noFields = noFields;
+    public IndexOptions noFields() {
+        this.noFields = true;
+        return this;
     }
 
     public boolean isNoHL() {
         return noHL;
     }
 
-    public void setNoHL(boolean noHL) {
-        this.noHL = noHL;
+    public IndexOptions noHL() {
+        this.noHL = true;
+        return this;
     }
 
     public List<String> getStopwords() {
         return stopwords;
     }
 
-    public void setStopwords(List<String> stopwords) {
+    public IndexOptions stopwords(List<String> stopwords) {
         this.stopwords = stopwords;
+        return this;
     }
 
     public static IndexOptions defaultOptions() {
         return new IndexOptions();
+    }
+
+    public void build(List<Object> args) {
+        if (isMaxTextFields()) {
+            args.add(Keywords.MAXTEXTFIELDS.name());
+        }
+        if (getExpire() > 0) {
+            args.add(Keywords.TEMPORARY.name());
+            args.add(getExpire());
+        }
+        if (isNoOffsets()) {
+            args.add(Keywords.NOOFFSETS.name());
+        }
+        if (isNoHL()) {
+            args.add(Keywords.NOHL.name());
+        }
+        if (isNoFields()) {
+            args.add(Keywords.NOFIELDS.name());
+        }
+        if (isNoFreqs()) {
+            args.add(Keywords.NOFREQS.name());
+        }
+        if (getStopwords() != null) {
+            args.add(Keywords.STOPWORDS.name());
+            args.add(getStopwords().size());
+            args.addAll(getStopwords());
+        }
     }
 }

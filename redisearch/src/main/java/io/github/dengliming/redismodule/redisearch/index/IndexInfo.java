@@ -15,7 +15,7 @@
  */
 package io.github.dengliming.redismodule.redisearch.index;
 
-import io.github.dengliming.redismodule.redisearch.schema.Schema;
+import io.github.dengliming.redismodule.redisearch.index.schema.Schema;
 
 /**
  * @author dengliming

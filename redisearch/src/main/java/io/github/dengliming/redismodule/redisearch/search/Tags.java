@@ -13,32 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.dengliming.redismodule.redisearch.schema;
+package io.github.dengliming.redismodule.redisearch.search;
 
-import java.util.ArrayList;
+import io.github.dengliming.redismodule.redisearch.protocol.Keywords;
+
 import java.util.List;
 
 /**
  * @author dengliming
  */
-public class Schema {
+public class Tags {
 
-    private final List<Field> fields;
+    private final String open;
+    private final String close;
 
-    public Schema() {
-        this(new ArrayList<>());
+    public Tags(String open, String close) {
+        this.open = open;
+        this.close = close;
     }
 
-    public Schema(List<Field> fields) {
-        this.fields = fields;
-    }
-
-    public Schema addField(Field field) {
-        fields.add(field);
-        return this;
-    }
-
-    public List<Field> getFields() {
-        return fields;
+    public void build(List<Object> args) {
+        args.add(Keywords.TAGS);
+        args.add(open);
+        args.add(close);
     }
 }

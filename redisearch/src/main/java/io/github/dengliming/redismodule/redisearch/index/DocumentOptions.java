@@ -15,6 +15,10 @@
  */
 package io.github.dengliming.redismodule.redisearch.index;
 
+import io.github.dengliming.redismodule.redisearch.protocol.Keywords;
+
+import java.util.List;
+
 /**
  * @author dengliming
  */
@@ -54,6 +58,26 @@ public class DocumentOptions {
         this.replacePolicy = replacePolicy;
         this.replaceCondition = condition;
         return this;
+    }
+
+    public void build(List<Object> args) {
+        if (isNoSave()) {
+            args.add(Keywords.NOSAVE.name());
+        }
+        if (getReplacePolicy() != null) {
+            args.add(Keywords.REPLACE.name());
+            if (getReplacePolicy() != DocumentOptions.ReplacePolicy.NONE) {
+                args.add(getReplacePolicy().name());
+            }
+        }
+        if (getLanguage() != null) {
+            args.add(Keywords.LANGUAGE.name());
+            args.add(getLanguage().name().toLowerCase());
+        }
+        if (getReplaceCondition() != null) {
+            args.add(Keywords.IF.name());
+            args.add(getReplaceCondition());
+        }
     }
 
     public enum ReplacePolicy {

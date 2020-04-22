@@ -13,14 +13,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.dengliming.redismodule.redisearch.protocol;
+package io.github.dengliming.redismodule.redisearch.index.schema;
 
 /**
  * @author dengliming
  */
-public enum Keywords {
-    MAXTEXTFIELDS, TEMPORARY, NOOFFSETS, NOHL, FUZZY, WITHSCORES, WITHPAYLOADS, MAX, PAYLOAD, INCR, LANGUAGE, REPLACE,
-    DD, FIELDS, IF, NOSAVE, KEEPDOCS, NOINDEX, SORTABLE, PHONETIC, NOSTEM, WEIGHT, SEPARATOR, ADD, SCHEMA, STOPWORDS, NOFREQS, NOFIELDS,
-    NOCONTENT, VERBATIM, NOSTOPWORDS, WITHSORTKEYS, FILTER, GEOFILTER, INKEYS, INFIELDS, RETURN, SUMMARIZE, FRAGS, LEN,
-    HIGHLIGHT, TAGS, SLOP, INORDER, EXPANDER, SCORER, EXPLAINSCORE, SORTBY, LIMIT;
+public class TagField extends Field {
+
+    private static final String DEFAULT_SEPARATOR = ",";
+    private final String separator;
+
+    public TagField(String name) {
+        this(name, DEFAULT_SEPARATOR);
+    }
+
+    public TagField(String name, String separator) {
+        this(name, DEFAULT_SEPARATOR, false);
+    }
+
+    public TagField(String name, String separator, boolean sortable) {
+        super(name, FieldType.TAG, sortable);
+        this.separator = separator;
+    }
+
+    public String getSeparator() {
+        return separator;
+    }
 }
