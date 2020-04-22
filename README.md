@@ -3,8 +3,8 @@
 Java Client libraries for redis-modules, based on [Redisson](https://github.com/redisson/redisson).
 
 ## Support
-* [RedisBloom](https://oss.redislabs.com/redisbloom/) 
-* [RediSearch](https://oss.redislabs.com/redisearch/)
+* [RedisBloom](redisbloom/README.md) 
+* [RediSearch](redisearch/README.md)
 
 ## TODO
 * [RedisAI](https://oss.redislabs.com/redisai/)
@@ -31,7 +31,7 @@ bloomFilter.madd(new String[] {"a", "b", "c"});
 TopKFilter topKFilter = redisBloomClient.getTopKFilter("topk_add");
 topKFilter.reserve(1, 2000, 7, 0.925d);
 topKFilter.add("test");
-List<Boolean> itemExits = topKFilter.query("test");
+List<Boolean> itemExits = topKFilter.searchOptions("test");
 Map<String, Integer> itemIncrement = new HashMap<>();
 itemIncrement.put("test", 3);
 topKFilter.incrby(itemIncrement);
