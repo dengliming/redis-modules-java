@@ -19,6 +19,7 @@ import io.github.dengliming.redismodule.redisbloom.model.BloomFilterInfo;
 import io.github.dengliming.redismodule.redisbloom.model.InsertArgs;
 import io.github.dengliming.redismodule.common.util.ArgsUtil;
 import io.github.dengliming.redismodule.common.util.RAssert;
+import io.github.dengliming.redismodule.redisbloom.protocol.Keywords;
 import org.redisson.RedissonObject;
 import org.redisson.api.RFuture;
 import org.redisson.client.codec.Codec;
@@ -122,25 +123,8 @@ public class BloomFilter extends RedissonObject {
 
         List<Object> params = new ArrayList<>();
         params.add(getName());
-        if (insertArgs.getCapacity() > 0) {
-            params.add("CAPACITY");
-            params.add(insertArgs.getCapacity());
-        }
-        if (insertArgs.getErrorRatio() > 0) {
-            params.add("ERROR");
-            params.add(insertArgs.getErrorRatio());
-        }
-        if (insertArgs.getExpansion() > 0) {
-            params.add("EXPANSION");
-            params.add(insertArgs.getExpansion());
-        }
-        if (insertArgs.getNoCreate()) {
-            params.add("NOCREATE");
-        }
-        if (insertArgs.getNonScaling()) {
-            params.add("NONSCALING");
-        }
-        params.add("ITEMS");
+        insertArgs.build(params);
+        params.add(Keywords.ITEMS);
         for (String item : items) {
             params.add(item);
         }

@@ -18,6 +18,7 @@ package io.github.dengliming.redismodule.redisbloom;
 import io.github.dengliming.redismodule.redisbloom.model.CountMinSketchInfo;
 import io.github.dengliming.redismodule.common.util.ArgsUtil;
 import io.github.dengliming.redismodule.common.util.RAssert;
+import io.github.dengliming.redismodule.redisbloom.protocol.Keywords;
 import org.redisson.RedissonObject;
 import org.redisson.api.RFuture;
 import org.redisson.client.codec.Codec;
@@ -126,7 +127,7 @@ public class CountMinSketch extends RedissonObject {
             params.add(src);
         }
         if (weights.length > 0) {
-            params.add("WEIGHTS");
+            params.add(Keywords.WEIGHTS);
             for (Integer weight : weights) {
                 params.add(weight);
             }

@@ -17,11 +17,13 @@ package io.github.dengliming.redismodule.redisbloom;
 
 import io.github.dengliming.redismodule.redisbloom.model.CuckooFilterInfo;
 import io.github.dengliming.redismodule.common.util.RAssert;
+import io.github.dengliming.redismodule.redisbloom.protocol.Keywords;
 import org.redisson.RedissonObject;
 import org.redisson.api.RFuture;
 import org.redisson.client.codec.Codec;
 import org.redisson.command.CommandAsyncExecutor;
 
+import java.security.Key;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -63,15 +65,15 @@ public class CuckooFilter extends RedissonObject {
         params.add(getName());
         params.add(capacity);
         if (bucketSize > 0) {
-            params.add("BUCKETSIZE");
+            params.add(Keywords.BUCKETSIZE);
             params.add(bucketSize);
         }
         if (maxIterations > 0) {
-            params.add("MAXITERATIONS");
+            params.add(Keywords.MAXITERATIONS);
             params.add(maxIterations);
         }
         if (expansion > 0) {
-            params.add("EXPANSION");
+            params.add(Keywords.EXPANSION);
             params.add(expansion);
         }
         return commandExecutor.writeAsync(getName(), codec, CF_RESERVE, params.toArray());
@@ -139,13 +141,13 @@ public class CuckooFilter extends RedissonObject {
         List<Object> params = new ArrayList<>();
         params.add(key);
         if (capacity > 0) {
-            params.add("CAPACITY");
+            params.add(Keywords.CAPACITY);
             params.add(capacity);
         }
         if (noCreate) {
-            params.add("NOCREATE");
+            params.add(Keywords.NOCREATE);
         }
-        params.add("ITEMS");
+        params.add(Keywords.ITEMS);
         for (String item : items) {
             params.add(item);
         }

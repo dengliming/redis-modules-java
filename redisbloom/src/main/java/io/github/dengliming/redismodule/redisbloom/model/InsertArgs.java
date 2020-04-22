@@ -15,6 +15,10 @@
  */
 package io.github.dengliming.redismodule.redisbloom.model;
 
+import io.github.dengliming.redismodule.redisbloom.protocol.Keywords;
+
+import java.util.List;
+
 /**
  * @author dengliming
  */
@@ -100,5 +104,26 @@ public class InsertArgs {
     public InsertArgs setNonScaling(boolean nonScaling) {
         this.nonScaling = nonScaling;
         return this;
+    }
+
+    public void build(List<Object> args) {
+        if (getCapacity() > 0) {
+            args.add(Keywords.CAPACITY);
+            args.add(getCapacity());
+        }
+        if (getErrorRatio() > 0) {
+            args.add(Keywords.ERROR);
+            args.add(getErrorRatio());
+        }
+        if (getExpansion() > 0) {
+            args.add(Keywords.EXPANSION);
+            args.add(getExpansion());
+        }
+        if (getNoCreate()) {
+            args.add(Keywords.NOCREATE);
+        }
+        if (getNonScaling()) {
+            args.add(Keywords.NONSCALING);
+        }
     }
 }
