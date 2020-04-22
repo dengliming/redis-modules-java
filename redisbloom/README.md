@@ -10,8 +10,8 @@ BF.MADD | BloomFilter.<br/>madd()<br/>maddAsync() |
 BF.INSERT | BloomFilter.<br/>insert()<br/>insertAsync() |
 BF.EXISTS | BloomFilter.<br/>exists()<br/>existsAsync() |
 BF.MEXISTS | BloomFilter.<br/>existsMulti()<br/>existsMultiAsync() |
-BF.SCANDUMP | N/A |
-BF.LOADCHUNK | N/A |
+BF.SCANDUMP | BloomFilter.<br/>scanDump()<br/>scanDumpAsync() |
+BF.LOADCHUNK | BloomFilter.<br/>loadChunk()<br/>loadChunkAsync() |
 BF.INFO | BloomFilter.<br/>getInfo()<br/>getInfoAsync() |
 CF.RESERVE | CuckooFilter.<br/>reserve()<br/>reserveAsync() |
 CF.ADD | CuckooFilter.<br/>add()<br/>addAsync() |
@@ -21,8 +21,8 @@ CF.INSERTNX | CuckooFilter.<br/>insertNx()<br/>insertNxAsync() |
 CF.EXISTS | CuckooFilter.<br/>exists()<br/>existsAsync() |
 CF.DEL | CuckooFilter.<br/>delete()<br/>deleteAsync() |
 CF.COUNT | CuckooFilter.<br/>count()<br/>countAsync() |
-CF.SCANDUMP | N/A |
-CF.LOADDUMP | N/A |
+CF.SCANDUMP | CuckooFilter.<br/>scanDump()<br/>scanDumpAsync() |
+CF.LOADCHUNK | CuckooFilter.<br/>loadChunk()<br/>loadChunkAsync() |
 CF.INFO | CuckooFilter.<br/>getInfo()<br/>getInfoAsync() |
 CMS.INITBYDIM | CountMinSketch.<br/>create()<br/>createAsync() |
 CMS.INITBYPROB | CountMinSketch.<br/>create()<br/>createAsync() |

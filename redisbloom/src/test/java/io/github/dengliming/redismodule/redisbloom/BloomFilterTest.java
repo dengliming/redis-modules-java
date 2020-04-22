@@ -16,10 +16,12 @@
 package io.github.dengliming.redismodule.redisbloom;
 
 import io.github.dengliming.redismodule.redisbloom.model.BloomFilterInfo;
+import io.github.dengliming.redismodule.redisbloom.model.ChunksData;
 import io.github.dengliming.redismodule.redisbloom.model.InsertArgs;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -57,6 +59,32 @@ public class BloomFilterTest extends AbstractTest {
         BloomFilter bloomFilter = redisBloomClient.getRBloomFilter("bf_info");
         boolean result = bloomFilter.create(0.1d, 100);
         Assert.assertTrue(result);
+        BloomFilterInfo bloomFilterInfo = bloomFilter.getInfo();
+        Assert.assertTrue(bloomFilterInfo.getCapacity().intValue() == 100);
+    }
+
+    @Test
+    public void testScanDump() {
+        BloomFilter bloomFilter = redisBloomClient.getRBloomFilter("bf_info");
+        boolean result = bloomFilter.create(0.1d, 100);
+        Assert.assertTrue(result);
+        bloomFilter.add("a1");
+
+        int iter = 0;
+        List<ChunksData> chunks = new ArrayList<>();
+        while (true) {
+            ChunksData chunksData = bloomFilter.scanDump(iter);
+            iter = chunksData.getIter();
+            if (iter == 0) {
+                break;
+            }
+            chunks.add(chunksData);
+        }
+
+        bloomFilter.delete();
+        // Load it back
+        chunks.forEach(chunksData -> Assert.assertTrue(bloomFilter.loadChunk(chunksData)));
+
         BloomFilterInfo bloomFilterInfo = bloomFilter.getInfo();
         Assert.assertTrue(bloomFilterInfo.getCapacity().intValue() == 100);
     }

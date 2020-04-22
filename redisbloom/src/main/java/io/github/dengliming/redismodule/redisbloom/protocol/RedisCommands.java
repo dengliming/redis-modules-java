@@ -15,14 +15,8 @@
  */
 package io.github.dengliming.redismodule.redisbloom.protocol;
 
-import io.github.dengliming.redismodule.redisbloom.model.BloomFilterInfo;
-import io.github.dengliming.redismodule.redisbloom.model.CountMinSketchInfo;
-import io.github.dengliming.redismodule.redisbloom.model.CuckooFilterInfo;
-import io.github.dengliming.redismodule.redisbloom.model.TopKFilterInfo;
-import io.github.dengliming.redismodule.redisbloom.protocol.decoder.BloomFilterDecoder;
-import io.github.dengliming.redismodule.redisbloom.protocol.decoder.CountMinSketchDecoder;
-import io.github.dengliming.redismodule.redisbloom.protocol.decoder.CuckooFilterDecoder;
-import io.github.dengliming.redismodule.redisbloom.protocol.decoder.TopKFilterDecoder;
+import io.github.dengliming.redismodule.redisbloom.model.*;
+import io.github.dengliming.redismodule.redisbloom.protocol.decoder.*;
 import org.redisson.client.protocol.RedisCommand;
 import org.redisson.client.protocol.convertor.BooleanReplayConvertor;
 import org.redisson.client.protocol.convertor.IntegerReplayConvertor;
@@ -43,8 +37,8 @@ public interface RedisCommands {
     RedisCommand<List<Boolean>> BF_INSERT = new RedisCommand("BF.INSERT", new ObjectListReplayDecoder<Boolean>(), new BooleanReplayConvertor());
     RedisCommand<Boolean> BF_EXISTS = new RedisCommand<>("BF.EXISTS", new BooleanReplayConvertor());
     RedisCommand<List<Boolean>> BF_MEXISTS = new RedisCommand("BF.MEXISTS", new ObjectListReplayDecoder<Boolean>(), new BooleanReplayConvertor());
-    RedisCommand<Void> BF_SCANDUMP = new RedisCommand<>("BF.SCANDUMP", new VoidReplayConvertor());
-    RedisCommand<Void> BF_LOADCHUNK = new RedisCommand<>("BF.LOADCHUNK", new VoidReplayConvertor());
+    RedisCommand<ChunksData> BF_SCANDUMP = new RedisCommand<>("BF.SCANDUMP", new ListMultiDecoder2(new ChunksDecoder()));
+    RedisCommand<Boolean> BF_LOADCHUNK = new RedisCommand<>("BF.LOADCHUNK", new BooleanReplayConvertor());
     RedisCommand<BloomFilterInfo> BF_INFO = new RedisCommand<>("BF.INFO", new ListMultiDecoder2(new BloomFilterDecoder()));
 
     RedisCommand<Boolean> CF_RESERVE = new RedisCommand<>("CF.RESERVE", new BooleanReplayConvertor());
@@ -55,8 +49,8 @@ public interface RedisCommands {
     RedisCommand<Boolean> CF_EXISTS = new RedisCommand<>("CF.EXISTS", new BooleanReplayConvertor());
     RedisCommand<Boolean> CF_DEL = new RedisCommand<>("CF.DEL", new BooleanReplayConvertor());
     RedisCommand<Integer> CF_COUNT = new RedisCommand<>("CF.COUNT", new IntegerReplayConvertor());
-    RedisCommand<Void> CF_SCANDUMP = new RedisCommand<>("CF.SCANDUMP", new VoidReplayConvertor());
-    RedisCommand<Void> CF_LOADDUMP = new RedisCommand<>("CF.LOADDUMP", new VoidReplayConvertor());
+    RedisCommand<ChunksData> CF_SCANDUMP = new RedisCommand<>("CF.SCANDUMP", new ListMultiDecoder2(new ChunksDecoder()));
+    RedisCommand<Boolean> CF_LOADCHUNK = new RedisCommand("CF.LOADCHUNK", new BooleanReplayConvertor());
     RedisCommand<CuckooFilterInfo> CF_INFO = new RedisCommand<>("CF.INFO", new ListMultiDecoder2(new CuckooFilterDecoder()));
 
     RedisCommand<Boolean> CMS_INITBYDIM = new RedisCommand<>("CMS.INITBYDIM", new BooleanReplayConvertor());

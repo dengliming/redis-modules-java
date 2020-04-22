@@ -15,12 +15,15 @@
  */
 package io.github.dengliming.redismodule.redisbloom;
 
+import io.github.dengliming.redismodule.redisbloom.model.ChunksData;
 import io.github.dengliming.redismodule.redisbloom.model.CuckooFilterInfo;
 import io.github.dengliming.redismodule.common.util.RAssert;
 import io.github.dengliming.redismodule.redisbloom.protocol.Keywords;
 import org.redisson.RedissonObject;
 import org.redisson.api.RFuture;
+import org.redisson.client.codec.ByteArrayCodec;
 import org.redisson.client.codec.Codec;
+import org.redisson.client.codec.StringCodec;
 import org.redisson.command.CommandAsyncExecutor;
 
 import java.security.Key;
@@ -211,5 +214,33 @@ public class CuckooFilter extends RedissonObject {
 
     public RFuture<CuckooFilterInfo> getInfoAsync() {
         return commandExecutor.readAsync(getName(), codec, CF_INFO, getName());
+    }
+
+    /**
+     * Begins an incremental save of the cuckoo filter.
+     *
+     * @param iter Iterator value. This is either 0, or the iterator from a previous invocation of this command
+     * @return
+     */
+    public ChunksData scanDump(int iter) {
+        return get(scanDumpAsync(iter));
+    }
+
+    public RFuture<ChunksData> scanDumpAsync(int iter) {
+        return commandExecutor.readAsync(getName(), ByteArrayCodec.INSTANCE, CF_SCANDUMP, getName(), iter);
+    }
+
+    /**
+     * Restores a filter previously saved using SCANDUMP.
+     *
+     * @param chunk
+     * @return
+     */
+    public boolean loadChunk(ChunksData chunk) {
+        return get(loadChunkAsync(chunk));
+    }
+
+    public RFuture<Boolean> loadChunkAsync(ChunksData chunk) {
+        return commandExecutor.writeAsync(getName(), StringCodec.INSTANCE, CF_LOADCHUNK, getName(), chunk.getIter(), chunk.getData());
     }
 }
