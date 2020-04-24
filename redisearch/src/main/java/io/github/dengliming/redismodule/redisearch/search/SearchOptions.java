@@ -175,6 +175,9 @@ public class SearchOptions {
         if (withSortKeys) {
             args.add(Keywords.WITHSORTKEYS);
         }
+        if (filters != null) {
+            filters.forEach(f -> f.build(args));
+        }
         if (inKeys != null) {
             args.add(Keywords.INKEYS);
             args.add(inKeys.length);

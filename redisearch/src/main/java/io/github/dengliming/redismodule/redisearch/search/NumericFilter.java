@@ -15,6 +15,10 @@
  */
 package io.github.dengliming.redismodule.redisearch.search;
 
+import io.github.dengliming.redismodule.redisearch.protocol.Keywords;
+
+import java.util.List;
+
 /**
  * @author dengliming
  */
@@ -59,5 +63,23 @@ public class NumericFilter extends Filter {
 
     public boolean isExclusiveMax() {
         return exclusiveMax;
+    }
+
+    public void build(List<Object> args) {
+        args.add(Keywords.FILTER);
+        args.add(this.getField());
+        args.add(formatNum(this.getMin(), this.exclusiveMin));
+        args.add(formatNum(this.getMax(), this.exclusiveMax));
+    }
+
+    private String formatNum(double num, boolean exclude) {
+        if (num == Double.POSITIVE_INFINITY) {
+            return "+inf";
+        }
+        if (num == Double.NEGATIVE_INFINITY) {
+            return "-inf";
+        }
+
+        return exclude ?  "(" + num  : String.valueOf(num);
     }
 }

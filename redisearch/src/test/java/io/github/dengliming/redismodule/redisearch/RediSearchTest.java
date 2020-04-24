@@ -19,8 +19,12 @@ import io.github.dengliming.redismodule.redisearch.index.ConfigOption;
 import io.github.dengliming.redismodule.redisearch.index.DocumentOptions;
 import io.github.dengliming.redismodule.redisearch.index.RSLanguage;
 import io.github.dengliming.redismodule.redisearch.index.*;
+import io.github.dengliming.redismodule.redisearch.index.schema.Field;
+import io.github.dengliming.redismodule.redisearch.index.schema.FieldType;
 import io.github.dengliming.redismodule.redisearch.index.schema.Schema;
 import io.github.dengliming.redismodule.redisearch.index.schema.TextField;
+import io.github.dengliming.redismodule.redisearch.search.GeoFilter;
+import io.github.dengliming.redismodule.redisearch.search.NumericFilter;
 import io.github.dengliming.redismodule.redisearch.search.SearchOptions;
 import io.github.dengliming.redismodule.redisearch.search.SearchResult;
 import org.junit.Test;
@@ -93,7 +97,11 @@ public class RediSearchTest extends AbstractTest {
     @Test
     public void testSearch() {
         RediSearch rediSearch = rediSearchClient.getRediSearch("testSearch");
-        assertTrue(rediSearch.createIndex(new Schema().addField(new TextField("title")).addField(new TextField("content"))));
+        assertTrue(rediSearch.createIndex(new Schema()
+                .addField(new TextField("title"))
+                .addField(new TextField("content"))
+                .addField(new Field("age", FieldType.NUMERIC, false))
+                .addField(new Field("location", FieldType.GEO, false))));
         Map<String, Object> fields = new HashMap<>();
         fields.put("title", "Hi");
         fields.put("content", "OOOO");
@@ -108,6 +116,27 @@ public class RediSearchTest extends AbstractTest {
         assertEquals(2, searchResult.getTotal());
 
         searchResult = rediSearch.search("OOOO", new SearchOptions().noStopwords().language(RSLanguage.ENGLISH));
+        assertEquals(1, searchResult.getTotal());
+
+        Map<String, Object> fields3 = new HashMap<>();
+        fields3.put("title", "hello");
+        fields3.put("content", "test number");
+        fields3.put("age", 3);
+        fields3.put("location", "13.361389,38.115556");
+        assertTrue(rediSearch.addDocument(new Document(String.format("doc3"), 0.3d, fields3), new DocumentOptions()));
+
+        // Search with NumericFilter
+        searchResult = rediSearch.search("number", new SearchOptions()
+                .noStopwords()
+                .language(RSLanguage.ENGLISH)
+                .filter(new NumericFilter("age", 1, 4)));
+        assertEquals(1, searchResult.getTotal());
+
+        // Search with GeoFilter
+        searchResult = rediSearch.search("number", new SearchOptions()
+                .noStopwords()
+                .language(RSLanguage.ENGLISH)
+                .filter(new GeoFilter("location", 15, 37, 200, GeoFilter.Unit.KILOMETERS)));
         assertEquals(1, searchResult.getTotal());
     }
 }

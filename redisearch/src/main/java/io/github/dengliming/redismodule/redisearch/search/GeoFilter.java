@@ -15,6 +15,9 @@
  */
 package io.github.dengliming.redismodule.redisearch.search;
 
+import io.github.dengliming.redismodule.redisearch.protocol.Keywords;
+import java.util.List;
+
 /**
  * @author dengliming
  */
@@ -64,5 +67,14 @@ public class GeoFilter extends Filter {
         public String getCode() {
             return code;
         }
+    }
+
+    public void build(List<Object> args) {
+        args.add(Keywords.GEOFILTER);
+        args.add(this.getField());
+        args.add(this.getLon());
+        args.add(this.getLat());
+        args.add(this.getRadius());
+        args.add(this.getUnit().code);
     }
 }

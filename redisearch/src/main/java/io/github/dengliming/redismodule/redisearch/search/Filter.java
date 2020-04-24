@@ -15,6 +15,8 @@
  */
 package io.github.dengliming.redismodule.redisearch.search;
 
+import java.util.List;
+
 /**
  * @author dengliming
  */
@@ -24,5 +26,13 @@ public abstract class Filter {
 
     public Filter(String field) {
         this.field = field;
+    }
+
+    public String getField() {
+        return field;
+    }
+
+    public void build(List<Object> args) {
+
     }
 }
