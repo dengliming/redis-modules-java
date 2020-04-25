@@ -23,7 +23,9 @@ TODO
 ## Usage example
 RedisBloom
 ```java
-RedisBloomClient redisBloomClient = new RedisBloomClient("redis://127.0.0.1:6379");
+Config config = new Config();
+config.useSingleServer().setAddress("redis://127.0.0.1:6379");
+RedisBloomClient redisBloomClient = new RedisBloomClient(config);
 
 BloomFilter bloomFilter = redisBloomClient.getBloomFilter("bf");
 bloomFilter.create(0.1d, 100);
@@ -46,6 +48,37 @@ CuckooFilter cuckooFilter = redisBloomClient.getCuckooFilter("cf_insert");
 List<Boolean> result = cuckooFilter.insert(-1L, false, "a");
 
 redisBloomClient.shutdown();
+```
+
+RediSearch
+```java
+Config config = new Config();
+config.useSingleServer().setAddress("redis://" + DEFAULT_HOST + ":" + DEFAULT_PORT);
+RediSearchClient rediSearchClient = new RediSearchClient(config);
+
+RediSearch rediSearch = rediSearchClient.getRediSearch("testSearch");
+rediSearch.createIndex(new Schema()
+    .addField(new TextField("title"))
+    .addField(new TextField("content"))
+    .addField(new Field("age", FieldType.NUMERIC))
+    .addField(new Field("location", FieldType.GEO)));
+
+Map<String, Object> fields = new HashMap<>();
+fields.put("title", "Hi");
+fields.put("content", "OOOO");
+rediSearch.addDocument(new Document(String.format("doc1"), 1.0d, fields), new DocumentOptions());
+
+// Search with NumericFilter
+SearchResult searchResult = rediSearch.search("number", new SearchOptions()
+                .noStopwords()
+                .language(RSLanguage.ENGLISH)
+                .filter(new NumericFilter("age", 1, 4)));
+
+// Search with GeoFilter
+searchResult = rediSearch.search("number", new SearchOptions()
+                .noStopwords()
+                .language(RSLanguage.ENGLISH)
+                .filter(new GeoFilter("location", 15, 37, 200, GeoFilter.Unit.KILOMETERS)));
 ```
 ## License
 
