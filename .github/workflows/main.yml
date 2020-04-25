@@ -1,6 +1,10 @@
 name: Java CI
 
-on: [push]
+on:
+  pull_request:
+  push:
+    branches:
+      - master
 
 jobs:
   build:
@@ -25,6 +29,15 @@ jobs:
           --health-retries 5
         ports:
           - 6380:6379
+      redistimeseries:
+        image: redislabs/redistimeseries
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 6381:6379
 
     steps:
       - uses: actions/checkout@v2
@@ -41,3 +54,6 @@ jobs:
 
       - name: Test RediSearch
         run: mvn test -pl redisearch -DREDIS_HOST=localhost -DREDIS_PORT=6380 --file pom.xml
+
+      - name: Test RedisTimeSeries
+        run: mvn test -pl redistimeseries -DREDIS_HOST=localhost -DREDIS_PORT=6381 --file pom.xml
