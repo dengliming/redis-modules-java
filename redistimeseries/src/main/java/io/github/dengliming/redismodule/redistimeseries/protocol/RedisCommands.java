@@ -13,9 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.dengliming.redismodule.protocol;
+package io.github.dengliming.redismodule.redistimeseries.protocol;
 
 import org.redisson.client.protocol.RedisCommand;
+import org.redisson.client.protocol.convertor.BooleanReplayConvertor;
 import org.redisson.client.protocol.convertor.VoidReplayConvertor;
 
 /**
@@ -23,7 +24,7 @@ import org.redisson.client.protocol.convertor.VoidReplayConvertor;
  */
 public interface RedisCommands {
 
-    RedisCommand TS_CREATE = new RedisCommand<>("TS.CREATE", new VoidReplayConvertor());
+    RedisCommand TS_CREATE = new RedisCommand<>("TS.CREATE", new BooleanReplayConvertor());
     RedisCommand TS_ALTER = new RedisCommand<>("TS.ALTER", new VoidReplayConvertor());
     RedisCommand TS_ADD = new RedisCommand<>("TS.ADD", new VoidReplayConvertor());
     RedisCommand TS_MADD = new RedisCommand<>("TS.MADD", new VoidReplayConvertor());

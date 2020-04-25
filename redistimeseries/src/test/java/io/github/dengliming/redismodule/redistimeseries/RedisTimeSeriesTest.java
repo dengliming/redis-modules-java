@@ -13,13 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.dengliming.redismodule.protocol;
+package io.github.dengliming.redismodule.redistimeseries;
+
+import org.junit.Test;
+
+import static org.junit.Assert.assertTrue;
+
 
 /**
  * @author dengliming
  */
-public enum Keywords {
+public class RedisTimeSeriesTest extends AbstractTest {
 
-    RETENTION, UNCOMPRESSED, LABELS, TIMESTAMP, AGGREGATION, COUNT, WITHLABELS, FILTER;
-
+    @Test
+    public void testCreate() {
+        RedisTimeSeries redisTimeSeries = redisTimeSeriesClient.getRedisTimeSeries("testCreate");
+        assertTrue(redisTimeSeries.create(0L, false, "t"));
+    }
 }

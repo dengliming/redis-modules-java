@@ -13,23 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.dengliming.redismodule;
-
-import org.redisson.RedissonObject;
-import org.redisson.client.codec.Codec;
-import org.redisson.command.CommandAsyncExecutor;
+package io.github.dengliming.redismodule.redistimeseries.protocol;
 
 /**
  * @author dengliming
  */
-public class RedisTimeSeries extends RedissonObject {
+public enum Keywords {
 
-    public RedisTimeSeries(Codec codec, CommandAsyncExecutor commandExecutor, String name) {
-        super(codec, commandExecutor, name);
-    }
-
-    public RedisTimeSeries(CommandAsyncExecutor commandExecutor, String name) {
-        this(commandExecutor.getConnectionManager().getCodec(), commandExecutor, name);
-    }
+    RETENTION, UNCOMPRESSED, LABELS, TIMESTAMP, AGGREGATION, COUNT, WITHLABELS, FILTER;
 
 }
