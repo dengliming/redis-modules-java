@@ -33,8 +33,10 @@ import org.redisson.client.codec.Codec;
 import org.redisson.client.codec.StringCodec;
 import org.redisson.command.CommandAsyncExecutor;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import static io.github.dengliming.redismodule.redisearch.protocol.RedisCommands.*;
 
@@ -144,11 +146,11 @@ public class RediSearch extends RedissonObject {
         return commandExecutor.writeAsync(getName(), codec, FT_DROP, getName());
     }
 
-    public Object loadIndex() {
+    public Map<String, Object> loadIndex() {
         return get(loadIndexAsync());
     }
 
-    public RFuture<Object> loadIndexAsync() {
+    public RFuture<Map<String, Object>> loadIndexAsync() {
         return commandExecutor.readAsync(getName(), StringCodec.INSTANCE, FT_INFO, getName());
     }
 
@@ -398,7 +400,7 @@ public class RediSearch extends RedissonObject {
     public RFuture<List<String>> dumpDictAsync(String dictName) {
         RAssert.notNull(dictName, "dictName must be not null");
 
-        return commandExecutor.writeAsync(getName(), codec, FT_DICTDUMP, dictName);
+        return commandExecutor.writeAsync(getName(), StringCodec.INSTANCE, FT_DICTDUMP, dictName);
     }
 
     /**
@@ -431,7 +433,11 @@ public class RediSearch extends RedissonObject {
     public RFuture<Boolean> updateSynonymAsync(long synonymGroupId, String... terms) {
         RAssert.notEmpty(terms, "terms must be not empty");
 
-        return commandExecutor.writeAsync(getName(), codec, FT_SYNUPDATE, getName(), ArgsUtil.append(synonymGroupId, terms));
+        List<Object> args = new ArrayList<>(terms.length + 2);
+        args.add(getName());
+        args.add(synonymGroupId);
+        Arrays.stream(terms).forEach(args::add);
+        return commandExecutor.writeAsync(getName(), codec, FT_SYNUPDATE, args.toArray());
     }
 
     /**
@@ -439,12 +445,12 @@ public class RediSearch extends RedissonObject {
      *
      * @return
      */
-    public boolean dumpSynonyms() {
+    public Map<String, Long> dumpSynonyms() {
         return get(dumpSynonymsAsync());
     }
 
-    public RFuture<Boolean> dumpSynonymsAsync() {
-        return commandExecutor.writeAsync(getName(), codec, FT_SYNUPDATE, getName());
+    public RFuture<Map<String, Long>> dumpSynonymsAsync() {
+        return commandExecutor.writeAsync(getName(), StringCodec.INSTANCE, FT_SYNDUMP, getName());
     }
 
     /**

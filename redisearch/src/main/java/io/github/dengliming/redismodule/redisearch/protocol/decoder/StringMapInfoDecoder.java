@@ -15,17 +15,18 @@
  */
 package io.github.dengliming.redismodule.redisearch.protocol.decoder;
 
-import io.github.dengliming.redismodule.redisearch.index.IndexInfo;
 import org.redisson.client.handler.State;
 import org.redisson.client.protocol.Decoder;
 import org.redisson.client.protocol.decoder.MultiDecoder;
 
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author dengliming
  */
-public class IndexInfoDecoder implements MultiDecoder<IndexInfo> {
+public class StringMapInfoDecoder implements MultiDecoder<Map<String, Object>> {
 
     @Override
     public Decoder<Object> getDecoder(int paramNum, State state) {
@@ -33,9 +34,13 @@ public class IndexInfoDecoder implements MultiDecoder<IndexInfo> {
     }
 
     @Override
-    public IndexInfo decode(List<Object> parts, State state) {
-        // TODO
-        return null;
+    public Map<String, Object> decode(List<Object> parts, State state) {
+        Map<String, Object> fields = new LinkedHashMap<>(parts.size() / 2);
+        for (int i = 0; i < parts.size(); i++) {
+            if (i % 2 != 0) {
+                fields.put((String) parts.get(i - 1), parts.get(i));
+            }
+        }
+        return fields;
     }
-
 }

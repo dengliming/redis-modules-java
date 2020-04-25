@@ -30,9 +30,7 @@ import io.github.dengliming.redismodule.redisearch.search.SearchResult;
 import org.junit.Test;
 import org.redisson.api.RMap;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static org.junit.Assert.*;
 
@@ -44,8 +42,17 @@ public class RediSearchTest extends AbstractTest {
     @Test
     public void testIndex() {
         RediSearch rediSearch = rediSearchClient.getRediSearch("index1");
-        assertTrue(rediSearch.createIndex(new Schema().addField(new TextField("title"))));
-        Object index = rediSearch.loadIndex();
+        assertTrue(rediSearch.createIndex(
+                new Schema()
+                        .addField(new TextField("title")),
+                new IndexOptions()
+                        .maxTextFields()
+                        .stopwords(Arrays.asList("kk"))));
+        Map<String, Object> indexInfo = rediSearch.loadIndex();
+        assertNotNull(indexInfo);
+        assertEquals("index1", indexInfo.get("index_name"));
+        assertEquals("MAXTEXTFIELDS", ((List) (indexInfo.get("index_options"))).get(0));
+        assertEquals("title", ((List<List<Object>>) (indexInfo.get("fields"))).get(0).get(0));
     }
 
     @Test
@@ -139,5 +146,41 @@ public class RediSearchTest extends AbstractTest {
                 .filter(new GeoFilter("location", 15, 37, 200, GeoFilter.Unit.KILOMETERS)));
         assertEquals(1, searchResult.getTotal());
     }
-}
 
+    @Test
+    public void testAlias() {
+        RediSearch rediSearch = rediSearchClient.getRediSearch("testAlias");
+        assertTrue(rediSearch.createIndex(new Schema().addField(new TextField("title"))));
+        assertTrue(rediSearch.addAlias("TEST"));
+        assertTrue(rediSearch.updateAlias("HI"));
+        assertTrue(rediSearch.deleteAlias("HI"));
+    }
+
+    @Test
+    public void testDict() {
+        RediSearch rediSearch = rediSearchClient.getRediSearch("testDict");
+        assertTrue(rediSearch.createIndex(new Schema().addField(new TextField("title"))));
+        assertEquals(2, rediSearch.addDict("TEST", "A", "B"));
+        assertEquals(1, rediSearch.deleteDict("TEST", "A"));
+        List<String> dicts = rediSearch.dumpDict("TEST");
+        assertNotNull(dicts);
+        assertEquals(1, dicts.size());
+        assertEquals("B", dicts.get(0));
+    }
+
+    @Test
+    public void testSynonym() {
+        RediSearch rediSearch = rediSearchClient.getRediSearch("testSynonym");
+        assertTrue(rediSearch.createIndex(new Schema().addField(new TextField("title"))));
+        Map<String, Object> fields = new HashMap<>();
+        fields.put("title", "Hi~");
+        long gid = rediSearch.addSynonym("a", "b", "c");
+        assertTrue(gid >= 0);
+
+        assertTrue(rediSearch.updateSynonym(gid, "c", "d"));
+
+        Map<String, Long> synonymMap = rediSearch.dumpSynonyms();
+        assertNotNull(synonymMap);
+        assertEquals(gid, synonymMap.get("c").longValue());
+    }
+}
