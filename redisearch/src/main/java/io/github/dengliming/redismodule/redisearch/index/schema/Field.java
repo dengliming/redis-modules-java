@@ -24,15 +24,19 @@ public class Field {
     private boolean noIndex;
     private FieldType fieldType;
 
-    public Field(String name, FieldType type, boolean sortable) {
-        this(name, type, sortable, false);
-    }
-
-    public Field(String name, FieldType fieldType, boolean sortable, boolean noIndex) {
+    public Field(String name, FieldType fieldType) {
         this.name = name;
         this.fieldType = fieldType;
-        this.sortable = sortable;
-        this.noIndex = noIndex;
+    }
+
+    public Field sortable() {
+        this.sortable = true;
+        return this;
+    }
+
+    public Field noIndex() {
+        this.noIndex = true;
+        return this;
     }
 
     public String getName() {

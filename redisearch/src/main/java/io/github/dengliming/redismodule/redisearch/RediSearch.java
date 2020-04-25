@@ -17,6 +17,8 @@ package io.github.dengliming.redismodule.redisearch;
 
 import io.github.dengliming.redismodule.common.util.ArgsUtil;
 import io.github.dengliming.redismodule.common.util.RAssert;
+import io.github.dengliming.redismodule.redisearch.aggregate.AggregateOptions;
+import io.github.dengliming.redismodule.redisearch.aggregate.AggregateResult;
 import io.github.dengliming.redismodule.redisearch.index.*;
 import io.github.dengliming.redismodule.redisearch.protocol.Keywords;
 import io.github.dengliming.redismodule.redisearch.index.schema.Field;
@@ -563,5 +565,27 @@ public class RediSearch extends RedissonObject {
         args.add(query);
         searchOptions.build(args);
         return commandExecutor.readAsync(getName(), StringCodec.INSTANCE, FT_SEARCH, args.toArray());
+    }
+
+    /**
+     * Runs a search query on an index, and performs aggregate transformations on the results.
+     *
+     * @param query
+     * @param aggregateOptions
+     * @return
+     */
+    public AggregateResult aggregate(String query, AggregateOptions aggregateOptions) {
+        return get(aggregateAsync(query, aggregateOptions));
+    }
+
+    public RFuture<AggregateResult> aggregateAsync(String query, AggregateOptions aggregateOptions) {
+        RAssert.notNull(query, "query must be not null");
+        RAssert.notNull(aggregateOptions, "SearchOptions must be not null");
+
+        List<Object> args = new ArrayList<>();
+        args.add(getName());
+        args.add(query);
+        aggregateOptions.build(args);
+        return commandExecutor.readAsync(getName(), StringCodec.INSTANCE, FT_AGGREGATE, args.toArray());
     }
 }

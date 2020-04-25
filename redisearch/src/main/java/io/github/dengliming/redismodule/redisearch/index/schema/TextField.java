@@ -23,34 +23,16 @@ import io.github.dengliming.redismodule.redisearch.index.Phonetic;
 public class TextField extends Field {
 
     private final double weight;
-    private final boolean noStem;
-    private final Phonetic phonetic;
+    private boolean noStem;
+    private Phonetic phonetic;
 
     public TextField(String name) {
         this(name, 1.0d);
     }
 
     public TextField(String name, double weight) {
-        this(name, weight, false);
-    }
-
-    public TextField(String name, double weight, boolean sortable) {
-        this(name, weight, sortable, false);
-    }
-
-    public TextField(String name, double weight, boolean sortable, boolean noStem) {
-        this(name, weight, sortable, noStem, false);
-    }
-
-    public TextField(String name, double weight, boolean sortable, boolean noStem, boolean noIndex) {
-        this(name, weight, sortable, noStem, noIndex, null);
-    }
-
-    public TextField(String name, double weight, boolean sortable, boolean noStem, boolean noIndex, Phonetic phonetic) {
-        super(name, FieldType.TEXT, sortable, noIndex);
+        super(name, FieldType.TEXT);
         this.weight = weight;
-        this.noStem = noStem;
-        this.phonetic = phonetic;
     }
 
     public double getWeight() {
@@ -63,5 +45,15 @@ public class TextField extends Field {
 
     public Phonetic getPhonetic() {
         return phonetic;
+    }
+
+    public TextField noStem() {
+        this.noStem = true;
+        return this;
+    }
+
+    public TextField phonetic(Phonetic phonetic) {
+        this.phonetic = phonetic;
+        return this;
     }
 }

@@ -13,26 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.dengliming.redismodule.redisearch.index.schema;
+package io.github.dengliming.redismodule.redisearch.aggregate;
+
+import io.github.dengliming.redismodule.redisearch.protocol.Keywords;
+
+import java.util.List;
 
 /**
  * @author dengliming
  */
-public class TagField extends Field {
+public class Filter {
 
-    private static final String DEFAULT_SEPARATOR = ",";
-    private final String separator;
+    private final String expr;
 
-    public TagField(String name) {
-        this(name, DEFAULT_SEPARATOR);
+    public Filter(String expr) {
+        this.expr = expr;
     }
 
-    public TagField(String name, String separator) {
-        super(name, FieldType.TAG);
-        this.separator = separator;
+    public String getExpr() {
+        return expr;
     }
 
-    public String getSeparator() {
-        return separator;
+    public void build(List<Object> args) {
+        args.add(Keywords.FILTER);
+        args.add(getExpr());
     }
 }

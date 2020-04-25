@@ -100,8 +100,8 @@ public class RediSearchTest extends AbstractTest {
         assertTrue(rediSearch.createIndex(new Schema()
                 .addField(new TextField("title"))
                 .addField(new TextField("content"))
-                .addField(new Field("age", FieldType.NUMERIC, false))
-                .addField(new Field("location", FieldType.GEO, false))));
+                .addField(new Field("age", FieldType.NUMERIC))
+                .addField(new Field("location", FieldType.GEO))));
         Map<String, Object> fields = new HashMap<>();
         fields.put("title", "Hi");
         fields.put("content", "OOOO");

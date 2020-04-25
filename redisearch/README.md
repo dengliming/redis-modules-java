@@ -13,7 +13,7 @@ FT.ALIASUPDATE | RediSearch.<br/>updateAlias()<br/>updateAliasAsync() |
 FT.ALIASDEL | RediSearch.<br/>deleteAlias()<br/>deleteAliasAsync() |
 FT.INFO | RediSearch.<br/>loadIndex()<br/>loadIndexAsync() |
 FT.SEARCH | RediSearch.<br/>search()<br/>searchAsync() |
-FT.AGGREGATE | N/A |
+FT.AGGREGATE | RediSearch.<br/>aggregate()<br/>aggregateAsync() |
 FT.EXPLAIN | RediSearch.<br/>explain()<br/>explainAsync() |
 FT.EXPLAINCLI | N/A |
 FT.DEL | RediSearch.<br/>deleteDocument()<br/>deleteDocumentAsync() |

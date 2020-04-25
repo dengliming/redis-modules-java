@@ -13,26 +13,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.dengliming.redismodule.redisearch.index.schema;
+package io.github.dengliming.redismodule.redisearch.aggregate;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author dengliming
  */
-public class TagField extends Field {
+public class AggregateResult {
 
-    private static final String DEFAULT_SEPARATOR = ",";
-    private final String separator;
+    private long total;
+    private List<Map<String, Object>> rows;
 
-    public TagField(String name) {
-        this(name, DEFAULT_SEPARATOR);
+    public long getTotal() {
+        return total;
     }
 
-    public TagField(String name, String separator) {
-        super(name, FieldType.TAG);
-        this.separator = separator;
+    public void setTotal(long total) {
+        this.total = total;
     }
 
-    public String getSeparator() {
-        return separator;
+    public List<Map<String, Object>> getRows() {
+        return rows;
+    }
+
+    public void setRows(List<Map<String, Object>> rows) {
+        this.rows = rows;
     }
 }

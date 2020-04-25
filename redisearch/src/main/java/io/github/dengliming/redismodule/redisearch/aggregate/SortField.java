@@ -13,26 +13,36 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.dengliming.redismodule.redisearch.index.schema;
+package io.github.dengliming.redismodule.redisearch.aggregate;
+
+import org.redisson.api.SortOrder;
 
 /**
  * @author dengliming
  */
-public class TagField extends Field {
+public class SortField {
 
-    private static final String DEFAULT_SEPARATOR = ",";
-    private final String separator;
+    private String field;
+    private SortOrder order;
 
-    public TagField(String name) {
-        this(name, DEFAULT_SEPARATOR);
+    public SortField(String field, SortOrder order) {
+        this.field = field;
+        this.order = order;
     }
 
-    public TagField(String name, String separator) {
-        super(name, FieldType.TAG);
-        this.separator = separator;
+    public static SortField desc(String field) {
+        return new SortField(field, SortOrder.DESC);
     }
 
-    public String getSeparator() {
-        return separator;
+    public static SortField asc(String field) {
+        return new SortField(field, SortOrder.ASC);
+    }
+
+    public String getField() {
+        return field;
+    }
+
+    public SortOrder getOrder() {
+        return order;
     }
 }
