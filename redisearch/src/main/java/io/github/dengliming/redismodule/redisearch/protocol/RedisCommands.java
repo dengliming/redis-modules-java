@@ -53,7 +53,7 @@ public interface RedisCommands {
 
     RedisCommand FT_SYNADD = new RedisCommand<>("FT.SYNADD", new LongReplayConvertor());
     RedisCommand FT_SYNUPDATE = new RedisCommand<>("FT.SYNUPDATE", new BooleanReplayConvertor());
-    RedisCommand FT_SYNDUMP = new RedisCommand<>("FT.SYNDUMP", new ListMultiDecoder2(new ObjectMapReplayDecoder(), new ListFirstObjectDecoder()));
+    RedisCommand FT_SYNDUMP = new RedisCommand<>("FT.SYNDUMP", new ListMultiDecoder2(new ObjectMapReplayDecoder(), new ObjectListReplayDecoder()));
 
     RedisCommand FT_SPELLCHECK = new RedisCommand<>("FT.SPELLCHECK", new VoidReplayConvertor());
 

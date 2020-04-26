@@ -179,8 +179,8 @@ public class RediSearchTest extends AbstractTest {
 
         assertTrue(rediSearch.updateSynonym(gid, "c", "d"));
 
-        Map<String, Long> synonymMap = rediSearch.dumpSynonyms();
+        Map<String, List<Long>> synonymMap = rediSearch.dumpSynonyms();
         assertNotNull(synonymMap);
-        assertEquals(gid, synonymMap.get("c").longValue());
+        assertEquals(gid, synonymMap.get("c").get(0).longValue());
     }
 }

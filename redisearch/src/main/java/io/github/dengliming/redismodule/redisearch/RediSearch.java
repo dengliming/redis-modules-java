@@ -445,11 +445,11 @@ public class RediSearch extends RedissonObject {
      *
      * @return
      */
-    public Map<String, Long> dumpSynonyms() {
+    public Map<String, List<Long>> dumpSynonyms() {
         return get(dumpSynonymsAsync());
     }
 
-    public RFuture<Map<String, Long>> dumpSynonymsAsync() {
+    public RFuture<Map<String, List<Long>>> dumpSynonymsAsync() {
         return commandExecutor.writeAsync(getName(), StringCodec.INSTANCE, FT_SYNDUMP, getName());
     }
 
