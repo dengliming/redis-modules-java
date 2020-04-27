@@ -42,8 +42,7 @@ public class CountMinSketchTest extends AbstractTest {
         CountMinSketch countMinSketch = redisBloomClient.getCountMinSketch("cms_add");
         Assert.assertTrue(countMinSketch.create(10, 10));
         Map<String, Integer> itemIncrement = new HashMap<>();
-        itemIncrement.put("a", 3);
-        List<Integer> results = countMinSketch.incrby(itemIncrement);
+        List<Integer> results = countMinSketch.incrby(new String[]{"a"}, new int[]{3});
         Assert.assertTrue(results != null && results.size() == 1);
         Assert.assertTrue(results.get(0) == 3);
         results = countMinSketch.query("a");

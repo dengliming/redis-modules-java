@@ -76,17 +76,26 @@ public class CountMinSketch extends RedissonObject {
     /**
      * Increases the count of item by increment.
      *
-     * @param itemIncrement
+     * @param items
+     * @param increments
      * @return
      */
-    public List<Integer> incrby(Map<String, Integer> itemIncrement) {
-        return get(incrbyAsync(itemIncrement));
+    public List<Integer> incrby(String[] items, int[] increments) {
+        return get(incrbyAsync(items, increments));
     }
 
-    public RFuture<List<Integer>> incrbyAsync(Map<String, Integer> itemIncrement) {
-        RAssert.notNull(itemIncrement, "ItemIncrement must not be null");
+    public RFuture<List<Integer>> incrbyAsync(String[] items, int[] increments) {
+        RAssert.notEmpty(items, "Items must not be empty");
+        RAssert.notEmpty(increments, "Increments must not be empty");
+        RAssert.isTrue(items.length == increments.length, "Items.length must be equal increments.length");
 
-        return commandExecutor.writeAsync(getName(), codec, CMS_INCRBY, ArgsUtil.append(getName(), itemIncrement));
+        List<Object> args = new ArrayList<>(items.length * 2 + 1);
+        args.add(getName());
+        for (int i = 0; i < items.length; i++) {
+            args.add(items[i]);
+            args.add(increments[i]);
+        }
+        return commandExecutor.writeAsync(getName(), codec, CMS_INCRBY, args.toArray());
     }
 
     /**

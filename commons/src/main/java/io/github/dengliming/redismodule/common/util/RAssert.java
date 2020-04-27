@@ -60,6 +60,18 @@ public final class RAssert {
         }
     }
 
+    public static void notEmpty(int[] array, String message) {
+        if (array == null || array.length == 0) {
+            throw new IllegalArgumentException(message);
+        }
+    }
+
+    public static void isTrue(boolean value, String message) {
+        if (!value) {
+            throw new IllegalArgumentException(message);
+        }
+    }
+
     /**
      * Assert that a Map contains entries; that is, it must not be {@code null} and must contain at least one entry.
      *

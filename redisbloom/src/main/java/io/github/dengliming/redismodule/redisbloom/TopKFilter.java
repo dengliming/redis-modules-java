@@ -88,7 +88,7 @@ public class TopKFilter extends RedissonObject {
     public RFuture<List<String>> incrbyAsync(Map<String, Integer> itemIncrement) {
         RAssert.notEmpty(itemIncrement, "ItemIncrement must not be empty");
 
-        return commandExecutor.writeAsync(getName(), codec, TOPK_INCRBY,  ArgsUtil.append(getName(), itemIncrement));
+        return commandExecutor.writeAsync(getName(), codec, TOPK_INCRBY, ArgsUtil.append(getName(), itemIncrement));
     }
 
     /**
