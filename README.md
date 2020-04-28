@@ -1,10 +1,11 @@
 ![build](https://github.com/dengliming/redis-modules-java/workflows/Java%20CI/badge.svg) [![license](https://img.shields.io/github/license/dengliming/redis-modules-java)](/LICENSE)
 
-Java Client libraries for redis-modules, based on [Redisson](https://github.com/redisson/redisson).
+Java Client libraries for [redis-modules](https://redis.io/modules), based on [Redisson](https://github.com/redisson/redisson).
 
 ## Support
 * [RedisBloom](redisbloom) 
 * [RediSearch](redisearch)
+* [RedisTimeSeries](redistimeseries)
 
 ## TODO
 * [RedisAI](https://oss.redislabs.com/redisai/)
@@ -79,6 +80,21 @@ searchResult = rediSearch.search("number", new SearchOptions()
                 .noStopwords()
                 .language(RSLanguage.ENGLISH)
                 .filter(new GeoFilter("location", 15, 37, 200, GeoFilter.Unit.KILOMETERS)));
+```
+
+RedisTimeSeries
+```java
+Config config = new Config();
+config.useSingleServer().setAddress("redis://" + DEFAULT_HOST + ":" + DEFAULT_PORT);
+RedisTimeSeriesClient redisTimeSeriesClient = new RedisTimeSeriesClient(config);
+
+RedisTimeSeries redisTimeSeries = redisTimeSeriesClient.getRedisTimeSeries();
+long timestamp = System.currentTimeMillis();
+redisTimeSeries.add(new Sample("temperature:2:32", timestamp, 26), new TimeSeriesOptions()
+                .retentionTime(6000L)
+                .unCompressed()
+                .labels(new Label("sensor_id", "2"), new Label("area_id", "32")));
+
 ```
 ## License
 
