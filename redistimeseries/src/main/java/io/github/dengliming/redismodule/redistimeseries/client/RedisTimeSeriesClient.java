@@ -30,8 +30,8 @@ public class RedisTimeSeriesClient extends Redisson {
         super(config);
     }
 
-    public RedisTimeSeries getRedisTimeSeries(String name) {
-        return new RedisTimeSeries(getConnectionManager().getCommandExecutor(), name);
+    public RedisTimeSeries getRedisTimeSeries() {
+        return new RedisTimeSeries(getConnectionManager().getCommandExecutor());
     }
 
     public Void flushall() {

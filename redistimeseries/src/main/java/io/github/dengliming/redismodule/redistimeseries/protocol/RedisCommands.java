@@ -17,7 +17,9 @@ package io.github.dengliming.redismodule.redistimeseries.protocol;
 
 import org.redisson.client.protocol.RedisCommand;
 import org.redisson.client.protocol.convertor.BooleanReplayConvertor;
+import org.redisson.client.protocol.convertor.LongReplayConvertor;
 import org.redisson.client.protocol.convertor.VoidReplayConvertor;
+import org.redisson.client.protocol.decoder.ObjectListReplayDecoder;
 
 /**
  * @author dengliming
@@ -25,13 +27,13 @@ import org.redisson.client.protocol.convertor.VoidReplayConvertor;
 public interface RedisCommands {
 
     RedisCommand TS_CREATE = new RedisCommand<>("TS.CREATE", new BooleanReplayConvertor());
-    RedisCommand TS_ALTER = new RedisCommand<>("TS.ALTER", new VoidReplayConvertor());
-    RedisCommand TS_ADD = new RedisCommand<>("TS.ADD", new VoidReplayConvertor());
-    RedisCommand TS_MADD = new RedisCommand<>("TS.MADD", new VoidReplayConvertor());
-    RedisCommand TS_INCRBY = new RedisCommand<>("TS.INCRBY", new VoidReplayConvertor());
-    RedisCommand TS_DECRBY = new RedisCommand<>("TS.DECRBY", new VoidReplayConvertor());
-    RedisCommand TS_CREATERULE = new RedisCommand<>("TS.CREATERULE", new VoidReplayConvertor());
-    RedisCommand TS_DELETERULE = new RedisCommand<>("TS.DELETERULE", new VoidReplayConvertor());
+    RedisCommand TS_ALTER = new RedisCommand<>("TS.ALTER", new BooleanReplayConvertor());
+    RedisCommand TS_ADD = new RedisCommand<>("TS.ADD", new LongReplayConvertor());
+    RedisCommand TS_MADD = new RedisCommand<>("TS.MADD", new ObjectListReplayDecoder<>());
+    RedisCommand TS_INCRBY = new RedisCommand<>("TS.INCRBY", new LongReplayConvertor());
+    RedisCommand TS_DECRBY = new RedisCommand<>("TS.DECRBY", new LongReplayConvertor());
+    RedisCommand TS_CREATERULE = new RedisCommand<>("TS.CREATERULE", new BooleanReplayConvertor());
+    RedisCommand TS_DELETERULE = new RedisCommand<>("TS.DELETERULE", new BooleanReplayConvertor());
     RedisCommand TS_RANGE = new RedisCommand<>("TS.RANGE", new VoidReplayConvertor());
     RedisCommand TS_MRANGE = new RedisCommand<>("TS.MRANGE", new VoidReplayConvertor());
     RedisCommand TS_GET = new RedisCommand<>("TS.GET", new VoidReplayConvertor());
