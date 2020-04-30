@@ -15,11 +15,12 @@
  */
 package io.github.dengliming.redismodule.redistimeseries.protocol;
 
+import io.github.dengliming.redismodule.redistimeseries.protocol.decoder.TimeSeriesDecoder;
+import io.github.dengliming.redismodule.redistimeseries.protocol.decoder.ValueDecoder;
 import org.redisson.client.protocol.RedisCommand;
 import org.redisson.client.protocol.convertor.BooleanReplayConvertor;
 import org.redisson.client.protocol.convertor.LongReplayConvertor;
-import org.redisson.client.protocol.convertor.VoidReplayConvertor;
-import org.redisson.client.protocol.decoder.ObjectListReplayDecoder;
+import org.redisson.client.protocol.decoder.*;
 
 /**
  * @author dengliming
@@ -34,11 +35,11 @@ public interface RedisCommands {
     RedisCommand TS_DECRBY = new RedisCommand<>("TS.DECRBY", new LongReplayConvertor());
     RedisCommand TS_CREATERULE = new RedisCommand<>("TS.CREATERULE", new BooleanReplayConvertor());
     RedisCommand TS_DELETERULE = new RedisCommand<>("TS.DELETERULE", new BooleanReplayConvertor());
-    RedisCommand TS_RANGE = new RedisCommand<>("TS.RANGE", new VoidReplayConvertor());
-    RedisCommand TS_MRANGE = new RedisCommand<>("TS.MRANGE", new VoidReplayConvertor());
-    RedisCommand TS_GET = new RedisCommand<>("TS.GET", new VoidReplayConvertor());
-    RedisCommand TS_MGET = new RedisCommand<>("TS.MGET", new VoidReplayConvertor());
-    RedisCommand TS_INFO = new RedisCommand<>("TS.INFO", new VoidReplayConvertor());
-    RedisCommand TS_QUERYINDEX = new RedisCommand<>("TS.QUERYINDEX", new VoidReplayConvertor());
+    RedisCommand TS_RANGE = new RedisCommand<>("TS.RANGE", new ListMultiDecoder2(new ObjectListReplayDecoder<>(), new ValueDecoder()));
+    RedisCommand TS_MRANGE = new RedisCommand<>("TS.MRANGE", new ListMultiDecoder2(new TimeSeriesDecoder(), new CodecDecoder(), new CodecDecoder(), new CodecDecoder()));
+    RedisCommand TS_GET = new RedisCommand<>("TS.GET", new ValueDecoder());
+    RedisCommand TS_MGET = new RedisCommand<>("TS.MGET", new ListMultiDecoder2(new TimeSeriesDecoder(), new CodecDecoder(), new CodecDecoder(), new CodecDecoder()));
+    RedisCommand TS_INFO = new RedisCommand<>("TS.INFO", new ListMultiDecoder2(new ObjectMapReplayDecoder(), new ObjectListReplayDecoder<>(), new ObjectListReplayDecoder<>()));
+    RedisCommand TS_QUERYINDEX = new RedisCommand<>("TS.QUERYINDEX", new StringListReplayDecoder());
 
 }

@@ -19,10 +19,12 @@ import io.github.dengliming.redismodule.common.util.RAssert;
 import io.github.dengliming.redismodule.redistimeseries.protocol.Keywords;
 import org.redisson.api.RFuture;
 import org.redisson.client.codec.Codec;
+import org.redisson.client.codec.StringCodec;
 import org.redisson.command.CommandAsyncExecutor;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import static io.github.dengliming.redismodule.redistimeseries.protocol.RedisCommands.*;
 
@@ -230,38 +232,124 @@ public class RedisTimeSeries {
      * Query a range.
      *
      * @param key
-     * @param fromTimestamp
-     * @param toTimestamp
+     * @param from
+     * @param to
      * @return
      */
-    public Object range(String key, long fromTimestamp, long toTimestamp) {
-        return this.range(key, fromTimestamp, toTimestamp, 0);
+    public List<Value> range(String key, long from, long to) {
+        return this.range(key, from, to, null);
     }
 
-    public Object range(String key, long fromTimestamp, long toTimestamp, int count) {
-        return this.range(key, fromTimestamp, toTimestamp, count, null, 0L);
+    public List<Value> range(String key, long from, long to, RangeOptions rangeOptions) {
+        return commandExecutor.get(rangeAsync(key, from, to, rangeOptions));
     }
 
-    public Object range(String key, long fromTimestamp, long toTimestamp, int count, Aggregation aggregation, long timeBucket) {
-        return commandExecutor.get(rangeAsync(key, fromTimestamp, toTimestamp, count, aggregation, timeBucket));
-    }
-
-    public RFuture<Object> rangeAsync(String key, long fromTimestamp, long toTimestamp, int count, Aggregation aggregation, long timeBucket) {
+    public RFuture<List<Value>> rangeAsync(String key, long from, long to, RangeOptions rangeOptions) {
         List<Object> args = new ArrayList<>();
         args.add(key);
-        args.add(fromTimestamp);
-        args.add(toTimestamp);
-        if (count > 0) {
-            args.add(Keywords.COUNT);
-            args.add(count);
+        args.add(from);
+        args.add(to);
+        if (rangeOptions != null) {
+            rangeOptions.build(args);
+        }
+        return commandExecutor.readAsync(getName(), StringCodec.INSTANCE, TS_RANGE, args.toArray());
+    }
+
+    /**
+     * Query a timestamp range across multiple time-series by filters.
+     *
+     * @param from
+     * @param to
+     * @param rangeOptions Optional args
+     * @param filters
+     * @return
+     */
+    public List<TimeSeries> mrange(long from, long to, RangeOptions rangeOptions, String... filters) {
+        return commandExecutor.get(mrangeAsync(from, to, rangeOptions, filters));
+    }
+
+    public RFuture<List<TimeSeries>> mrangeAsync(long from, long to, RangeOptions rangeOptions, String... filters) {
+        RAssert.notEmpty(filters, "filters must not be empty");
+
+        List<Object> args = new ArrayList<>();
+        args.add(from);
+        args.add(to);
+        if (rangeOptions != null) {
+            rangeOptions.build(args);
+        }
+        args.add(Keywords.FILTER);
+        for (String filter : filters) {
+            args.add(filter);
+        }
+        return commandExecutor.readAsync(getName(), StringCodec.INSTANCE, TS_MRANGE, args.toArray());
+    }
+
+    /**
+     * Get the last sample.
+     *
+     * @param key Key name for timeseries
+     * @return
+     */
+    public Value get(String key) {
+        return  commandExecutor.get(getAsync(key));
+    }
+
+    public RFuture<Value> getAsync(String key) {
+        return commandExecutor.readAsync(getName(), StringCodec.INSTANCE, TS_GET, key);
+    }
+
+    /**
+     * Get the last samples matching the specific filter.
+     *
+     * @param withLabels
+     * @param filters
+     * @return
+     */
+    public List<TimeSeries> mget(boolean withLabels, String... filters) {
+        return  commandExecutor.get(mgetAsync(withLabels, filters));
+    }
+
+    public RFuture<List<TimeSeries>> mgetAsync(boolean withLabels, String... filters) {
+        List<Object> args = new ArrayList<>(filters.length + (withLabels ? 2 : 1));
+        if (withLabels) {
+            args.add(Keywords.WITHLABELS);
+        }
+        args.add(Keywords.FILTER);
+        for (String filter : filters) {
+            args.add(filter);
         }
 
-        if (aggregation != null) {
-            args.add(Keywords.AGGREGATION);
-            args.add(aggregation.getKey());
-            args.add(timeBucket);
-        }
-        return commandExecutor.readAsync(getName(), codec, TS_RANGE, args.toArray());
+        return commandExecutor.readAsync(getName(), StringCodec.INSTANCE, TS_MGET, args.toArray());
+    }
+
+    /**
+     * Returns information and statistics on the time-series.
+     *
+     * @param key Key name of the time-series.
+     * @return
+     */
+    public Map<String, Object> info(String key) {
+        return  commandExecutor.get(infoAsync(key));
+    }
+
+    public RFuture<Map<String, Object>> infoAsync(String key) {
+        return commandExecutor.readAsync(getName(), StringCodec.INSTANCE, TS_INFO, key);
+    }
+
+    /**
+     * Get all the keys matching the filter list.
+     *
+     * @param filters
+     * @return
+     */
+    public List<String> queryIndex(String... filters) {
+        return commandExecutor.get(queryIndexAsync(filters));
+    }
+
+    public RFuture<List<String>> queryIndexAsync(String... filters) {
+        RAssert.notEmpty(filters, "filters must not be empty");
+
+        return commandExecutor.readAsync(getName(), StringCodec.INSTANCE, TS_QUERYINDEX, filters);
     }
 
     public String getName() {

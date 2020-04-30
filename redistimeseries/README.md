@@ -12,9 +12,9 @@ TS.INCRBY | RedisTimeSeries.<br/>incrBy()<br/>incrByAsync() |
 TS.DECRBY | RedisTimeSeries.<br/>decrBy()<br/>decrByAsync() |
 TS.CREATERULE | RedisTimeSeries.<br/>createRule()<br/>createRuleAsync() |
 TS.DELETERULE | RedisTimeSeries.<br/>deleteRule()<br/>deleteRuleAsync() |
-TS.RANGE | N/A |
-TS.MRANGE | N/A |
-TS.GET | N/A |
-TS.MGET | N/A |
-TS.INFO | N/A |
-TS.QUERYINDEX | N/A |
+TS.RANGE | RedisTimeSeries.<br/>range()<br/>rangeAsync() |
+TS.MRANGE | RedisTimeSeries.<br/>mrange()<br/>mrangeAsync() |
+TS.GET | RedisTimeSeries.<br/>get()<br/>getAsync() |
+TS.MGET | RedisTimeSeries.<br/>mget()<br/>mgetAsync() |
+TS.INFO | RedisTimeSeries.<br/>info()<br/>infoAsync() |
+TS.QUERYINDEX | RedisTimeSeries.<br/>queryIndex()<br/>queryIndexAsync() |
