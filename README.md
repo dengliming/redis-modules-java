@@ -10,13 +10,12 @@ Java Client libraries for [redis-modules](https://redis.io/modules), based on [R
 ## TODO
 * [RedisAI](https://oss.redislabs.com/redisai/)
 * [RedisGears](https://oss.redislabs.com/redisgears/)
-* [RedisTimeSeries](https://oss.redislabs.com/redistimeseries/)
 * [RedisJSON](https://oss.redislabs.com/rejson/)
 * [...](https://redis.io/modules)
  
 ## Installing
 
-#### Build form source
+#### Build from source
 Execute ./mvnw clean install -DskipTests=true. The build process requires JDK8+.
 #### Maven repository
 TODO
