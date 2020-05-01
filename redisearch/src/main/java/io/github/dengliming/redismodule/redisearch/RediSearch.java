@@ -25,8 +25,10 @@ import io.github.dengliming.redismodule.redisearch.index.schema.Field;
 import io.github.dengliming.redismodule.redisearch.index.schema.Schema;
 import io.github.dengliming.redismodule.redisearch.index.schema.TagField;
 import io.github.dengliming.redismodule.redisearch.index.schema.TextField;
+import io.github.dengliming.redismodule.redisearch.search.MisspelledTerm;
 import io.github.dengliming.redismodule.redisearch.search.SearchOptions;
 import io.github.dengliming.redismodule.redisearch.search.SearchResult;
+import io.github.dengliming.redismodule.redisearch.search.SpellCheckOptions;
 import org.redisson.RedissonObject;
 import org.redisson.api.RFuture;
 import org.redisson.client.codec.Codec;
@@ -563,7 +565,7 @@ public class RediSearch extends RedissonObject {
     }
 
     public RFuture<SearchResult> searchAsync(String query, SearchOptions searchOptions) {
-        RAssert.notNull(query, "query must be not null");
+        checkQueryArgument(query);
         RAssert.notNull(searchOptions, "SearchOptions must be not null");
 
         List<Object> args = new ArrayList<>();
@@ -585,13 +587,40 @@ public class RediSearch extends RedissonObject {
     }
 
     public RFuture<AggregateResult> aggregateAsync(String query, AggregateOptions aggregateOptions) {
-        RAssert.notNull(query, "query must be not null");
-        RAssert.notNull(aggregateOptions, "SearchOptions must be not null");
+        checkQueryArgument(query);
+        RAssert.notNull(aggregateOptions, "AggregateOptions must be not null");
 
         List<Object> args = new ArrayList<>();
         args.add(getName());
         args.add(query);
         aggregateOptions.build(args);
         return commandExecutor.readAsync(getName(), StringCodec.INSTANCE, FT_AGGREGATE, args.toArray());
+    }
+
+    /**
+     * Performs spelling correction on a query, returning suggestions for misspelled terms.
+     *
+     * @param query
+     * @param options
+     * @return
+     */
+    public List<MisspelledTerm> spellCheck(String query, SpellCheckOptions options) {
+        return get(spellCheckAsync(query, options));
+    }
+
+    public RFuture<List<MisspelledTerm>> spellCheckAsync(String query, SpellCheckOptions options) {
+        checkQueryArgument(query);
+
+        List<Object> args = new ArrayList<>();
+        args.add(getName());
+        args.add(query);
+        if (options != null) {
+            options.build(args);
+        }
+        return commandExecutor.readAsync(getName(), StringCodec.INSTANCE, FT_SPELLCHECK, args.toArray());
+    }
+
+    private void checkQueryArgument(String query) {
+        RAssert.notNull(query, "query must be not null");
     }
 }

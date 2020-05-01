@@ -23,10 +23,7 @@ import io.github.dengliming.redismodule.redisearch.index.schema.Field;
 import io.github.dengliming.redismodule.redisearch.index.schema.FieldType;
 import io.github.dengliming.redismodule.redisearch.index.schema.Schema;
 import io.github.dengliming.redismodule.redisearch.index.schema.TextField;
-import io.github.dengliming.redismodule.redisearch.search.GeoFilter;
-import io.github.dengliming.redismodule.redisearch.search.NumericFilter;
-import io.github.dengliming.redismodule.redisearch.search.SearchOptions;
-import io.github.dengliming.redismodule.redisearch.search.SearchResult;
+import io.github.dengliming.redismodule.redisearch.search.*;
 import org.junit.Test;
 import org.redisson.api.RMap;
 
@@ -182,5 +179,28 @@ public class RediSearchTest extends AbstractTest {
         Map<String, List<Long>> synonymMap = rediSearch.dumpSynonyms();
         assertNotNull(synonymMap);
         assertEquals(gid, synonymMap.get("c").get(0).longValue());
+    }
+
+    @Test
+    public void testSpellCheck() {
+        RediSearch rediSearch = rediSearchClient.getRediSearch("index1");
+        assertTrue(rediSearch.createIndex(new Schema().addField(new TextField("title"))));
+        Map<String, Object> fields = new HashMap<>();
+        fields.put("title", "Hi");
+        fields.put("tip", "ki");
+        assertTrue(rediSearch.addDocument(new Document(String.format("doc1"), 1.0d, fields), new DocumentOptions()));
+        Map<String, Object> fields2 = new HashMap<>();
+        fields2.put("title", "Yi");
+        fields2.put("tip", "hll2");
+        assertTrue(rediSearch.addDocument(new Document(String.format("doc3"), 0.9d, fields2), new DocumentOptions()));
+        List<MisspelledTerm> misspelledTerms = rediSearch.spellCheck("i", new SpellCheckOptions().distance(2));
+        assertEquals(1, misspelledTerms.size());
+        assertEquals("i", misspelledTerms.get(0).getTerm());
+        assertEquals(2, misspelledTerms.get(0).getMisspelledSuggestions().size());
+        assertTrue(0.5d == misspelledTerms.get(0).getMisspelledSuggestions().get(0).getScore());
+        misspelledTerms = rediSearch.spellCheck("i|k", new SpellCheckOptions().distance(2));
+        assertEquals(2, misspelledTerms.size());
+        misspelledTerms = rediSearch.spellCheck("*", new SpellCheckOptions().distance(2));
+        assertEquals(0, misspelledTerms.size());
     }
 }

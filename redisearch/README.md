@@ -28,7 +28,7 @@ FT.SUGLEN | RediSearch.<br/>getSuggestionLength()<br/>getSuggestionLengthAsync()
 FT.SYNADD | RediSearch.<br/>addSynonym()<br/>addSynonymAsync() |
 FT.SYNUPDATE | RediSearch.<br/>updateSynonym()<br/>updateSynonymAsync() |
 FT.SYNDUMP | RediSearch.<br/>dumpSynonyms()<br/>dumpSynonymsAsync() |
-FT.SPELLCHECK | N/A |
+FT.SPELLCHECK | RediSearch.<br/>spellCheck()<br/>spellCheckAsync() |
 FT.DICTADD | RediSearch.<br/>addDict()<br/>addDictAsync() |
 FT.DICTDEL | RediSearch.<br/>deleteDict()<br/>deleteDictAsync() |
 FT.DICTDUMP | RediSearch.<br/>dumpDict()<br/>dumpDictAsync() |

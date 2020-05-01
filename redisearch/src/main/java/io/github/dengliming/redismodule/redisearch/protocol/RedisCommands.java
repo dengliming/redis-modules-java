@@ -18,6 +18,7 @@ package io.github.dengliming.redismodule.redisearch.protocol;
 import io.github.dengliming.redismodule.redisearch.protocol.decoder.AggregateDecoder;
 import io.github.dengliming.redismodule.redisearch.protocol.decoder.SearchResultDecoder;
 import io.github.dengliming.redismodule.redisearch.protocol.decoder.StringMapInfoDecoder;
+import io.github.dengliming.redismodule.redisearch.protocol.decoder.MisspelledTermDecoder;
 import org.redisson.client.protocol.RedisCommand;
 import org.redisson.client.protocol.convertor.*;
 import org.redisson.client.protocol.decoder.*;
@@ -55,7 +56,7 @@ public interface RedisCommands {
     RedisCommand FT_SYNUPDATE = new RedisCommand<>("FT.SYNUPDATE", new BooleanReplayConvertor());
     RedisCommand FT_SYNDUMP = new RedisCommand<>("FT.SYNDUMP", new ListMultiDecoder2(new ObjectMapReplayDecoder(), new ObjectListReplayDecoder()));
 
-    RedisCommand FT_SPELLCHECK = new RedisCommand<>("FT.SPELLCHECK", new VoidReplayConvertor());
+    RedisCommand FT_SPELLCHECK = new RedisCommand<>("FT.SPELLCHECK", new ListMultiDecoder2<>(new ObjectListReplayDecoder<>(), new MisspelledTermDecoder(), new CodecDecoder(), new CodecDecoder()));
 
     RedisCommand FT_DICTADD = new RedisCommand<>("FT.DICTADD", new IntegerReplayConvertor());
     RedisCommand FT_DICTDEL = new RedisCommand<>("FT.DICTDEL", new IntegerReplayConvertor());
