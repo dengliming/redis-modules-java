@@ -21,7 +21,7 @@ import org.redisson.client.RedisException;
 
 import java.util.List;
 import java.util.Map;
-
+import static io.github.dengliming.redismodule.redistimeseries.Sample.Value;
 import static org.junit.Assert.*;
 
 
@@ -47,14 +47,14 @@ public class RedisTimeSeriesTest extends AbstractTest {
     public void testAdd() {
         RedisTimeSeries redisTimeSeries = redisTimeSeriesClient.getRedisTimeSeries();
         long timestamp = System.currentTimeMillis();
-        assertEquals(timestamp, redisTimeSeries.add(new Sample("temperature:2:32", timestamp, 26), new TimeSeriesOptions()
+        assertEquals(timestamp, redisTimeSeries.add(new Sample("temperature:2:32", Value.of(timestamp, 26)), new TimeSeriesOptions()
                 .retentionTime(6000L)
                 .unCompressed()
                 .labels(new Label("sensor_id", "2"), new Label("area_id", "32"))).longValue());
 
 
-        List<Long> result = redisTimeSeries.add(new Sample("temperature:2:32", timestamp + 1, 26),
-                new Sample("temperature:2:32", timestamp + 2, 45));
+        List<Long> result = redisTimeSeries.add(new Sample("temperature:2:32", Value.of(timestamp + 1, 26)),
+                new Sample("temperature:2:32", Value.of(timestamp + 2, 45)));
         assertNotNull(result);
         assertEquals(timestamp + 1, result.get(0).longValue());
         assertEquals(timestamp + 2, result.get(1).longValue());
@@ -64,7 +64,7 @@ public class RedisTimeSeriesTest extends AbstractTest {
     public void testIncrDecrBy() {
         RedisTimeSeries redisTimeSeries = redisTimeSeriesClient.getRedisTimeSeries();
         long timestamp = System.currentTimeMillis();
-        assertEquals(timestamp, redisTimeSeries.add(new Sample("temperature:2:32", timestamp, 26), new TimeSeriesOptions()
+        assertEquals(timestamp, redisTimeSeries.add(new Sample("temperature:2:32", Value.of(timestamp, 26)), new TimeSeriesOptions()
                 .retentionTime(6000L)
                 .unCompressed()
                 .labels(new Label("sensor_id", "2"), new Label("area_id", "32"))).longValue());

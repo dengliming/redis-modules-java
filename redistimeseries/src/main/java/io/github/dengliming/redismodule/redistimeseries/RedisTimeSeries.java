@@ -21,7 +21,7 @@ import org.redisson.api.RFuture;
 import org.redisson.client.codec.Codec;
 import org.redisson.client.codec.StringCodec;
 import org.redisson.command.CommandAsyncExecutor;
-
+import static io.github.dengliming.redismodule.redistimeseries.Sample.Value;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -49,17 +49,7 @@ public class RedisTimeSeries {
      * @return
      */
     public boolean create(String key, TimeSeriesOptions options) {
-        return commandExecutor.get(createAsync(key, options));
-    }
-
-    public RFuture<Boolean> createAsync(String key, TimeSeriesOptions options) {
-        RAssert.notNull(key, "key must not be null");
-        RAssert.notNull(options, "TimeSeriesOptions must not be null");
-
-        List<Object> args = new ArrayList<>();
-        args.add(key);
-        options.build(args);
-        return commandExecutor.writeAsync(getName(), codec, TS_CREATE, args.toArray());
+        return commandExecutor.get(createOrAlterAsync(key, options, true));
     }
 
     /**
@@ -69,16 +59,19 @@ public class RedisTimeSeries {
      * @return
      */
     public boolean alter(String key, TimeSeriesOptions options) {
-        return commandExecutor.get(alterAsync(key, options));
+        return commandExecutor.get(createOrAlterAsync(key, options, false));
     }
 
-    public RFuture<Boolean> alterAsync(String key, TimeSeriesOptions options) {
+    public RFuture<Boolean> createOrAlterAsync(String key, TimeSeriesOptions options, boolean create) {
         RAssert.notNull(key, "key must not be null");
         RAssert.notNull(options, "TimeSeriesOptions must not be null");
 
         List<Object> args = new ArrayList<>();
         args.add(key);
         options.build(args);
+        if (create) {
+            return commandExecutor.writeAsync(getName(), codec, TS_CREATE, args.toArray());
+        }
         return commandExecutor.writeAsync(getName(), codec, TS_ALTER, args.toArray());
     }
 
@@ -98,8 +91,8 @@ public class RedisTimeSeries {
 
         List<Object> args = new ArrayList<>();
         args.add(sample.getKey());
-        args.add(sample.getTimestamp());
-        args.add(sample.getValue());
+        args.add(sample.getValue().getTimestamp());
+        args.add(sample.getValue().getValue());
         if (options != null) {
             options.build(args);
         }
@@ -121,8 +114,8 @@ public class RedisTimeSeries {
         List<Object> args = new ArrayList<>(samples.length * 3);
         for (Sample sample : samples) {
             args.add(sample.getKey());
-            args.add(sample.getTimestamp() > 0 ? sample.getTimestamp() : "*");
-            args.add(sample.getValue());
+            args.add(sample.getValue().getTimestamp() > 0 ? sample.getValue().getTimestamp() : "*");
+            args.add(sample.getValue().getValue());
         }
         return commandExecutor.writeAsync(getName(), codec, TS_MADD, args.toArray());
     }

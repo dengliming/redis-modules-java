@@ -21,24 +21,41 @@ package io.github.dengliming.redismodule.redistimeseries;
 public class Sample {
 
     private final String key;
-    private final long timestamp;
-    private final double value;
+    private final Value value;
 
-    public Sample(String key, long timestamp, double value) {
+    public Sample(String key, Value value) {
         this.key = key;
-        this.timestamp = timestamp;
         this.value = value;
     }
 
-    public long getTimestamp() {
-        return timestamp;
-    }
-
-    public double getValue() {
+    public Value getValue() {
         return value;
     }
 
     public String getKey() {
         return key;
+    }
+
+    public static class Value {
+
+        private final long timestamp;
+        private final double value;
+
+        public Value(long timestamp, double value) {
+            this.timestamp = timestamp;
+            this.value = value;
+        }
+
+        public long getTimestamp() {
+            return timestamp;
+        }
+
+        public double getValue() {
+            return value;
+        }
+
+        public static Value of(long timestamp, double value) {
+            return new Value(timestamp, value);
+        }
     }
 }

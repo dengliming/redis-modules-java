@@ -16,11 +16,10 @@
 package io.github.dengliming.redismodule.redistimeseries.protocol.decoder;
 
 import io.github.dengliming.redismodule.redistimeseries.TimeSeries;
-import io.github.dengliming.redismodule.redistimeseries.Value;
 import org.redisson.client.handler.State;
 import org.redisson.client.protocol.Decoder;
 import org.redisson.client.protocol.decoder.MultiDecoder;
-
+import static io.github.dengliming.redismodule.redistimeseries.Sample.Value;
 import java.util.ArrayList;
 import java.util.List;
 

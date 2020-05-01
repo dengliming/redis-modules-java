@@ -16,6 +16,7 @@
 package io.github.dengliming.redismodule.redistimeseries;
 
 import java.util.List;
+import static io.github.dengliming.redismodule.redistimeseries.Sample.Value;
 
 /**
  * @author dengliming
