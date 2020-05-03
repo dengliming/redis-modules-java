@@ -13,6 +13,12 @@
 
     <dependencies>
         <dependency>
+            <artifactId>commons</artifactId>
+            <groupId>io.github.dengliming.redismodule</groupId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
             <groupId>org.redisson</groupId>
             <artifactId>redisson</artifactId>
         </dependency>
