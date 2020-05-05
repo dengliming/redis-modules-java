@@ -17,6 +17,8 @@ package io.github.dengliming.redismodule.redisai;
 
 import org.junit.Test;
 
+import static org.junit.Assert.assertTrue;
+
 
 /**
  * @author dengliming
@@ -25,7 +27,8 @@ public class RedisAITest extends AbstractTest {
 
     @Test
     public void testSetTensor() {
-
+        RedisAI redisAI = redisAIClient.getRedisAI();
+        assertTrue(redisAI.setTensor("tensor1", DataType.FLOAT, new int[]{2, 2}, null, new String[]{"1", "2", "3", "4"}));
     }
 
 }

@@ -24,14 +24,14 @@ import org.redisson.client.protocol.convertor.VoidReplayConvertor;
  */
 public interface RedisCommands {
 
-    RedisCommand AI_TENSORSET = new RedisCommand<>("AI.TENSORSET", new VoidReplayConvertor());
+    RedisCommand AI_TENSORSET = new RedisCommand<>("AI.TENSORSET", new BooleanReplayConvertor());
     RedisCommand AI_TENSORGET = new RedisCommand<>("AI.TENSORGET", new VoidReplayConvertor());
-    RedisCommand AI_MODELSET = new RedisCommand<>("AI.MODELSET", new VoidReplayConvertor());
+    RedisCommand AI_MODELSET = new RedisCommand<>("AI.MODELSET", new BooleanReplayConvertor());
     RedisCommand AI_MODELGET = new RedisCommand<>("AI.MODELGET", new VoidReplayConvertor());
     RedisCommand AI_MODELDEL = new RedisCommand<>("AI.MODELDEL", new BooleanReplayConvertor());
     RedisCommand AI_MODELRUN = new RedisCommand<>("AI.MODELRUN", new VoidReplayConvertor());
     RedisCommand AI_MODELSCAN = new RedisCommand<>("AI._MODELSCAN", new VoidReplayConvertor());
-    RedisCommand AI_SCRIPTSET = new RedisCommand<>("AI.SCRIPTSET", new VoidReplayConvertor());
+    RedisCommand AI_SCRIPTSET = new RedisCommand<>("AI.SCRIPTSET", new BooleanReplayConvertor());
     RedisCommand AI_SCRIPTGET = new RedisCommand<>("AI.SCRIPTGET", new VoidReplayConvertor());
     RedisCommand AI_SCRIPTDEL = new RedisCommand<>("AI.SCRIPTDEL", new BooleanReplayConvertor());
     RedisCommand AI_SCRIPTRUN = new RedisCommand<>("AI.SCRIPTRUN", new VoidReplayConvertor());

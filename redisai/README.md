@@ -4,7 +4,7 @@ See https://oss.redislabs.com/redisai/ for more details.
 ## Redis commands mapping
 Redis command|Sync / Async Api|
 | --- | --- |
-AI.TENSORSET | N/A |
+AI.TENSORSET | RedisAI.<br/>setTensor()<br/>setTensorAsync() |
 AI.TENSORGET | N/A |
 AI.MODELSET | N/A |
 AI.MODELGET | N/A |

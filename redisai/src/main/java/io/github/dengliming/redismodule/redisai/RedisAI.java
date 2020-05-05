@@ -19,7 +19,11 @@ import io.github.dengliming.redismodule.common.util.RAssert;
 import io.github.dengliming.redismodule.redisai.protocol.Keywords;
 import org.redisson.api.RFuture;
 import org.redisson.client.codec.Codec;
+import org.redisson.client.codec.StringCodec;
 import org.redisson.command.CommandAsyncExecutor;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static io.github.dengliming.redismodule.redisai.protocol.RedisCommands.*;
 
@@ -34,10 +38,6 @@ public class RedisAI {
     public RedisAI(CommandAsyncExecutor commandExecutor) {
         this.commandExecutor = commandExecutor;
         this.codec = commandExecutor.getConnectionManager().getCodec();
-    }
-
-    public boolean setTensor(String key, DataType type, int[] dims) {
-        return commandExecutor.get(setTensorAsync());
     }
 
     /**
@@ -55,11 +55,29 @@ public class RedisAI {
         RAssert.notNull(type, "type must not be null");
         RAssert.notEmpty(dimensions, "dimensions must not be empty");
 
-        return commandExecutor.get(setTensorAsync());
+        return commandExecutor.get(setTensorAsync(key, type, dimensions, data, values));
     }
 
-    public RFuture<Boolean> setTensorAsync() {
-        return commandExecutor.writeAsync(getName(), codec, AI_TENSORSET);
+    public RFuture<Boolean> setTensorAsync(String key, DataType type, int[] dimensions, byte[] data, String[] values) {
+        List<Object> args = new ArrayList<>();
+        args.add(key);
+        if (dimensions != null) {
+            args.add(type);
+            for (int dimension : dimensions) {
+                args.add(dimension);
+            }
+        }
+        if (data != null) {
+            args.add(Keywords.BLOB);
+            args.add(data);
+        }
+        if (values != null) {
+            args.add(Keywords.VALUES);
+            for (String value : values) {
+                args.add(value);
+            }
+        }
+        return commandExecutor.writeAsync(getName(), codec, AI_TENSORSET, args.toArray());
     }
 
     public boolean setModel(String key, Backend backEnd, Device device, byte[] model) {
