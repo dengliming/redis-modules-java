@@ -38,6 +38,15 @@ jobs:
           --health-retries 5
         ports:
           - 6381:6379
+      redisai:
+        image: redisai/redisai:edge
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 6382:6379
 
     steps:
       - uses: actions/checkout@v2
@@ -57,3 +66,6 @@ jobs:
 
       - name: Test RedisTimeSeries
         run: mvn test -pl redistimeseries -DREDIS_HOST=localhost -DREDIS_PORT=6381 --file pom.xml
+
+      - name: Test RedisAI
+        run: mvn test -pl redisai -DREDIS_HOST=localhost -DREDIS_PORT=6382 --file pom.xml
