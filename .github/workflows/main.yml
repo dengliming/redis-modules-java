@@ -12,7 +12,7 @@ jobs:
 
     services:
       rebloom:
-        image: redislabs/rebloom:latest
+        image: redislabs/rebloom:edge
         options: >-
           --health-cmd "redis-cli ping"
           --health-interval 10s
@@ -21,7 +21,7 @@ jobs:
         ports:
           - 6379:6379
       redisearch:
-        image: redislabs/redisearch:latest
+        image: redislabs/redisearch:edge
         options: >-
           --health-cmd "redis-cli ping"
           --health-interval 10s
@@ -30,7 +30,7 @@ jobs:
         ports:
           - 6380:6379
       redistimeseries:
-        image: redislabs/redistimeseries
+        image: redislabs/redistimeseries:edge
         options: >-
           --health-cmd "redis-cli ping"
           --health-interval 10s
