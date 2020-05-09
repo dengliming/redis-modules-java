@@ -18,8 +18,35 @@ Java Client libraries for [redis-modules](https://redis.io/modules), based on [R
 #### Build from source
 Execute ./mvnw clean install -DskipTests=true. The build process requires JDK8+.
 #### Maven repository
-TODO
-
+repositories
+```xml
+<repositories>
+    <repository>
+        <id>snapshots-repo</id>
+        <url>https://raw.githubusercontent.com/dengliming/mvn-repo/master/snapshots</url>
+    </repository>
+    <repository>
+        <id>releases-repo</id>
+        <url>https://raw.githubusercontent.com/dengliming/mvn-repo/master/releases</url>
+    </repository>
+</repositories>
+```
+include all
+```xml
+<dependency>
+    <groupId>io.github.dengliming.redismodule</groupId>
+    <artifactId>all</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+</dependency>
+```
+include single module like:
+```xml
+<dependency>
+    <groupId>io.github.dengliming.redismodule</groupId>
+    <artifactId>redistimeseries</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+</dependency>
+```
 ## Usage example
 RedisBloom
 ```java
@@ -84,16 +111,16 @@ searchResult = rediSearch.search("number", new SearchOptions()
 RedisTimeSeries
 ```java
 Config config = new Config();
-config.useSingleServer().setAddress("redis://" + DEFAULT_HOST + ":" + DEFAULT_PORT);
+config.useSingleServer().setAddress("redis://192.168.50.16:6383");
 RedisTimeSeriesClient redisTimeSeriesClient = new RedisTimeSeriesClient(config);
 
 RedisTimeSeries redisTimeSeries = redisTimeSeriesClient.getRedisTimeSeries();
 long timestamp = System.currentTimeMillis();
-redisTimeSeries.add(new Sample("temperature:2:32", timestamp, 26), new TimeSeriesOptions()
+redisTimeSeries.add(new Sample("temperature:2:32", Sample.Value.of(timestamp, 26)), new TimeSeriesOptions()
                 .retentionTime(6000L)
                 .unCompressed()
                 .labels(new Label("sensor_id", "2"), new Label("area_id", "32")));
-
+redisTimeSeriesClient.shutdown();
 ```
 ## License
 
