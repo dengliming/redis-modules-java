@@ -25,8 +25,8 @@ import org.redisson.config.Config;
  */
 public abstract class AbstractTest {
 
-    public static final String DEFAULT_HOST = System.getProperty("REDIS_HOST", "192.168.50.16");
-    public static final int DEFAULT_PORT = Integer.valueOf(System.getProperty("REDIS_PORT", "6382"));
+    public static final String DEFAULT_HOST = System.getProperty("REDIS_HOST", "192.168.50.10");
+    public static final int DEFAULT_PORT = Integer.valueOf(System.getProperty("REDIS_PORT", "6379"));
     public static final String DEFAULT_PASSWORD = System.getProperty("REDIS_PASSWORD", "");
 
     protected RedisAIClient redisAIClient;
@@ -34,7 +34,10 @@ public abstract class AbstractTest {
     @Before
     public void init() {
         Config config = new Config();
-        config.useSingleServer().setAddress("redis://" + DEFAULT_HOST + ":" + DEFAULT_PORT);
+        config.useSingleServer()
+                .setConnectTimeout(10000)
+                .setTimeout(10000)
+                .setAddress("redis://" + DEFAULT_HOST + ":" + DEFAULT_PORT);
         redisAIClient = new RedisAIClient(config);
         redisAIClient.flushall();
     }

@@ -18,6 +18,7 @@ package io.github.dengliming.redismodule.redisai;
 import io.github.dengliming.redismodule.common.util.RAssert;
 import io.github.dengliming.redismodule.redisai.protocol.Keywords;
 import org.redisson.api.RFuture;
+import org.redisson.client.codec.ByteArrayCodec;
 import org.redisson.client.codec.Codec;
 import org.redisson.client.codec.StringCodec;
 import org.redisson.command.CommandAsyncExecutor;
@@ -155,7 +156,7 @@ public class RedisAI {
     }
 
     public RFuture<Boolean> loadBackendAsync(Backend backEnd, String path) {
-        return commandExecutor.readAsync(getName(), codec, AI_CONFIG, Keywords.LOADBACKEND, backEnd, path);
+        return commandExecutor.readAsync(getName(), StringCodec.INSTANCE, AI_CONFIG, Keywords.LOADBACKEND, backEnd, path);
     }
 
     /**
@@ -169,7 +170,7 @@ public class RedisAI {
     }
 
     public RFuture<Boolean> setBackendPathAsync(String path) {
-        return commandExecutor.readAsync(getName(), codec, AI_CONFIG, Keywords.BACKENDSPATH, path);
+        return commandExecutor.readAsync(getName(), StringCodec.INSTANCE, AI_CONFIG, Keywords.BACKENDSPATH, path);
     }
 
     public String getName() {

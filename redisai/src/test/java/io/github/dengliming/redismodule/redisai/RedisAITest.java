@@ -16,8 +16,10 @@
 package io.github.dengliming.redismodule.redisai;
 
 import org.junit.Test;
+import org.redisson.client.RedisException;
 
 import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 
 /**
@@ -31,4 +33,11 @@ public class RedisAITest extends AbstractTest {
         assertTrue(redisAI.setTensor("tensor1", DataType.FLOAT, new int[]{2, 2}, null, new String[]{"1", "2", "3", "4"}));
     }
 
+    @Test
+    public void testConfig() {
+        RedisAI redisAI = redisAIClient.getRedisAI();
+        assertTrue(redisAI.setBackendPath("/usr/lib/redis/modules/backends/"));
+        assertThrows(RedisException.class, () -> redisAI.loadBackend(Backend.TF, "notexist/redisai_tensorflow.so"));
+        assertTrue(redisAI.loadBackend(Backend.TF, "redisai_tensorflow/redisai_tensorflow.so"));
+    }
 }
