@@ -1,4 +1,4 @@
-![build](https://github.com/dengliming/redis-modules-java/workflows/Java%20CI/badge.svg) [![license](https://img.shields.io/github/license/dengliming/redis-modules-java)](/LICENSE)
+![build](https://github.com/dengliming/redis-modules-java/workflows/Java%20CI/badge.svg) ![java-version](https://img.shields.io/badge/JDK-1.8+-brightgreen.svg) ![maven](https://img.shields.io/badge/maven-3.5+-brightgreen.svg) [![license](https://img.shields.io/github/license/dengliming/redis-modules-java)](/LICENSE)
 
 Java Client libraries for [redis-modules](https://redis.io/modules), based on [Redisson](https://github.com/redisson/redisson).
 
