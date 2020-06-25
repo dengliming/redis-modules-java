@@ -18,6 +18,8 @@ package io.github.dengliming.redismodule.redisai.protocol;
 import org.redisson.client.protocol.RedisCommand;
 import org.redisson.client.protocol.convertor.BooleanReplayConvertor;
 import org.redisson.client.protocol.convertor.VoidReplayConvertor;
+import org.redisson.client.protocol.decoder.ObjectMapReplayDecoder;
+import org.redisson.client.protocol.decoder.StringMapDataDecoder;
 
 /**
  * @author dengliming
@@ -34,10 +36,11 @@ public interface RedisCommands {
     RedisCommand AI_SCRIPTSET = new RedisCommand<>("AI.SCRIPTSET", new BooleanReplayConvertor());
     RedisCommand AI_SCRIPTGET = new RedisCommand<>("AI.SCRIPTGET", new VoidReplayConvertor());
     RedisCommand AI_SCRIPTDEL = new RedisCommand<>("AI.SCRIPTDEL", new BooleanReplayConvertor());
-    RedisCommand AI_SCRIPTRUN = new RedisCommand<>("AI.SCRIPTRUN", new VoidReplayConvertor());
+    RedisCommand AI_SCRIPTRUN = new RedisCommand<>("AI.SCRIPTRUN", new BooleanReplayConvertor());
     RedisCommand AI_SCRIPTSCAN = new RedisCommand<>("AI._SCRIPTSCAN", new VoidReplayConvertor());
     RedisCommand AI_DAGRUN = new RedisCommand<>("AI.DAGRUN", new VoidReplayConvertor());
     RedisCommand AI_DAGRUN_RO = new RedisCommand<>("AI.DAGRUN_RO", new VoidReplayConvertor());
-    RedisCommand AI_INFO = new RedisCommand<>("AI.INFO", new VoidReplayConvertor());
+    RedisCommand AI_INFO = new RedisCommand<>("AI.INFO", new ObjectMapReplayDecoder());
+    RedisCommand AI_INFO_RESETSTAT = new RedisCommand<>("AI.INFO", new BooleanReplayConvertor());
     RedisCommand AI_CONFIG = new RedisCommand<>("AI.CONFIG", new BooleanReplayConvertor());
 }

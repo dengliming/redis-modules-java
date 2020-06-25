@@ -18,13 +18,13 @@ package io.github.dengliming.redismodule.redisai;
 import io.github.dengliming.redismodule.common.util.RAssert;
 import io.github.dengliming.redismodule.redisai.protocol.Keywords;
 import org.redisson.api.RFuture;
-import org.redisson.client.codec.ByteArrayCodec;
 import org.redisson.client.codec.Codec;
 import org.redisson.client.codec.StringCodec;
 import org.redisson.command.CommandAsyncExecutor;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import static io.github.dengliming.redismodule.redisai.protocol.RedisCommands.*;
 
@@ -117,6 +117,35 @@ public class RedisAI {
     }
 
     /**
+     * runs a script stored as a key's value on its specified device
+     *
+     * @return
+     */
+    public boolean runScript(String key, String function, String[] inputs, String[] outputs) {
+        return commandExecutor.get(runScriptAsync(key, function, inputs, outputs));
+    }
+
+    public RFuture<Boolean> runScriptAsync(String key, String function, String[] inputs, String[] outputs) {
+        RAssert.notNull(key, "key must not be null");
+        RAssert.notNull(function, "function must not be null");
+        RAssert.notEmpty(inputs, "inputs must not be empty");
+        RAssert.notEmpty(outputs, "outputs must not be empty");
+
+        String[] args = new String[4 + inputs.length + outputs.length];
+        args[0] = key;
+        args[1] = function;
+        args[2] = Keywords.INPUTS.name();
+        for (int i = 0; i < inputs.length; i++) {
+            args[3 + i] = inputs[i];
+        }
+        args[3 + inputs.length] = Keywords.OUTPUTS.name();
+        for (int i = 0; i < outputs.length; i++) {
+            args[4 + inputs.length + i] = outputs[i];
+        }
+        return commandExecutor.writeAsync(getName(), codec, AI_SCRIPTRUN, args);
+    }
+
+    /**
      * deletes a model stored as a key's value
      *
      * @param key the model's key name
@@ -171,6 +200,34 @@ public class RedisAI {
 
     public RFuture<Boolean> setBackendPathAsync(String path) {
         return commandExecutor.readAsync(getName(), StringCodec.INSTANCE, AI_CONFIG, Keywords.BACKENDSPATH, path);
+    }
+
+    /**
+     * returns information about the execution a model or a script.
+     *
+     * @param key the key name of a model or script
+     * @return
+     */
+    public Map<String, Object> getInfo(String key) {
+        return commandExecutor.get(getInfoAsync(key));
+    }
+
+    public RFuture<Map<String, Object>> getInfoAsync(String key) {
+        return commandExecutor.readAsync(getName(), StringCodec.INSTANCE, AI_INFO, key);
+    }
+
+    /**
+     * resets all statistics associated with the key
+     *
+     * @param key the key name of a model or script
+     * @return
+     */
+    public boolean resetStat(String key) {
+        return commandExecutor.get(resetStatAsync(key));
+    }
+
+    public RFuture<Boolean> resetStatAsync(String key) {
+        return commandExecutor.readAsync(getName(), StringCodec.INSTANCE, AI_INFO_RESETSTAT, key, Keywords.RESETSTAT);
     }
 
     public String getName() {

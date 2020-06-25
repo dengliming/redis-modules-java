@@ -20,6 +20,6 @@ package io.github.dengliming.redismodule.redisai;
  *
  * @author dengliming
  */
-public enum  DataType {
+public enum DataType {
     FLOAT, DOUBLE, INT8, INT16, INT32, INT64, UINT8, UINT16
 }

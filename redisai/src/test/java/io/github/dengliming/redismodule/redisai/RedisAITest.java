@@ -18,7 +18,10 @@ package io.github.dengliming.redismodule.redisai;
 import org.junit.Test;
 import org.redisson.client.RedisException;
 
-import static org.junit.Assert.assertTrue;
+import java.util.Map;
+
+import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 
@@ -39,5 +42,44 @@ public class RedisAITest extends AbstractTest {
         assertTrue(redisAI.setBackendPath("/usr/lib/redis/modules/backends/"));
         assertThrows(RedisException.class, () -> redisAI.loadBackend(Backend.TF, "notexist/redisai_tensorflow.so"));
         assertTrue(redisAI.loadBackend(Backend.TF, "redisai_tensorflow/redisai_tensorflow.so"));
+    }
+
+    @Test
+    public void testInfo() {
+        RedisAI redisAI = redisAIClient.getRedisAI();
+        String key = "tensor:info";
+        String script = "def bar(a, b):\n" + "    return a + b\n";
+        assertTrue(redisAI.setScript(key, Device.CPU, script));
+        // not exist
+        Map<String, Object> infoMap;
+        assertThrows(RedisException.class, () -> {
+            // ERR cannot find run info for key
+            redisAI.getInfo("not:exist");
+        });
+
+        // first inited info
+        infoMap = redisAI.getInfo(key);
+        assertNotNull(infoMap);
+        assertEquals(key, infoMap.get("key"));
+        assertEquals(Device.CPU.name(), infoMap.get("device"));
+        assertEquals(0L, infoMap.get("calls"));
+
+        redisAI.setTensor("a1", DataType.FLOAT, new int[] {2}, null, new String[] {"2", "3"});
+        redisAI.setTensor("b1", DataType.FLOAT, new int[] {2}, null, new String[] {"2", "3"});
+        assertTrue(redisAI.runScript(key, "bar", new String[] {"a1", "b1"}, new String[] {"c1"}));
+
+        // one model runs
+        infoMap = redisAI.getInfo(key);
+        assertEquals(1L, infoMap.get("calls"));
+
+        // reset
+        assertTrue(redisAI.resetStat(key));
+        infoMap = redisAI.getInfo(key);
+        assertEquals(0L, infoMap.get("calls"));
+
+        assertThrows(RedisException.class, () -> {
+            // ERR cannot find run info for key
+            redisAI.resetStat("not:exist");
+        });
     }
 }
