@@ -411,12 +411,10 @@ public class RediSearch extends RedissonObject {
      * @param terms
      * @return
      */
-    @Deprecated
     public long addSynonym(String... terms) {
         return get(addSynonymAsync(terms));
     }
 
-	@Deprecated
     public RFuture<Long> addSynonymAsync(String... terms) {
         RAssert.notEmpty(terms, "terms must be not empty");
 

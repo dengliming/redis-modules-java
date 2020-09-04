@@ -167,7 +167,7 @@ public class RediSearchTest extends AbstractTest {
 
     @Test
     public void testSynonym() {
-        /*RediSearch rediSearch = rediSearchClient.getRediSearch("testSynonym");
+        RediSearch rediSearch = rediSearchClient.getRediSearch("testSynonym");
         assertTrue(rediSearch.createIndex(new Schema().addField(new TextField("title"))));
         Map<String, Object> fields = new HashMap<>();
         fields.put("title", "Hi~");
@@ -178,7 +178,7 @@ public class RediSearchTest extends AbstractTest {
 
         Map<String, List<Long>> synonymMap = rediSearch.dumpSynonyms();
         assertNotNull(synonymMap);
-        assertEquals(gid, synonymMap.get("c").get(0).longValue());*/
+        assertEquals(gid, synonymMap.get("c").get(0).longValue());
     }
 
     @Test

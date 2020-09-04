@@ -21,7 +21,7 @@ jobs:
         ports:
           - 6379:6379
       redisearch:
-        image: redislabs/redisearch:edge
+        image: redislabs/redisearch:1.4.28
         options: >-
           --health-cmd "redis-cli ping"
           --health-interval 10s
