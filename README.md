@@ -31,20 +31,40 @@ repositories
     </repository>
 </repositories>
 ```
-include all
+Include all
 ```xml
+<!-- snapshot -->
 <dependency>
     <groupId>io.github.dengliming.redismodule</groupId>
     <artifactId>all</artifactId>
     <version>1.0.0-SNAPSHOT</version>
 </dependency>
 ```
-include single module like:
+or
 ```xml
+<!-- release -->
+<dependency>
+    <groupId>io.github.dengliming.redismodule</groupId>
+    <artifactId>all</artifactId>
+    <version>1.0.0</version>
+</dependency>
+```
+Include single module like:
+```xml
+<!-- snapshot -->
 <dependency>
     <groupId>io.github.dengliming.redismodule</groupId>
     <artifactId>redistimeseries</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.0.1-SNAPSHOT</version>
+</dependency>
+```
+or
+```xml
+<!-- release -->
+<dependency>
+    <groupId>io.github.dengliming.redismodule</groupId>
+    <artifactId>redistimeseries</artifactId>
+    <version>1.0.0</version>
 </dependency>
 ```
 ## Usage example
