@@ -28,6 +28,7 @@
         <maven-source-plugin.version>3.0.1</maven-source-plugin.version>
         <maven-shade-plugin.version>3.2.1</maven-shade-plugin.version>
 		<maven-release-plugin.version>2.5.3</maven-release-plugin.version>
+		<jacoco-maven-plugin.version>0.8.5</jacoco-maven-plugin.version>
     </properties>
 
 	<scm>
@@ -148,6 +149,26 @@
                     </execution>
                 </executions>
             </plugin>
+
+			<plugin>
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+				<version>${jacoco-maven-plugin.version}</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>prepare-agent</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>report</id>
+						<phase>test</phase>
+						<goals>
+							<goal>report</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
         </plugins>
     </build>
 

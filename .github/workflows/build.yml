@@ -69,3 +69,5 @@ jobs:
 
       - name: Test RedisAI
         run: mvn test -pl redisai -DREDIS_HOST=localhost -DREDIS_PORT=6382 --file pom.xml
+
+      - uses: codecov/codecov-action@v1

@@ -1,4 +1,5 @@
-![build](https://github.com/dengliming/redis-modules-java/workflows/build/badge.svg) ![java-version](https://img.shields.io/badge/JDK-1.8+-brightgreen.svg) ![maven](https://img.shields.io/badge/maven-3.5+-brightgreen.svg) [![license](https://img.shields.io/github/license/dengliming/redis-modules-java)](/LICENSE)
+![build](https://github.com/dengliming/redis-modules-java/workflows/build/badge.svg) ![java-version](https://img.shields.io/badge/JDK-1.8+-brightgreen.svg) ![maven](https://img.shields.io/badge/maven-3.5+-brightgreen.svg) [![license](https://img.shields.io/github/license/dengliming/redis-modules-java)](/LICENSE) [![codecov](https://codecov.io/gh/dengliming/redis-modules-java/branch/master/graph/badge.svg?token=U8BA091JD5)](https://codecov.io/gh/dengliming/redis-modules-java)
+
 
 Java Client libraries for [redis-modules](https://redis.io/modules), based on [Redisson](https://github.com/redisson/redisson).
 
