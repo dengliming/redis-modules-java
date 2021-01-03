@@ -7,9 +7,9 @@ Java Client libraries for [redis-modules](https://redis.io/modules), based on [R
 * [RedisBloom](redisbloom) 
 * [RediSearch](redisearch)
 * [RedisTimeSeries](redistimeseries)
+* [RedisAI](redisai)
 
 ## TODO
-* [RedisAI](https://oss.redislabs.com/redisai/)
 * [RedisGears](https://oss.redislabs.com/redisgears/)
 * [RedisJSON](https://oss.redislabs.com/rejson/)
 * [...](https://redis.io/modules)
