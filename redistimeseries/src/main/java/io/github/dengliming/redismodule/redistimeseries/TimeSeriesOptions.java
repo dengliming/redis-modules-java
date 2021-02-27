@@ -27,6 +27,8 @@ public class TimeSeriesOptions {
     private long retentionTime;
     private boolean unCompressed;
     private Label[] labels;
+    private DuplicatePolicy duplicatePolicy;
+	private boolean isAdd = false;
 
     public TimeSeriesOptions retentionTime(long retentionTime) {
         this.retentionTime = retentionTime;
@@ -43,6 +45,16 @@ public class TimeSeriesOptions {
         return this;
     }
 
+	public TimeSeriesOptions duplicatePolicy(DuplicatePolicy duplicatePolicy) {
+		this.duplicatePolicy = duplicatePolicy;
+		return this;
+	}
+
+	public TimeSeriesOptions isAdd(boolean add) {
+		this.isAdd = add;
+		return this;
+	}
+
     public void build(List<Object> args) {
         if (retentionTime > 0) {
             args.add(Keywords.RETENTION);
@@ -52,6 +64,11 @@ public class TimeSeriesOptions {
         if (unCompressed) {
             args.add(Keywords.UNCOMPRESSED);
         }
+
+        if (duplicatePolicy != null) {
+			args.add(isAdd ? Keywords.ON_DUPLICATE : Keywords.DUPLICATE_POLICY);
+			args.add(duplicatePolicy.name());
+		}
 
         if (labels != null) {
             args.add(Keywords.LABELS);

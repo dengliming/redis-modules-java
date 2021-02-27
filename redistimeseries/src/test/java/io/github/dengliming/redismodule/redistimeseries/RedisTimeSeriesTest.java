@@ -16,6 +16,7 @@
 package io.github.dengliming.redismodule.redistimeseries;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.redisson.client.RedisException;
 
@@ -30,12 +31,19 @@ import static org.junit.Assert.*;
  */
 public class RedisTimeSeriesTest extends AbstractTest {
 
+	RedisTimeSeries redisTimeSeries;
+
+	@Before
+	public void before() {
+		redisTimeSeries = redisTimeSeriesClient.getRedisTimeSeries();
+	}
+
     @Test
     public void testCreate() {
-        RedisTimeSeries redisTimeSeries = redisTimeSeriesClient.getRedisTimeSeries();
         assertTrue(redisTimeSeries.create("Series-1", new TimeSeriesOptions()
                 .retentionTime(0L)
                 .unCompressed()
+				.duplicatePolicy(DuplicatePolicy.MAX)
                 .labels(new Label("a", "1"))));
 
         assertTrue(redisTimeSeries.alter("Series-1", new TimeSeriesOptions()
@@ -45,11 +53,11 @@ public class RedisTimeSeriesTest extends AbstractTest {
 
     @Test
     public void testAdd() {
-        RedisTimeSeries redisTimeSeries = redisTimeSeriesClient.getRedisTimeSeries();
         long timestamp = System.currentTimeMillis();
         assertEquals(timestamp, redisTimeSeries.add(new Sample("temperature:2:32", Value.of(timestamp, 26)), new TimeSeriesOptions()
                 .retentionTime(6000L)
                 .unCompressed()
+				.duplicatePolicy(DuplicatePolicy.MAX)
                 .labels(new Label("sensor_id", "2"), new Label("area_id", "32"))).longValue());
 
 
@@ -60,9 +68,23 @@ public class RedisTimeSeriesTest extends AbstractTest {
         assertEquals(timestamp + 2, result.get(1).longValue());
     }
 
+	@Test
+	public void testAddOnDuplicate() {
+		RedisTimeSeries redisTimeSeries = redisTimeSeriesClient.getRedisTimeSeries();
+		long timestamp = System.currentTimeMillis();
+		assertEquals(timestamp, redisTimeSeries.add(new Sample("temperature:2:32", Value.of(timestamp, 26)), new TimeSeriesOptions()
+				.retentionTime(6000L)).longValue());
+
+		assertEquals(timestamp, redisTimeSeries.add(new Sample("temperature:2:32", Value.of(timestamp, 32)), new TimeSeriesOptions()
+				.retentionTime(6000L)
+				.duplicatePolicy(DuplicatePolicy.MIN)).longValue());
+		List<Value> values = redisTimeSeries.range("temperature:2:32", 0, timestamp);
+		assertEquals(1, values.size());
+		assertEquals(26, (int) values.get(0).getValue());
+	}
+
     @Test
     public void testIncrDecrBy() {
-        RedisTimeSeries redisTimeSeries = redisTimeSeriesClient.getRedisTimeSeries();
         long timestamp = System.currentTimeMillis();
         assertEquals(timestamp, redisTimeSeries.add(new Sample("temperature:2:32", Value.of(timestamp, 26)), new TimeSeriesOptions()
                 .retentionTime(6000L)
@@ -82,7 +104,6 @@ public class RedisTimeSeriesTest extends AbstractTest {
 
     @Test
     public void testRule() {
-        RedisTimeSeries redisTimeSeries = redisTimeSeriesClient.getRedisTimeSeries();
         assertTrue(redisTimeSeries.create("Series-1", new TimeSeriesOptions()
                 .retentionTime(0L)
                 .unCompressed()
@@ -132,7 +153,6 @@ public class RedisTimeSeriesTest extends AbstractTest {
 
     @Test
     public void testQueryIndex() {
-        RedisTimeSeries redisTimeSeries = redisTimeSeriesClient.getRedisTimeSeries();
         long timestamp = System.currentTimeMillis();
         assertEquals(timestamp, redisTimeSeries.incrBy("temperature:2:33", 13, timestamp, new TimeSeriesOptions()
                 .retentionTime(6000L)
@@ -173,7 +193,6 @@ public class RedisTimeSeriesTest extends AbstractTest {
 
     @Test
     public void testInfo() {
-        RedisTimeSeries redisTimeSeries = redisTimeSeriesClient.getRedisTimeSeries();
         long timestamp = System.currentTimeMillis();
         assertEquals(timestamp, redisTimeSeries.incrBy("temperature:2:33", 13, timestamp,
                 new TimeSeriesOptions().labels(new Label("label1", "test"), new Label("label2", "test1"))).longValue());

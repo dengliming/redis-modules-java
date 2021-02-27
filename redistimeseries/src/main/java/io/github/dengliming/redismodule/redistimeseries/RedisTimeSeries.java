@@ -94,7 +94,7 @@ public class RedisTimeSeries {
         args.add(sample.getValue().getTimestamp());
         args.add(sample.getValue().getValue());
         if (options != null) {
-            options.build(args);
+            options.isAdd(true).build(args);
         }
         return commandExecutor.writeAsync(getName(), codec, TS_ADD, args.toArray());
     }
