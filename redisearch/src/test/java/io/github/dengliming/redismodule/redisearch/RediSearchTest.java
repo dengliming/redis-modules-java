@@ -44,7 +44,6 @@ public class RediSearchTest extends AbstractTest {
                         .addField(new TextField("title")),
                 new IndexOptions()
                         .maxTextFields()
-						.prefixes(Arrays.asList("prefix1:"))
                         .stopwords(Arrays.asList("kk"))));
         Map<String, Object> indexInfo = rediSearch.loadIndex();
         assertNotNull(indexInfo);
