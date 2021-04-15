@@ -38,7 +38,7 @@ Include all
 <dependency>
     <groupId>io.github.dengliming.redismodule</groupId>
     <artifactId>all</artifactId>
-    <version>1.0.1-SNAPSHOT</version>
+    <version>1.0.2-SNAPSHOT</version>
 </dependency>
 ```
 or
@@ -56,7 +56,7 @@ Include single module like:
 <dependency>
     <groupId>io.github.dengliming.redismodule</groupId>
     <artifactId>redistimeseries</artifactId>
-    <version>1.0.1-SNAPSHOT</version>
+    <version>1.0.2-SNAPSHOT</version>
 </dependency>
 ```
 or
