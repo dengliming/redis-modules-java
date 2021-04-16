@@ -40,7 +40,7 @@ public abstract class AbstractTest {
     }
 
     @AfterEach
-    public void destory() {
+    public void destroy() {
         if (redisBloomClient != null) {
             redisBloomClient.shutdown();
         }
