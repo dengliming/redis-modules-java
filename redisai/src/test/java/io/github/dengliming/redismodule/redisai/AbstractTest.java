@@ -16,8 +16,8 @@
 package io.github.dengliming.redismodule.redisai;
 
 import io.github.dengliming.redismodule.redisai.client.RedisAIClient;
-import org.junit.After;
-import org.junit.Before;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.redisson.config.Config;
 
 /**
@@ -31,7 +31,7 @@ public abstract class AbstractTest {
 
     protected RedisAIClient redisAIClient;
 
-    @Before
+    @BeforeEach
     public void init() {
         Config config = new Config();
         config.useSingleServer()
@@ -42,7 +42,7 @@ public abstract class AbstractTest {
         redisAIClient.flushall();
     }
 
-    @After
+    @AfterEach
     public void destory() {
         if (redisAIClient != null) {
             redisAIClient.shutdown();

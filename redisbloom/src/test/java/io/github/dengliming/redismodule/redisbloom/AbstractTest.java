@@ -16,8 +16,8 @@
 package io.github.dengliming.redismodule.redisbloom;
 
 import io.github.dengliming.redismodule.redisbloom.client.RedisBloomClient;
-import org.junit.After;
-import org.junit.Before;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.redisson.config.Config;
 
 /**
@@ -31,7 +31,7 @@ public abstract class AbstractTest {
 
     protected RedisBloomClient redisBloomClient;
 
-    @Before
+    @BeforeEach
     public void init() {
         Config config = new Config();
         config.useSingleServer().setAddress("redis://" + DEFAULT_HOST + ":" + DEFAULT_PORT);
@@ -39,7 +39,7 @@ public abstract class AbstractTest {
         redisBloomClient.flushall();
     }
 
-    @After
+    @AfterEach
     public void destory() {
         if (redisBloomClient != null) {
             redisBloomClient.shutdown();

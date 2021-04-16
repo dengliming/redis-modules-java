@@ -16,12 +16,13 @@
 package io.github.dengliming.redismodule.redisbloom;
 
 import io.github.dengliming.redismodule.redisbloom.model.CountMinSketchInfo;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author dengliming
@@ -31,30 +32,30 @@ public class CountMinSketchTest extends AbstractTest {
     @Test
     public void testReserve() {
         CountMinSketch countMinSketch = redisBloomClient.getCountMinSketch("cms_reserve");
-        Assert.assertTrue(countMinSketch.create(0.1d, 0.2d));
+		assertThat(countMinSketch.create(0.1d, 0.2d)).isTrue();
 
         CountMinSketch countMinSketch2 = redisBloomClient.getCountMinSketch("cms_reserve2");
-        Assert.assertTrue(countMinSketch2.create(10, 2));
+		assertThat(countMinSketch2.create(10, 2)).isTrue();
     }
 
     @Test
     public void testAdd() {
         CountMinSketch countMinSketch = redisBloomClient.getCountMinSketch("cms_add");
-        Assert.assertTrue(countMinSketch.create(10, 10));
+		assertThat(countMinSketch.create(10, 10)).isTrue();
         Map<String, Integer> itemIncrement = new HashMap<>();
         List<Integer> results = countMinSketch.incrby(new String[]{"a"}, new int[]{3});
-        Assert.assertTrue(results != null && results.size() == 1);
-        Assert.assertTrue(results.get(0) == 3);
+        assertThat(results).isNotNull().hasSize(1);
+		assertThat(results.get(0)).isEqualTo(3);
         results = countMinSketch.query("a");
-        Assert.assertTrue(results.get(0) == 3);
+		assertThat(results.get(0)).isEqualTo(3);
     }
 
     @Test
     public void testInfo() {
         CountMinSketch countMinSketch = redisBloomClient.getCountMinSketch("cms_info");
-        Assert.assertTrue(countMinSketch.create(5, 10));
+		assertThat(countMinSketch.create(5, 10)).isTrue();
         CountMinSketchInfo countMinSketchInfo = countMinSketch.getInfo();
-        Assert.assertTrue(countMinSketchInfo.getWidth() == 5);
+		assertThat(countMinSketchInfo.getWidth()).isEqualTo(5);
     }
 
 }

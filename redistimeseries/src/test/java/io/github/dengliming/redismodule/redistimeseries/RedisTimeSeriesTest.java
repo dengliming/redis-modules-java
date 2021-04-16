@@ -16,14 +16,14 @@
 package io.github.dengliming.redismodule.redistimeseries;
 
 import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.redisson.client.RedisException;
 
 import java.util.List;
 import java.util.Map;
 import static io.github.dengliming.redismodule.redistimeseries.Sample.Value;
-import static org.junit.Assert.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 
 /**
@@ -33,145 +33,145 @@ public class RedisTimeSeriesTest extends AbstractTest {
 
 	RedisTimeSeries redisTimeSeries;
 
-	@Before
+	@BeforeEach
 	public void before() {
 		redisTimeSeries = redisTimeSeriesClient.getRedisTimeSeries();
 	}
 
     @Test
     public void testCreate() {
-        assertTrue(redisTimeSeries.create("Series-1", new TimeSeriesOptions()
-                .retentionTime(0L)
-                .unCompressed()
+		assertThat(redisTimeSeries.create("Series-1", new TimeSeriesOptions()
+				.retentionTime(0L)
+				.unCompressed()
 				.duplicatePolicy(DuplicatePolicy.MAX)
-                .labels(new Label("a", "1"))));
+				.labels(new Label("a", "1")))).isTrue();
 
-        assertTrue(redisTimeSeries.alter("Series-1", new TimeSeriesOptions()
+		assertThat(redisTimeSeries.alter("Series-1", new TimeSeriesOptions()
                 .retentionTime(0L)
-                .labels(new Label("b", "1"))));
+                .labels(new Label("b", "1")))).isTrue();
     }
 
     @Test
     public void testAdd() {
         long timestamp = System.currentTimeMillis();
-        assertEquals(timestamp, redisTimeSeries.add(new Sample("temperature:2:32", Value.of(timestamp, 26)), new TimeSeriesOptions()
+		assertThat(redisTimeSeries.add(new Sample("temperature:2:32", Value.of(timestamp, 26)), new TimeSeriesOptions()
                 .retentionTime(6000L)
                 .unCompressed()
 				.duplicatePolicy(DuplicatePolicy.MAX)
-                .labels(new Label("sensor_id", "2"), new Label("area_id", "32"))).longValue());
+                .labels(new Label("sensor_id", "2"), new Label("area_id", "32"))).longValue()).isEqualTo(timestamp);
 
 
         List<Long> result = redisTimeSeries.add(new Sample("temperature:2:32", Value.of(timestamp + 1, 26)),
                 new Sample("temperature:2:32", Value.of(timestamp + 2, 45)));
-        assertNotNull(result);
-        assertEquals(timestamp + 1, result.get(0).longValue());
-        assertEquals(timestamp + 2, result.get(1).longValue());
+		assertThat(result).isNotNull();
+		assertThat(result.get(0).longValue()).isEqualTo(timestamp + 1);
+		assertThat(result.get(1).longValue()).isEqualTo(timestamp + 2);
     }
 
 	@Test
 	public void testAddOnDuplicate() {
 		RedisTimeSeries redisTimeSeries = redisTimeSeriesClient.getRedisTimeSeries();
 		long timestamp = System.currentTimeMillis();
-		assertEquals(timestamp, redisTimeSeries.add(new Sample("temperature:2:32", Value.of(timestamp, 26)), new TimeSeriesOptions()
-				.retentionTime(6000L)).longValue());
+		assertThat(redisTimeSeries.add(new Sample("temperature:2:32", Value.of(timestamp, 26)), new TimeSeriesOptions()
+				.retentionTime(6000L)).longValue()).isEqualTo(timestamp);
 
-		assertEquals(timestamp, redisTimeSeries.add(new Sample("temperature:2:32", Value.of(timestamp, 32)), new TimeSeriesOptions()
+		assertThat(redisTimeSeries.add(new Sample("temperature:2:32", Value.of(timestamp, 32)), new TimeSeriesOptions()
 				.retentionTime(6000L)
-				.duplicatePolicy(DuplicatePolicy.MIN)).longValue());
+				.duplicatePolicy(DuplicatePolicy.MIN)).longValue()).isEqualTo(timestamp);
 		List<Value> values = redisTimeSeries.range("temperature:2:32", 0, timestamp);
-		assertEquals(1, values.size());
-		assertEquals(26, (int) values.get(0).getValue());
+		assertThat(values).hasSize(1);
+		assertThat((int) values.get(0).getValue()).isEqualTo(26);
 	}
 
     @Test
     public void testIncrDecrBy() {
         long timestamp = System.currentTimeMillis();
-        assertEquals(timestamp, redisTimeSeries.add(new Sample("temperature:2:32", Value.of(timestamp, 26)), new TimeSeriesOptions()
+		assertThat(redisTimeSeries.add(new Sample("temperature:2:32", Value.of(timestamp, 26)), new TimeSeriesOptions()
                 .retentionTime(6000L)
                 .unCompressed()
-                .labels(new Label("sensor_id", "2"), new Label("area_id", "32"))).longValue());
+                .labels(new Label("sensor_id", "2"), new Label("area_id", "32"))).longValue()).isEqualTo(timestamp);
 
 
-        assertEquals(timestamp, redisTimeSeries.incrBy("temperature:2:33", 13, timestamp, new TimeSeriesOptions()
+		assertThat(redisTimeSeries.incrBy("temperature:2:33", 13, timestamp, new TimeSeriesOptions()
                 .retentionTime(6000L)
                 .unCompressed()
-                .labels(new Label("sensor_id", "2"), new Label("area_id", "32"))).longValue());
+                .labels(new Label("sensor_id", "2"), new Label("area_id", "32"))).longValue()).isEqualTo(timestamp);
 
-        assertEquals(timestamp + 1, redisTimeSeries.incrBy("temperature:2:33", 13, timestamp + 1).longValue());
+		assertThat(redisTimeSeries.incrBy("temperature:2:33", 13, timestamp + 1).longValue()).isEqualTo(timestamp + 1);
 
-        assertEquals(timestamp + 3, redisTimeSeries.decrBy("temperature:2:33", 13, timestamp + 3).longValue());
+		assertThat(redisTimeSeries.decrBy("temperature:2:33", 13, timestamp + 3).longValue()).isEqualTo(timestamp + 3);
     }
 
     @Test
     public void testRule() {
-        assertTrue(redisTimeSeries.create("Series-1", new TimeSeriesOptions()
+		assertThat(redisTimeSeries.create("Series-1", new TimeSeriesOptions()
                 .retentionTime(0L)
                 .unCompressed()
-                .labels(new Label("a", "1"))));
+                .labels(new Label("a", "1")))).isTrue();
 
-        assertTrue(redisTimeSeries.create("Series-2", new TimeSeriesOptions()
+		assertThat(redisTimeSeries.create("Series-2", new TimeSeriesOptions()
                 .retentionTime(0L)
                 .unCompressed()
-                .labels(new Label("a", "1"))));
+                .labels(new Label("a", "1")))).isTrue();
 
-        assertTrue(redisTimeSeries.createRule("Series-1", "Series-2", Aggregation.COUNT, 100));
+		assertThat(redisTimeSeries.createRule("Series-1", "Series-2", Aggregation.COUNT, 100)).isTrue();
 
         try {
-            assertFalse(redisTimeSeries.createRule("Series-1", "Series-2", Aggregation.COUNT, 100));
+			assertThat(redisTimeSeries.createRule("Series-1", "Series-2", Aggregation.COUNT, 100)).isFalse();
             Assert.fail();
         } catch(RedisException e) {
         }
 
-        assertTrue(redisTimeSeries.deleteRule("Series-1", "Series-2"));
+		assertThat(redisTimeSeries.deleteRule("Series-1", "Series-2")).isTrue();
     }
 
     @Test
     public void testRange() {
         RedisTimeSeries redisTimeSeries = redisTimeSeriesClient.getRedisTimeSeries();
         long timestamp = System.currentTimeMillis();
-        assertEquals(timestamp, redisTimeSeries.incrBy("temperature:2:33", 13, timestamp, new TimeSeriesOptions()
+		assertThat(redisTimeSeries.incrBy("temperature:2:33", 13, timestamp, new TimeSeriesOptions()
                 .retentionTime(6000L)
                 .unCompressed()
-                .labels(new Label("sensor_id", "2"), new Label("area_id", "32"))).longValue());
+                .labels(new Label("sensor_id", "2"), new Label("area_id", "32"))).longValue()).isEqualTo(timestamp);
 
-        assertEquals(timestamp + 1, redisTimeSeries.incrBy("temperature:2:33", 13, timestamp + 1).longValue());
+		assertThat(redisTimeSeries.incrBy("temperature:2:33", 13, timestamp + 1).longValue()).isEqualTo(timestamp + 1);
 
-        assertEquals(timestamp + 3, redisTimeSeries.decrBy("temperature:2:33", 13, timestamp + 3).longValue());
+		assertThat(redisTimeSeries.decrBy("temperature:2:33", 13, timestamp + 3).longValue()).isEqualTo(timestamp + 3);
 
         List<Value> values = redisTimeSeries.range("temperature:2:33", timestamp, timestamp + 1);
-        assertEquals(2, values.size());
+		assertThat(values).hasSize(2);
 
         List<TimeSeries> timeSeries = redisTimeSeries.mrange(timestamp, timestamp + 1, new RangeOptions()
                 .max(3).withLabels(), "sensor_id=2");
-        assertEquals(1, timeSeries.size());
-        assertEquals("temperature:2:33", timeSeries.get(0).getKey());
+		assertThat(timeSeries).hasSize(1);
+		assertThat(timeSeries.get(0).getKey()).isEqualTo("temperature:2:33");
 
         timeSeries = redisTimeSeries.mrange(timestamp, timestamp + 1, new RangeOptions()
                 .max(3).withLabels(), "sensor_id=1");
-        assertEquals(0, timeSeries.size());
+		assertThat(timeSeries).isEmpty();
     }
 
     @Test
     public void testQueryIndex() {
         long timestamp = System.currentTimeMillis();
-        assertEquals(timestamp, redisTimeSeries.incrBy("temperature:2:33", 13, timestamp, new TimeSeriesOptions()
+		assertThat(redisTimeSeries.incrBy("temperature:2:33", 13, timestamp, new TimeSeriesOptions()
                 .retentionTime(6000L)
                 .unCompressed()
-                .labels(new Label("sensor_id", "2"), new Label("area_id", "32"))).longValue());
+                .labels(new Label("sensor_id", "2"), new Label("area_id", "32"))).longValue()).isEqualTo(timestamp);
 
         List<String> keys = redisTimeSeries.queryIndex("sensor_id=2");
-        assertEquals("temperature:2:33", keys.get(0));
+		assertThat(keys.get(0)).isEqualTo("temperature:2:33");
     }
 
     @Test
     public void testGet() {
         RedisTimeSeries redisTimeSeries = redisTimeSeriesClient.getRedisTimeSeries();
         long timestamp = System.currentTimeMillis();
-        assertEquals(timestamp, redisTimeSeries.incrBy("temperature:2:33", 13, timestamp,
-                new TimeSeriesOptions().labels(new Label("label1", "test"), new Label("label2", "test1"))).longValue());
-        assertEquals(timestamp, redisTimeSeries.incrBy("temperature:3:33", 14, timestamp,
-                new TimeSeriesOptions().labels(new Label("label1", "test"))).longValue());
-        assertEquals(timestamp + 2, redisTimeSeries.incrBy("temperature:2:34", 14, timestamp + 2).longValue());
+		assertThat(redisTimeSeries.incrBy("temperature:2:33", 13, timestamp,
+                new TimeSeriesOptions().labels(new Label("label1", "test"), new Label("label2", "test1"))).longValue()).isEqualTo(timestamp);
+		assertThat(redisTimeSeries.incrBy("temperature:3:33", 14, timestamp,
+                new TimeSeriesOptions().labels(new Label("label1", "test"))).longValue()).isEqualTo(timestamp);
+		assertThat(redisTimeSeries.incrBy("temperature:2:34", 14, timestamp + 2).longValue()).isEqualTo(timestamp + 2);
 
         Value value = null;
         try {
@@ -181,29 +181,29 @@ public class RedisTimeSeriesTest extends AbstractTest {
             //  TSDB: the key does not exist
         }
         value = redisTimeSeries.get("temperature:2:33");
-        assertEquals(timestamp, value.getTimestamp());
+		assertThat(value.getTimestamp()).isEqualTo(timestamp);
 
         List<TimeSeries> timeSeries = redisTimeSeries.mget(true, "label1=test");
-        assertEquals(2, timeSeries.size());
+		assertThat(timeSeries).hasSize(2);
 
         timeSeries = redisTimeSeries.mget(true, "label2=test1");
-        assertEquals(1, timeSeries.size());
-        assertEquals("temperature:2:33", timeSeries.get(0).getKey());
+		assertThat(timeSeries).hasSize(1);
+		assertThat(timeSeries.get(0).getKey()).isEqualTo("temperature:2:33");
     }
 
     @Test
     public void testInfo() {
         long timestamp = System.currentTimeMillis();
-        assertEquals(timestamp, redisTimeSeries.incrBy("temperature:2:33", 13, timestamp,
-                new TimeSeriesOptions().labels(new Label("label1", "test"), new Label("label2", "test1"))).longValue());
-        assertTrue(redisTimeSeries.create("Series-2", new TimeSeriesOptions()
+		assertThat(redisTimeSeries.incrBy("temperature:2:33", 13, timestamp,
+                new TimeSeriesOptions().labels(new Label("label1", "test"), new Label("label2", "test1"))).longValue()).isEqualTo(timestamp);
+		assertThat(redisTimeSeries.create("Series-2", new TimeSeriesOptions()
                 .retentionTime(0L)
                 .unCompressed()
-                .labels(new Label("a", "1"))));
-        assertTrue(redisTimeSeries.createRule("temperature:2:33", "Series-2", Aggregation.COUNT, 100));
+                .labels(new Label("a", "1")))).isTrue();
+		assertThat(redisTimeSeries.createRule("temperature:2:33", "Series-2", Aggregation.COUNT, 100)).isTrue();
         Map<String, Object> map = redisTimeSeries.info("temperature:2:33");
-        assertEquals(1, (long) map.get("totalSamples"));
-        assertEquals(2, ((List<List<Object>>) map.get("labels")).size());
-        assertTrue(((List<List<Object>>) map.get("labels")).get(0).contains("label1"));
+		assertThat((long) map.get("totalSamples")).isEqualTo(1);
+		assertThat(((List<List<Object>>) map.get("labels"))).hasSize(2);
+		assertThat(((List<List<Object>>) map.get("labels")).get(0)).contains("label1");
     }
 }

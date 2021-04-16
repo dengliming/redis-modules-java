@@ -59,6 +59,8 @@
 		<gpg-plugin.version>1.6</gpg-plugin.version>
 		<maven-javadoc-plugin.version>2.10.4</maven-javadoc-plugin.version>
 		<surefire-plugin.version>3.0.0-M3</surefire-plugin.version>
+		<assertj-core.version>3.17.2</assertj-core.version>
+		<hamcrest-library.version>2.2</hamcrest-library.version>
     </properties>
 
     <dependencyManagement>
@@ -108,6 +110,20 @@
     </dependencyManagement>
 
     <dependencies>
+		<dependency>
+			<groupId>org.assertj</groupId>
+			<artifactId>assertj-core</artifactId>
+			<version>${assertj-core.version}</version>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.hamcrest</groupId>
+			<artifactId>hamcrest-library</artifactId>
+			<version>${hamcrest-library.version}</version>
+			<scope>test</scope>
+		</dependency>
+
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>

@@ -15,13 +15,12 @@
  */
 package io.github.dengliming.redismodule.redisai;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.redisson.client.RedisException;
 
 import java.util.Map;
 
-import static org.junit.Assert.*;
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 
@@ -33,15 +32,15 @@ public class RedisAITest extends AbstractTest {
     @Test
     public void testSetTensor() {
         RedisAI redisAI = redisAIClient.getRedisAI();
-        assertTrue(redisAI.setTensor("tensor1", DataType.FLOAT, new int[]{2, 2}, null, new String[]{"1", "2", "3", "4"}));
+		assertThat(redisAI.setTensor("tensor1", DataType.FLOAT, new int[]{2, 2}, null, new String[]{"1", "2", "3", "4"})).isTrue();
     }
 
     @Test
     public void testConfig() {
         RedisAI redisAI = redisAIClient.getRedisAI();
-        assertTrue(redisAI.setBackendPath("/usr/lib/redis/modules/backends/"));
+		assertThat(redisAI.setBackendPath("/usr/lib/redis/modules/backends/")).isTrue();
         assertThrows(RedisException.class, () -> redisAI.loadBackend(Backend.TF, "notexist/redisai_tensorflow.so"));
-        assertTrue(redisAI.loadBackend(Backend.TF, "redisai_tensorflow/redisai_tensorflow.so"));
+		assertThat(redisAI.loadBackend(Backend.TF, "redisai_tensorflow/redisai_tensorflow.so")).isTrue();
     }
 
     @Test
@@ -49,7 +48,7 @@ public class RedisAITest extends AbstractTest {
         RedisAI redisAI = redisAIClient.getRedisAI();
         String key = "tensor:info";
         String script = "def bar(a, b):\n" + "    return a + b\n";
-        assertTrue(redisAI.setScript(key, Device.CPU, script));
+		assertThat(redisAI.setScript(key, Device.CPU, script)).isTrue();
         // not exist
         Map<String, Object> infoMap;
         assertThrows(RedisException.class, () -> {
@@ -59,23 +58,23 @@ public class RedisAITest extends AbstractTest {
 
         // first inited info
         infoMap = redisAI.getInfo(key);
-        assertNotNull(infoMap);
-        assertEquals(key, infoMap.get("key"));
-        assertEquals(Device.CPU.name(), infoMap.get("device"));
-        assertEquals(0L, infoMap.get("calls"));
+		assertThat(infoMap).isNotNull();
+		assertThat(infoMap.get("key")).isEqualTo(key);
+		assertThat(infoMap.get("device")).isEqualTo(Device.CPU.name());
+		assertThat(infoMap.get("calls")).isEqualTo(0L);
 
         redisAI.setTensor("a1", DataType.FLOAT, new int[] {2}, null, new String[] {"2", "3"});
         redisAI.setTensor("b1", DataType.FLOAT, new int[] {2}, null, new String[] {"2", "3"});
-        assertTrue(redisAI.runScript(key, "bar", new String[] {"a1", "b1"}, new String[] {"c1"}));
+		assertThat(redisAI.runScript(key, "bar", new String[] {"a1", "b1"}, new String[] {"c1"})).isTrue();
 
         // one model runs
         infoMap = redisAI.getInfo(key);
-        assertEquals(1L, infoMap.get("calls"));
+		assertThat(infoMap.get("calls")).isEqualTo(1L);
 
         // reset
-        assertTrue(redisAI.resetStat(key));
+		assertThat(redisAI.resetStat(key)).isTrue();
         infoMap = redisAI.getInfo(key);
-        assertEquals(0L, infoMap.get("calls"));
+		assertThat(infoMap.get("calls")).isEqualTo(0L);
 
         assertThrows(RedisException.class, () -> {
             // ERR cannot find run info for key
