@@ -17,7 +17,7 @@ Java Client libraries for [redis-modules](https://redis.io/modules), based on [R
 ## Installing
 
 #### Build from source
-Execute ./mvnw clean install -DskipTests=true. The build process requires JDK8+.
+Execute ./mvnw clean install -DskipTests=true -Dgpg.skip. The build process requires JDK8+.
 
 #### Maven repository
 Include all
