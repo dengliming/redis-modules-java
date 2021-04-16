@@ -18,30 +18,9 @@ Java Client libraries for [redis-modules](https://redis.io/modules), based on [R
 
 #### Build from source
 Execute ./mvnw clean install -DskipTests=true. The build process requires JDK8+.
+
 #### Maven repository
-repositories
-```xml
-<repositories>
-    <repository>
-        <id>snapshots-repo</id>
-        <url>https://raw.githubusercontent.com/dengliming/mvn-repo/master/snapshots</url>
-    </repository>
-    <repository>
-        <id>releases-repo</id>
-        <url>https://raw.githubusercontent.com/dengliming/mvn-repo/master/releases</url>
-    </repository>
-</repositories>
-```
 Include all
-```xml
-<!-- snapshot -->
-<dependency>
-    <groupId>io.github.dengliming.redismodule</groupId>
-    <artifactId>all</artifactId>
-    <version>1.0.1-SNAPSHOT</version>
-</dependency>
-```
-or
 ```xml
 <!-- release -->
 <dependency>
@@ -52,15 +31,6 @@ or
 ```
 Include single module like:
 ```xml
-<!-- snapshot -->
-<dependency>
-    <groupId>io.github.dengliming.redismodule</groupId>
-    <artifactId>redistimeseries</artifactId>
-    <version>1.0.1-SNAPSHOT</version>
-</dependency>
-```
-or
-```xml
 <!-- release -->
 <dependency>
     <groupId>io.github.dengliming.redismodule</groupId>
@@ -68,6 +38,7 @@ or
     <version>1.0.0</version>
 </dependency>
 ```
+
 ## Usage example
 RedisBloom
 ```java
