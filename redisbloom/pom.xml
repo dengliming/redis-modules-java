@@ -15,10 +15,6 @@
             <groupId>io.github.dengliming.redismodule</groupId>
             <artifactId>commons</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.redisson</groupId>
-            <artifactId>redisson</artifactId>
-        </dependency>
     </dependencies>
 
 </project>

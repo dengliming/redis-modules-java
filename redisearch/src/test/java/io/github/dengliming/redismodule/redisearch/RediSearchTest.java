@@ -24,7 +24,8 @@ import io.github.dengliming.redismodule.redisearch.index.schema.FieldType;
 import io.github.dengliming.redismodule.redisearch.index.schema.Schema;
 import io.github.dengliming.redismodule.redisearch.index.schema.TextField;
 import io.github.dengliming.redismodule.redisearch.search.*;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.redisson.api.RMap;
 
 import java.util.*;
@@ -44,6 +45,7 @@ public class RediSearchTest extends AbstractTest {
                         .addField(new TextField("title")),
                 new IndexOptions()
                         .maxTextFields()
+						.prefixes(Arrays.asList("doc:"))
                         .stopwords(Arrays.asList("kk"))));
         Map<String, Object> indexInfo = rediSearch.loadIndex();
         assertNotNull(indexInfo);
@@ -53,6 +55,7 @@ public class RediSearchTest extends AbstractTest {
     }
 
     @Test
+	@Disabled("FT_ADDHASH No longer suppoted")
     public void testAddHash() {
         RediSearch rediSearch = rediSearchClient.getRediSearch("index1");
         assertTrue(rediSearch.createIndex(new Schema().addField(new TextField("title"))));
@@ -166,6 +169,7 @@ public class RediSearchTest extends AbstractTest {
     }
 
     @Test
+	@Disabled("FT_SYNADD No longer suppoted, use FT.SYNUPDATE.")
     public void testSynonym() {
         RediSearch rediSearch = rediSearchClient.getRediSearch("testSynonym");
         assertTrue(rediSearch.createIndex(new Schema().addField(new TextField("title"))));

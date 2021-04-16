@@ -10,11 +10,4 @@
     <artifactId>redisgears</artifactId>
     <name>RedisGears</name>
 
-    <dependencies>
-        <dependency>
-            <groupId>org.redisson</groupId>
-            <artifactId>redisson</artifactId>
-        </dependency>
-    </dependencies>
-
 </project>

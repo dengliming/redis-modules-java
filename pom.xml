@@ -58,6 +58,7 @@
 		<jacoco-maven-plugin.version>0.8.5</jacoco-maven-plugin.version>
 		<gpg-plugin.version>1.6</gpg-plugin.version>
 		<maven-javadoc-plugin.version>2.10.4</maven-javadoc-plugin.version>
+		<surefire-plugin.version>3.0.0-M3</surefire-plugin.version>
     </properties>
 
     <dependencyManagement>
@@ -103,12 +104,6 @@
                 <artifactId>redistimeseries</artifactId>
                 <version>${project.version}</version>
             </dependency>
-
-            <dependency>
-                <groupId>org.redisson</groupId>
-                <artifactId>redisson</artifactId>
-                <version>${redisson.version}</version>
-            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -132,6 +127,12 @@
             <version>${junit.version}</version>
             <scope>test</scope>
         </dependency>
+
+		<dependency>
+			<groupId>org.redisson</groupId>
+			<artifactId>redisson</artifactId>
+			<version>${redisson.version}</version>
+		</dependency>
     </dependencies>
 
     <build>
@@ -188,6 +189,12 @@
                     </execution>
                 </executions>
             </plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>${surefire-plugin.version}</version>
+			</plugin>
 
 			<plugin>
 				<groupId>org.jacoco</groupId>
