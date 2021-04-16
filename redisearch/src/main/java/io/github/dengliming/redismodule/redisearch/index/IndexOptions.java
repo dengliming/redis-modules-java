@@ -31,6 +31,7 @@ public class IndexOptions {
     private boolean noFields;
     private boolean noHL;
     private List<String> stopwords;
+	private List<String> prefixes;
 
     public long getExpire() {
         return expire;
@@ -94,12 +95,27 @@ public class IndexOptions {
         return this;
     }
 
-    public static IndexOptions defaultOptions() {
+	public List<String> getPrefixes() {
+		return prefixes;
+	}
+
+	public IndexOptions prefixes (List<String> prefixes){
+    	this.prefixes = prefixes;
+    	return this;
+	}
+
+	public static IndexOptions defaultOptions() {
         return new IndexOptions();
     }
 
     public void build(List<Object> args) {
-        if (isMaxTextFields()) {
+
+		if (getPrefixes() != null) {
+			args.add(Keywords.PREFIX.name());
+			args.add(getPrefixes().size());
+			args.addAll(getPrefixes());
+		}
+    	if (isMaxTextFields()) {
             args.add(Keywords.MAXTEXTFIELDS.name());
         }
         if (getExpire() > 0) {
