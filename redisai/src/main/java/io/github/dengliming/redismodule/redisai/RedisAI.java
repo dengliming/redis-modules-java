@@ -16,6 +16,7 @@
 package io.github.dengliming.redismodule.redisai;
 
 import io.github.dengliming.redismodule.common.util.RAssert;
+import io.github.dengliming.redismodule.redisai.model.Tensor;
 import io.github.dengliming.redismodule.redisai.protocol.Keywords;
 import org.redisson.api.RFuture;
 import org.redisson.client.codec.Codec;
@@ -229,6 +230,22 @@ public class RedisAI {
     public RFuture<Boolean> resetStatAsync(String key) {
         return commandExecutor.readAsync(getName(), StringCodec.INSTANCE, AI_INFO_RESETSTAT, key, Keywords.RESETSTAT);
     }
+
+	/**
+	 * Returns a tensor stored as key's value.
+	 *
+	 * @param key the tensor's key name
+	 * @return
+	 */
+	public Tensor getTensor(String key) {
+		return commandExecutor.get(getTensorAsync(key));
+	}
+
+	public RFuture<Tensor> getTensorAsync(String key) {
+		RAssert.notNull(key, "key must not be null");
+
+		return commandExecutor.readAsync(getName(), StringCodec.INSTANCE, AI_TENSORGET, key, Keywords.META, Keywords.BLOB);
+	}
 
     public String getName() {
         return null;

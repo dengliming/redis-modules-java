@@ -15,6 +15,7 @@
  */
 package io.github.dengliming.redismodule.redisai;
 
+import io.github.dengliming.redismodule.redisai.model.Tensor;
 import org.junit.jupiter.api.Test;
 import org.redisson.client.RedisException;
 
@@ -34,6 +35,18 @@ public class RedisAITest extends AbstractTest {
         RedisAI redisAI = redisAIClient.getRedisAI();
 		assertThat(redisAI.setTensor("tensor1", DataType.FLOAT, new int[]{2, 2}, null, new String[]{"1", "2", "3", "4"})).isTrue();
     }
+
+	@Test
+	public void testGetTensor() {
+		RedisAI redisAI = redisAIClient.getRedisAI();
+		assertThat(redisAI.setTensor("tensor1", DataType.FLOAT, new int[]{2, 2}, null, new String[]{"1", "2", "3", "4"})).isTrue();
+
+		Tensor tensor = redisAI.getTensor("tensor1");
+		assertThat(tensor).isNotNull();
+		assertThat(tensor.getDataType()).isEqualTo(DataType.FLOAT);
+		assertThat(tensor.getShape()).containsExactly(2, 2);
+		assertThat(tensor.getValues()).isNotNull();
+	}
 
     @Test
     public void testConfig() {
