@@ -18,6 +18,7 @@ package io.github.dengliming.redismodule.redisai;
 import io.github.dengliming.redismodule.common.util.RAssert;
 import io.github.dengliming.redismodule.redisai.args.SetModelArgs;
 import io.github.dengliming.redismodule.redisai.model.Model;
+import io.github.dengliming.redismodule.redisai.model.Script;
 import io.github.dengliming.redismodule.redisai.model.Tensor;
 import io.github.dengliming.redismodule.redisai.protocol.Keywords;
 import org.redisson.api.RFuture;
@@ -276,6 +277,24 @@ public class RedisAI {
 		RAssert.notNull(key, "key must not be null");
 
 		return commandExecutor.readAsync(getName(), StringCodec.INSTANCE, AI_MODELGET, key, Keywords.META, Keywords.BLOB);
+	}
+
+	/**
+	 * Returns the TorchScript stored as a key's value.
+	 *
+	 * AI.SCRIPTGET <key> [META] [SOURCE]
+	 *
+	 * @param key name of key to get the Script from RedisAI server
+	 * @return
+	 */
+	public Script getScript(String key) {
+		return commandExecutor.get(getScriptAsync(key));
+	}
+
+	public RFuture<Script> getScriptAsync(String key) {
+		RAssert.notNull(key, "key must not be null");
+
+		return commandExecutor.readAsync(getName(), StringCodec.INSTANCE, AI_SCRIPTGET, key, Keywords.META, Keywords.SOURCE);
 	}
 
     public String getName() {

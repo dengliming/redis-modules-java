@@ -17,6 +17,7 @@ package io.github.dengliming.redismodule.redisai;
 
 import io.github.dengliming.redismodule.redisai.args.SetModelArgs;
 import io.github.dengliming.redismodule.redisai.model.Model;
+import io.github.dengliming.redismodule.redisai.model.Script;
 import io.github.dengliming.redismodule.redisai.model.Tensor;
 import org.junit.jupiter.api.Test;
 import org.redisson.client.RedisException;
@@ -36,16 +37,12 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 public class RedisAITest extends AbstractTest {
 
     @Test
-    public void testSetTensor() {
+    public void testTensor() {
         RedisAI redisAI = redisAIClient.getRedisAI();
-		assertThat(redisAI.setTensor("tensor1", DataType.FLOAT, new int[]{2, 2}, null, new String[]{"1", "2", "3", "4"})).isTrue();
-    }
-
-	@Test
-	public void testGetTensor() {
-		RedisAI redisAI = redisAIClient.getRedisAI();
+        // setTensor
 		assertThat(redisAI.setTensor("tensor1", DataType.FLOAT, new int[]{2, 2}, null, new String[]{"1", "2", "3", "4"})).isTrue();
 
+		// getTensor
 		Tensor tensor = redisAI.getTensor("tensor1");
 		assertThat(tensor).isNotNull();
 		assertThat(tensor.getDataType()).isEqualTo(DataType.FLOAT);
@@ -68,6 +65,21 @@ public class RedisAITest extends AbstractTest {
 		assertThat(model.getInputs()).containsExactly("a", "b");
 		assertThat(model.getOutputs()).containsExactly("mul");
 		assertThat(model.getBlob()).isEqualTo(blob);
+	}
+
+	@Test
+	public void testScript() {
+		RedisAI redisAI = redisAIClient.getRedisAI();
+		String key = "script1";
+		String script = "def bar(a, b):\n" + "    return a + b\n";
+		// Set Script
+		assertThat(redisAI.setScript(key, Device.CPU, script)).isTrue();
+
+		// Get Script
+		Script scriptInfo = redisAI.getScript(key);
+		assertThat(scriptInfo).isNotNull();
+		assertThat(scriptInfo.getDevice()).isEqualTo(Device.CPU);
+		assertThat(scriptInfo.getSource()).isEqualTo(script);
 	}
 
     @Test

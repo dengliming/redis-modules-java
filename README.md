@@ -1,4 +1,4 @@
-![build](https://github.com/dengliming/redis-modules-java/workflows/build/badge.svg) ![java-version](https://img.shields.io/badge/JDK-1.8+-brightgreen.svg) ![maven](https://img.shields.io/badge/maven-3.5+-brightgreen.svg) [![license](https://img.shields.io/github/license/dengliming/redis-modules-java)](/LICENSE) [![codecov](https://codecov.io/gh/dengliming/redis-modules-java/branch/master/graph/badge.svg?token=U8BA091JD5)](https://codecov.io/gh/dengliming/redis-modules-java)
+![build](https://github.com/dengliming/redis-modules-java/workflows/build/badge.svg) ![java-version](https://img.shields.io/badge/JDK-1.8+-brightgreen.svg) [![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.github.dengliming.redismodule/redis-modules-java/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.github.dengliming.redismodule/redis-modules-java) [![license](https://img.shields.io/github/license/dengliming/redis-modules-java)](/LICENSE) [![codecov](https://codecov.io/gh/dengliming/redis-modules-java/branch/master/graph/badge.svg?token=U8BA091JD5)](https://codecov.io/gh/dengliming/redis-modules-java)
 
 
 Java Client libraries for [redis-modules](https://redis.io/modules), based on [Redisson](https://github.com/redisson/redisson).
@@ -113,6 +113,17 @@ redisTimeSeries.add(new Sample("temperature:2:32", Sample.Value.of(timestamp, 26
                 .unCompressed()
                 .labels(new Label("sensor_id", "2"), new Label("area_id", "32")));
 redisTimeSeriesClient.shutdown();
+```
+
+RedisAI
+```java
+Config config = new Config();
+config.useSingleServer().setAddress("redis://127.0.0.1:6379");
+RedisAIClient redisAIClient = new RedisAIClient(config);
+
+RedisAI redisAI = redisAIClient.getRedisAI();
+redisAI.setTensor("tensor1", DataType.FLOAT, new int[]{2, 2}, null, new String[]{"1", "2", "3", "4"});
+redisAIClient.shutdown();
 ```
 ## License
 
