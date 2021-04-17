@@ -7,7 +7,7 @@ Redis command|Sync / Async Api|
 AI.TENSORSET | RedisAI.<br/>setTensor()<br/>setTensorAsync() |
 AI.TENSORGET | RedisAI.<br/>getTensor()<br/>getTensorAsync() |
 AI.MODELSET | RedisAI.<br/>setModel()<br/>setModelAsync() |
-AI.MODELGET | N/A |
+AI.MODELGET | RedisAI.<br/>getModel()<br/>getModelAsync() |
 AI.MODELDEL | RedisAI.<br/>deleteModel()<br/>deleteModelAsync() |
 AI.MODELRUN | N/A |
 AI._MODELSCAN | N/A |

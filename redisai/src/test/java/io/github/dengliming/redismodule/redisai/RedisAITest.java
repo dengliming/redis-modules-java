@@ -15,10 +15,15 @@
  */
 package io.github.dengliming.redismodule.redisai;
 
+import io.github.dengliming.redismodule.redisai.args.SetModelArgs;
+import io.github.dengliming.redismodule.redisai.model.Model;
 import io.github.dengliming.redismodule.redisai.model.Tensor;
 import org.junit.jupiter.api.Test;
 import org.redisson.client.RedisException;
 
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -48,12 +53,35 @@ public class RedisAITest extends AbstractTest {
 		assertThat(tensor.getValues()).isNotNull();
 	}
 
+	@Test
+	public void testModel() throws Exception {
+		RedisAI redisAI = redisAIClient.getRedisAI();
+		// Set Model
+		byte[] blob = Files.readAllBytes(Paths.get(getClass().getClassLoader().getResource("test_data/graph.pb").toURI()));
+		assertThat(redisAI.setModel("model1", new SetModelArgs().backEnd(Backend.TF).device(Device.CPU)
+				.inputs(Arrays.asList("a", "b")).outputs(Arrays.asList("mul")).blob(blob))).isTrue();
+
+		// Get Model
+		Model model = redisAI.getModel("model1");
+		assertThat(model.getBackend()).isEqualTo(Backend.TF);
+		assertThat(model.getDevice()).isEqualTo(Device.CPU);
+		assertThat(model.getInputs()).containsExactly("a", "b");
+		assertThat(model.getOutputs()).containsExactly("mul");
+		assertThat(model.getBlob()).isEqualTo(blob);
+	}
+
     @Test
     public void testConfig() {
         RedisAI redisAI = redisAIClient.getRedisAI();
 		assertThat(redisAI.setBackendPath("/usr/lib/redis/modules/backends/")).isTrue();
         assertThrows(RedisException.class, () -> redisAI.loadBackend(Backend.TF, "notexist/redisai_tensorflow.so"));
-		assertThat(redisAI.loadBackend(Backend.TF, "redisai_tensorflow/redisai_tensorflow.so")).isTrue();
+
+		try {
+			boolean r = redisAI.loadBackend(Backend.TF, "redisai_tensorflow/redisai_tensorflow.so");
+			assertThat(r).isTrue();
+		} catch (RedisException e) {
+			// will throw error if backend already loaded
+		}
     }
 
     @Test

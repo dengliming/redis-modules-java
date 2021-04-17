@@ -15,6 +15,7 @@
  */
 package io.github.dengliming.redismodule.redisai.protocol;
 
+import io.github.dengliming.redismodule.redisai.protocol.decoder.ModelDecoder;
 import io.github.dengliming.redismodule.redisai.protocol.decoder.TensorDecoder;
 import org.redisson.client.protocol.RedisCommand;
 import org.redisson.client.protocol.convertor.BooleanReplayConvertor;
@@ -31,7 +32,7 @@ public interface RedisCommands {
     RedisCommand AI_TENSORSET = new RedisCommand<>("AI.TENSORSET", new BooleanReplayConvertor());
     RedisCommand AI_TENSORGET = new RedisCommand<>("AI.TENSORGET", new ListMultiDecoder2<>(new TensorDecoder(), new ObjectListReplayDecoder<>()));
     RedisCommand AI_MODELSET = new RedisCommand<>("AI.MODELSET", new BooleanReplayConvertor());
-    RedisCommand AI_MODELGET = new RedisCommand<>("AI.MODELGET", new VoidReplayConvertor());
+    RedisCommand AI_MODELGET = new RedisCommand<>("AI.MODELGET", new ListMultiDecoder2<>(new ModelDecoder(), new ObjectListReplayDecoder<>()));
     RedisCommand AI_MODELDEL = new RedisCommand<>("AI.MODELDEL", new BooleanReplayConvertor());
     RedisCommand AI_MODELRUN = new RedisCommand<>("AI.MODELRUN", new VoidReplayConvertor());
     RedisCommand AI_MODELSCAN = new RedisCommand<>("AI._MODELSCAN", new VoidReplayConvertor());
