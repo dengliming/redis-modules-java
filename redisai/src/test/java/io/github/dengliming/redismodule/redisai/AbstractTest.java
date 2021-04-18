@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package io.github.dengliming.redismodule.redisai;
 
 import io.github.dengliming.redismodule.redisai.client.RedisAIClient;
@@ -29,7 +30,7 @@ public abstract class AbstractTest {
     public static final int DEFAULT_PORT = Integer.valueOf(System.getProperty("REDIS_PORT", "6379"));
     public static final String DEFAULT_PASSWORD = System.getProperty("REDIS_PASSWORD", "");
 
-    protected RedisAIClient redisAIClient;
+    private RedisAIClient redisAIClient;
 
     @BeforeEach
     public void init() {
@@ -47,5 +48,12 @@ public abstract class AbstractTest {
         if (redisAIClient != null) {
             redisAIClient.shutdown();
         }
+    }
+
+    public RedisAI getRedisAI() {
+        if (redisAIClient != null) {
+            return redisAIClient.getRedisAI();
+        }
+        return null;
     }
 }

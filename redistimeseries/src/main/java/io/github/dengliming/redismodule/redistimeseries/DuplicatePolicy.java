@@ -22,29 +22,29 @@ package io.github.dengliming.redismodule.redistimeseries;
  * @author dengliming
  */
 public enum DuplicatePolicy {
-	/**
-	 * an error will occur for any out of order sample
-	 */
-	BLOCK,
-	/**
-	 * ignore the new value
-	 */
-	FIRST,
-	/**
-	 * override with latest value
-	 */
-	LAST,
-	/**
-	 * only override if the value is lower than the existing value
-	 */
-	MIN,
-	/**
-	 * only override if the value is higher than the existing value
-	 */
-	MAX,
-	/**
-	 * If a previous sample exists, add the new sample to it so that the updated value is equal to (previous + new).
-	 * If no previous sample exists, set the updated value equal to the new value.
-	 */
-	SUM;
+    /**
+     * an error will occur for any out of order sample
+     */
+    BLOCK,
+    /**
+     * ignore the new value
+     */
+    FIRST,
+    /**
+     * override with latest value
+     */
+    LAST,
+    /**
+     * only override if the value is lower than the existing value
+     */
+    MIN,
+    /**
+     * only override if the value is higher than the existing value
+     */
+    MAX,
+    /**
+     * If a previous sample exists, add the new sample to it so that the updated value is equal to (previous + new).
+     * If no previous sample exists, set the updated value equal to the new value.
+     */
+    SUM;
 }

@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package io.github.dengliming.redismodule.redistimeseries;
 
 import io.github.dengliming.redismodule.redistimeseries.client.RedisTimeSeriesClient;
@@ -29,7 +30,7 @@ public abstract class AbstractTest {
     public static final int DEFAULT_PORT = Integer.valueOf(System.getProperty("REDIS_PORT", "6381"));
     public static final String DEFAULT_PASSWORD = System.getProperty("REDIS_PASSWORD", "");
 
-    protected RedisTimeSeriesClient redisTimeSeriesClient;
+    private RedisTimeSeriesClient redisTimeSeriesClient;
 
     @BeforeEach
     public void init() {
@@ -44,5 +45,9 @@ public abstract class AbstractTest {
         if (redisTimeSeriesClient != null) {
             redisTimeSeriesClient.shutdown();
         }
+    }
+
+    public RedisTimeSeries getRedisTimeSeries() {
+        return redisTimeSeriesClient == null ? null : redisTimeSeriesClient.getRedisTimeSeries();
     }
 }

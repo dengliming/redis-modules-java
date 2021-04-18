@@ -13,11 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package io.github.dengliming.redismodule.redisbloom;
 
-import io.github.dengliming.redismodule.redisbloom.model.TopKFilterInfo;
 import io.github.dengliming.redismodule.common.util.ArgsUtil;
 import io.github.dengliming.redismodule.common.util.RAssert;
+import io.github.dengliming.redismodule.redisbloom.model.TopKFilterInfo;
 import org.redisson.RedissonObject;
 import org.redisson.api.RFuture;
 import org.redisson.client.codec.Codec;
@@ -27,7 +28,13 @@ import org.redisson.command.CommandAsyncExecutor;
 import java.util.List;
 import java.util.Map;
 
-import static io.github.dengliming.redismodule.redisbloom.protocol.RedisCommands.*;
+import static io.github.dengliming.redismodule.redisbloom.protocol.RedisCommands.TOPK_ADD;
+import static io.github.dengliming.redismodule.redisbloom.protocol.RedisCommands.TOPK_COUNT;
+import static io.github.dengliming.redismodule.redisbloom.protocol.RedisCommands.TOPK_INCRBY;
+import static io.github.dengliming.redismodule.redisbloom.protocol.RedisCommands.TOPK_INFO;
+import static io.github.dengliming.redismodule.redisbloom.protocol.RedisCommands.TOPK_LIST;
+import static io.github.dengliming.redismodule.redisbloom.protocol.RedisCommands.TOPK_QUERY;
+import static io.github.dengliming.redismodule.redisbloom.protocol.RedisCommands.TOPK_RESERVE;
 
 /**
  * @author dengliming
@@ -35,7 +42,7 @@ import static io.github.dengliming.redismodule.redisbloom.protocol.RedisCommands
 public class TopKFilter extends RedissonObject {
 
     public TopKFilter(CommandAsyncExecutor commandExecutor, String name) {
-       this(commandExecutor.getConnectionManager().getCodec(), commandExecutor, name);
+        this(commandExecutor.getConnectionManager().getCodec(), commandExecutor, name);
     }
 
     public TopKFilter(Codec codec, CommandAsyncExecutor commandExecutor, String name) {
@@ -45,7 +52,7 @@ public class TopKFilter extends RedissonObject {
     /**
      * Initializes a TopK with specified parameters
      *
-     * @param topk Number of top occurring items to keep
+     * @param topk  Number of top occurring items to keep
      * @param width Number of counters kept in each array
      * @param depth Number of arrays
      * @param decay The probability of reducing a counter in an occupied bucket
@@ -137,7 +144,6 @@ public class TopKFilter extends RedissonObject {
     }
 
     /**
-     *
      * @return Returns number of required items (k), width, depth and decay values
      */
     public TopKFilterInfo getInfo() {

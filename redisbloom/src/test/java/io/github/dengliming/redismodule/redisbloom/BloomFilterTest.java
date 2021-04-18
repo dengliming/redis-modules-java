@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package io.github.dengliming.redismodule.redisbloom;
 
 import io.github.dengliming.redismodule.redisbloom.model.BloomFilterInfo;
@@ -32,40 +33,40 @@ public class BloomFilterTest extends AbstractTest {
 
     @Test
     public void testReserve() {
-        BloomFilter bloomFilter = redisBloomClient.getRBloomFilter("bf_reserve");
-		assertThat(bloomFilter.create(0.1d, 100)).isTrue();
+        BloomFilter bloomFilter = getRedisBloomClient().getRBloomFilter("bf_reserve");
+        assertThat(bloomFilter.create(0.1d, 100)).isTrue();
     }
 
     @Test
     public void testAdd() {
-        BloomFilter bloomFilter = redisBloomClient.getRBloomFilter("bf_add");
-		assertThat(bloomFilter.create(0.1d, 100)).isTrue();
-        List<Boolean> results = bloomFilter.madd(new String[] {"a", "b", "c"});
-		assertThat(results).isNotNull().hasSize(3);
-		assertThat(bloomFilter.exists("a")).isTrue();
+        BloomFilter bloomFilter = getRedisBloomClient().getRBloomFilter("bf_add");
+        assertThat(bloomFilter.create(0.1d, 100)).isTrue();
+        List<Boolean> results = bloomFilter.madd(new String[]{"a", "b", "c"});
+        assertThat(results).isNotNull().hasSize(3);
+        assertThat(bloomFilter.exists("a")).isTrue();
     }
 
     @Test
     public void testInsert() {
-        BloomFilter bloomFilter = redisBloomClient.getRBloomFilter("bf_insert");
-		assertThat(bloomFilter.create(0.1d, 100)).isTrue();
+        BloomFilter bloomFilter = getRedisBloomClient().getRBloomFilter("bf_insert");
+        assertThat(bloomFilter.create(0.1d, 100)).isTrue();
         List<Boolean> result = bloomFilter.insert(new InsertArgs(), "a");
-		assertThat(result).isNotNull();
-		assertThat(result.get(0)).isTrue();
+        assertThat(result).isNotNull();
+        assertThat(result.get(0)).isTrue();
     }
 
     @Test
     public void testInfo() {
-        BloomFilter bloomFilter = redisBloomClient.getRBloomFilter("bf_info");
-		assertThat(bloomFilter.create(0.1d, 100)).isTrue();
+        BloomFilter bloomFilter = getRedisBloomClient().getRBloomFilter("bf_info");
+        assertThat(bloomFilter.create(0.1d, 100)).isTrue();
         BloomFilterInfo bloomFilterInfo = bloomFilter.getInfo();
         assertThat(bloomFilterInfo.getCapacity().intValue()).isEqualTo(100);
     }
 
     @Test
     public void testScanDump() {
-        BloomFilter bloomFilter = redisBloomClient.getRBloomFilter("bf_info");
-		assertThat(bloomFilter.create(0.1d, 100)).isTrue();
+        BloomFilter bloomFilter = getRedisBloomClient().getRBloomFilter("bf_info");
+        assertThat(bloomFilter.create(0.1d, 100)).isTrue();
         bloomFilter.add("a1");
 
         int iter = 0;
@@ -84,6 +85,6 @@ public class BloomFilterTest extends AbstractTest {
         chunks.forEach(chunksData -> assertThat(bloomFilter.loadChunk(chunksData)).isTrue());
 
         BloomFilterInfo bloomFilterInfo = bloomFilter.getInfo();
-		assertThat(bloomFilterInfo.getCapacity().intValue()).isEqualTo(100);
+        assertThat(bloomFilterInfo.getCapacity().intValue()).isEqualTo(100);
     }
 }

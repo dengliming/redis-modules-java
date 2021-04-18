@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package io.github.dengliming.redismodule.redisearch.protocol.decoder;
 
 import io.github.dengliming.redismodule.redisearch.index.Document;
@@ -43,8 +44,7 @@ public class SearchResultDecoder implements MultiDecoder<SearchResult> {
         for (int i = 1; i < parts.size(); i++) {
             if (noContent) {
                 documents.add(new Document((String) parts.get(i), 1.0d, null));
-            }
-            else if ((i + 1) % 2 != 0) {
+            } else if ((i + 1) % 2 != 0) {
                 documents.add(new Document((String) parts.get(i - 1), 1.0d, (Map<String, Object>) parts.get(i)));
             }
         }

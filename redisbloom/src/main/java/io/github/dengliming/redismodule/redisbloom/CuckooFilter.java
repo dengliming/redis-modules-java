@@ -13,11 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package io.github.dengliming.redismodule.redisbloom;
 
+import io.github.dengliming.redismodule.common.util.RAssert;
 import io.github.dengliming.redismodule.redisbloom.model.ChunksData;
 import io.github.dengliming.redismodule.redisbloom.model.CuckooFilterInfo;
-import io.github.dengliming.redismodule.common.util.RAssert;
 import io.github.dengliming.redismodule.redisbloom.protocol.Keywords;
 import org.redisson.RedissonObject;
 import org.redisson.api.RFuture;
@@ -26,11 +27,20 @@ import org.redisson.client.codec.Codec;
 import org.redisson.client.codec.StringCodec;
 import org.redisson.command.CommandAsyncExecutor;
 
-import java.security.Key;
 import java.util.ArrayList;
 import java.util.List;
 
-import static io.github.dengliming.redismodule.redisbloom.protocol.RedisCommands.*;
+import static io.github.dengliming.redismodule.redisbloom.protocol.RedisCommands.CF_ADD;
+import static io.github.dengliming.redismodule.redisbloom.protocol.RedisCommands.CF_ADDNX;
+import static io.github.dengliming.redismodule.redisbloom.protocol.RedisCommands.CF_COUNT;
+import static io.github.dengliming.redismodule.redisbloom.protocol.RedisCommands.CF_DEL;
+import static io.github.dengliming.redismodule.redisbloom.protocol.RedisCommands.CF_EXISTS;
+import static io.github.dengliming.redismodule.redisbloom.protocol.RedisCommands.CF_INFO;
+import static io.github.dengliming.redismodule.redisbloom.protocol.RedisCommands.CF_INSERT;
+import static io.github.dengliming.redismodule.redisbloom.protocol.RedisCommands.CF_INSERTNX;
+import static io.github.dengliming.redismodule.redisbloom.protocol.RedisCommands.CF_LOADCHUNK;
+import static io.github.dengliming.redismodule.redisbloom.protocol.RedisCommands.CF_RESERVE;
+import static io.github.dengliming.redismodule.redisbloom.protocol.RedisCommands.CF_SCANDUMP;
 
 /**
  * @author dengliming

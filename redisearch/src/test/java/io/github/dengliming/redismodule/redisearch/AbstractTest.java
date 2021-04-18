@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package io.github.dengliming.redismodule.redisearch;
 
 import io.github.dengliming.redismodule.redisearch.client.RediSearchClient;
@@ -29,7 +30,7 @@ public abstract class AbstractTest {
     public static final int DEFAULT_PORT = Integer.valueOf(System.getProperty("REDIS_PORT", "6379"));
     public static final String DEFAULT_PASSWORD = System.getProperty("REDIS_PASSWORD", "");
 
-    protected RediSearchClient rediSearchClient;
+    private RediSearchClient rediSearchClient;
 
     @BeforeEach
     public void init() {
@@ -44,5 +45,9 @@ public abstract class AbstractTest {
         if (rediSearchClient != null) {
             rediSearchClient.shutdown();
         }
+    }
+
+    protected RediSearchClient getRediSearchClient() {
+        return rediSearchClient;
     }
 }

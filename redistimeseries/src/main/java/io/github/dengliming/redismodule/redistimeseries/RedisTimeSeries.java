@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package io.github.dengliming.redismodule.redistimeseries;
 
 import io.github.dengliming.redismodule.common.util.RAssert;
@@ -21,20 +22,34 @@ import org.redisson.api.RFuture;
 import org.redisson.client.codec.Codec;
 import org.redisson.client.codec.StringCodec;
 import org.redisson.command.CommandAsyncExecutor;
-import static io.github.dengliming.redismodule.redistimeseries.Sample.Value;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import static io.github.dengliming.redismodule.redistimeseries.protocol.RedisCommands.*;
+import static io.github.dengliming.redismodule.redistimeseries.Sample.Value;
+import static io.github.dengliming.redismodule.redistimeseries.protocol.RedisCommands.TS_ADD;
+import static io.github.dengliming.redismodule.redistimeseries.protocol.RedisCommands.TS_ALTER;
+import static io.github.dengliming.redismodule.redistimeseries.protocol.RedisCommands.TS_CREATE;
+import static io.github.dengliming.redismodule.redistimeseries.protocol.RedisCommands.TS_CREATERULE;
+import static io.github.dengliming.redismodule.redistimeseries.protocol.RedisCommands.TS_DECRBY;
+import static io.github.dengliming.redismodule.redistimeseries.protocol.RedisCommands.TS_DELETERULE;
+import static io.github.dengliming.redismodule.redistimeseries.protocol.RedisCommands.TS_GET;
+import static io.github.dengliming.redismodule.redistimeseries.protocol.RedisCommands.TS_INCRBY;
+import static io.github.dengliming.redismodule.redistimeseries.protocol.RedisCommands.TS_INFO;
+import static io.github.dengliming.redismodule.redistimeseries.protocol.RedisCommands.TS_MADD;
+import static io.github.dengliming.redismodule.redistimeseries.protocol.RedisCommands.TS_MGET;
+import static io.github.dengliming.redismodule.redistimeseries.protocol.RedisCommands.TS_MRANGE;
+import static io.github.dengliming.redismodule.redistimeseries.protocol.RedisCommands.TS_QUERYINDEX;
+import static io.github.dengliming.redismodule.redistimeseries.protocol.RedisCommands.TS_RANGE;
 
 /**
  * @author dengliming
  */
 public class RedisTimeSeries {
 
-    protected final CommandAsyncExecutor commandExecutor;
-    protected final Codec codec;
+    private final CommandAsyncExecutor commandExecutor;
+    private final Codec codec;
 
     public RedisTimeSeries(CommandAsyncExecutor commandExecutor) {
         this.commandExecutor = commandExecutor;
@@ -185,10 +200,10 @@ public class RedisTimeSeries {
     /**
      * Create a compaction rule.
      *
-     * @param sourceKey Key name for source time series
-     * @param destKey Key name for destination time series
+     * @param sourceKey       Key name for source time series
+     * @param destKey         Key name for destination time series
      * @param aggregationType Aggregation type
-     * @param timeBucket Time bucket for aggregation in milliseconds
+     * @param timeBucket      Time bucket for aggregation in milliseconds
      * @return
      */
     public boolean createRule(String sourceKey, String destKey, Aggregation aggregationType, long timeBucket) {
@@ -207,7 +222,7 @@ public class RedisTimeSeries {
      * Delete a compaction rule.
      *
      * @param sourceKey Key name for source time series
-     * @param destKey Key name for destination time series
+     * @param destKey   Key name for destination time series
      * @return
      */
     public boolean deleteRule(String sourceKey, String destKey) {
@@ -284,7 +299,7 @@ public class RedisTimeSeries {
      * @return
      */
     public Value get(String key) {
-        return  commandExecutor.get(getAsync(key));
+        return commandExecutor.get(getAsync(key));
     }
 
     public RFuture<Value> getAsync(String key) {
@@ -299,7 +314,7 @@ public class RedisTimeSeries {
      * @return
      */
     public List<TimeSeries> mget(boolean withLabels, String... filters) {
-        return  commandExecutor.get(mgetAsync(withLabels, filters));
+        return commandExecutor.get(mgetAsync(withLabels, filters));
     }
 
     public RFuture<List<TimeSeries>> mgetAsync(boolean withLabels, String... filters) {
@@ -322,7 +337,7 @@ public class RedisTimeSeries {
      * @return
      */
     public Map<String, Object> info(String key) {
-        return  commandExecutor.get(infoAsync(key));
+        return commandExecutor.get(infoAsync(key));
     }
 
     public RFuture<Map<String, Object>> infoAsync(String key) {

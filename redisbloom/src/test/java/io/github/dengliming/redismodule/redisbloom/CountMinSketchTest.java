@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package io.github.dengliming.redismodule.redisbloom;
 
 import io.github.dengliming.redismodule.redisbloom.model.CountMinSketchInfo;
@@ -31,31 +32,31 @@ public class CountMinSketchTest extends AbstractTest {
 
     @Test
     public void testReserve() {
-        CountMinSketch countMinSketch = redisBloomClient.getCountMinSketch("cms_reserve");
-		assertThat(countMinSketch.create(0.1d, 0.2d)).isTrue();
+        CountMinSketch countMinSketch = getRedisBloomClient().getCountMinSketch("cms_reserve");
+        assertThat(countMinSketch.create(0.1d, 0.2d)).isTrue();
 
-        CountMinSketch countMinSketch2 = redisBloomClient.getCountMinSketch("cms_reserve2");
-		assertThat(countMinSketch2.create(10, 2)).isTrue();
+        CountMinSketch countMinSketch2 = getRedisBloomClient().getCountMinSketch("cms_reserve2");
+        assertThat(countMinSketch2.create(10, 2)).isTrue();
     }
 
     @Test
     public void testAdd() {
-        CountMinSketch countMinSketch = redisBloomClient.getCountMinSketch("cms_add");
-		assertThat(countMinSketch.create(10, 10)).isTrue();
+        CountMinSketch countMinSketch = getRedisBloomClient().getCountMinSketch("cms_add");
+        assertThat(countMinSketch.create(10, 10)).isTrue();
         Map<String, Integer> itemIncrement = new HashMap<>();
         List<Integer> results = countMinSketch.incrby(new String[]{"a"}, new int[]{3});
         assertThat(results).isNotNull().hasSize(1);
-		assertThat(results.get(0)).isEqualTo(3);
+        assertThat(results.get(0)).isEqualTo(3);
         results = countMinSketch.query("a");
-		assertThat(results.get(0)).isEqualTo(3);
+        assertThat(results.get(0)).isEqualTo(3);
     }
 
     @Test
     public void testInfo() {
-        CountMinSketch countMinSketch = redisBloomClient.getCountMinSketch("cms_info");
-		assertThat(countMinSketch.create(5, 10)).isTrue();
+        CountMinSketch countMinSketch = getRedisBloomClient().getCountMinSketch("cms_info");
+        assertThat(countMinSketch.create(5, 10)).isTrue();
         CountMinSketchInfo countMinSketchInfo = countMinSketch.getInfo();
-		assertThat(countMinSketchInfo.getWidth()).isEqualTo(5);
+        assertThat(countMinSketchInfo.getWidth()).isEqualTo(5);
     }
 
 }

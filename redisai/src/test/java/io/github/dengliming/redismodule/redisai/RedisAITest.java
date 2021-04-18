@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package io.github.dengliming.redismodule.redisai;
 
 import io.github.dengliming.redismodule.redisai.args.SetModelArgs;
@@ -21,7 +22,6 @@ import io.github.dengliming.redismodule.redisai.model.Script;
 import io.github.dengliming.redismodule.redisai.model.Tensor;
 import org.junit.jupiter.api.Test;
 import org.redisson.client.RedisException;
-
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Arrays;
@@ -38,70 +38,70 @@ public class RedisAITest extends AbstractTest {
 
     @Test
     public void testTensor() {
-        RedisAI redisAI = redisAIClient.getRedisAI();
+        RedisAI redisAI = getRedisAI();
         // setTensor
-		assertThat(redisAI.setTensor("tensor1", DataType.FLOAT, new int[]{2, 2}, null, new String[]{"1", "2", "3", "4"})).isTrue();
+        assertThat(redisAI.setTensor("tensor1", DataType.FLOAT, new int[]{2, 2}, null, new String[]{"1", "2", "3", "4"})).isTrue();
 
-		// getTensor
-		Tensor tensor = redisAI.getTensor("tensor1");
-		assertThat(tensor).isNotNull();
-		assertThat(tensor.getDataType()).isEqualTo(DataType.FLOAT);
-		assertThat(tensor.getShape()).containsExactly(2, 2);
-		assertThat(tensor.getValues()).isNotNull();
-	}
+        // getTensor
+        Tensor tensor = redisAI.getTensor("tensor1");
+        assertThat(tensor).isNotNull();
+        assertThat(tensor.getDataType()).isEqualTo(DataType.FLOAT);
+        assertThat(tensor.getShape()).containsExactly(2, 2);
+        assertThat(tensor.getValues()).isNotNull();
+    }
 
-	@Test
-	public void testModel() throws Exception {
-		RedisAI redisAI = redisAIClient.getRedisAI();
-		// Set Model
-		byte[] blob = Files.readAllBytes(Paths.get(getClass().getClassLoader().getResource("test_data/graph.pb").toURI()));
-		assertThat(redisAI.setModel("model1", new SetModelArgs().backEnd(Backend.TF).device(Device.CPU)
-				.inputs(Arrays.asList("a", "b")).outputs(Arrays.asList("mul")).blob(blob))).isTrue();
+    @Test
+    public void testModel() throws Exception {
+        RedisAI redisAI = getRedisAI();
+        // Set Model
+        byte[] blob = Files.readAllBytes(Paths.get(getClass().getClassLoader().getResource("test_data/graph.pb").toURI()));
+        assertThat(redisAI.setModel("model1", new SetModelArgs().backEnd(Backend.TF).device(Device.CPU)
+                .inputs(Arrays.asList("a", "b")).outputs(Arrays.asList("mul")).blob(blob))).isTrue();
 
-		// Get Model
-		Model model = redisAI.getModel("model1");
-		assertThat(model.getBackend()).isEqualTo(Backend.TF);
-		assertThat(model.getDevice()).isEqualTo(Device.CPU);
-		assertThat(model.getInputs()).containsExactly("a", "b");
-		assertThat(model.getOutputs()).containsExactly("mul");
-		assertThat(model.getBlob()).isEqualTo(blob);
-	}
+        // Get Model
+        Model model = redisAI.getModel("model1");
+        assertThat(model.getBackend()).isEqualTo(Backend.TF);
+        assertThat(model.getDevice()).isEqualTo(Device.CPU);
+        assertThat(model.getInputs()).containsExactly("a", "b");
+        assertThat(model.getOutputs()).containsExactly("mul");
+        assertThat(model.getBlob()).isEqualTo(blob);
+    }
 
-	@Test
-	public void testScript() {
-		RedisAI redisAI = redisAIClient.getRedisAI();
-		String key = "script1";
-		String script = "def bar(a, b):\n" + "    return a + b\n";
-		// Set Script
-		assertThat(redisAI.setScript(key, Device.CPU, script)).isTrue();
+    @Test
+    public void testScript() {
+        RedisAI redisAI = getRedisAI();
+        String key = "script1";
+        String script = "def bar(a, b):\n" + "    return a + b\n";
+        // Set Script
+        assertThat(redisAI.setScript(key, Device.CPU, script)).isTrue();
 
-		// Get Script
-		Script scriptInfo = redisAI.getScript(key);
-		assertThat(scriptInfo).isNotNull();
-		assertThat(scriptInfo.getDevice()).isEqualTo(Device.CPU);
-		assertThat(scriptInfo.getSource()).isEqualTo(script);
-	}
+        // Get Script
+        Script scriptInfo = redisAI.getScript(key);
+        assertThat(scriptInfo).isNotNull();
+        assertThat(scriptInfo.getDevice()).isEqualTo(Device.CPU);
+        assertThat(scriptInfo.getSource()).isEqualTo(script);
+    }
 
     @Test
     public void testConfig() {
-        RedisAI redisAI = redisAIClient.getRedisAI();
-		assertThat(redisAI.setBackendPath("/usr/lib/redis/modules/backends/")).isTrue();
+        RedisAI redisAI = getRedisAI();
+        assertThat(redisAI.setBackendPath("/usr/lib/redis/modules/backends/")).isTrue();
         assertThrows(RedisException.class, () -> redisAI.loadBackend(Backend.TF, "notexist/redisai_tensorflow.so"));
 
-		try {
-			boolean r = redisAI.loadBackend(Backend.TF, "redisai_tensorflow/redisai_tensorflow.so");
-			assertThat(r).isTrue();
-		} catch (RedisException e) {
-			// will throw error if backend already loaded
-		}
+        try {
+            boolean r = redisAI.loadBackend(Backend.TF, "redisai_tensorflow/redisai_tensorflow.so");
+            assertThat(r).isTrue();
+        } catch (RedisException e) {
+            // will throw error if backend already loaded
+        }
     }
 
     @Test
     public void testInfo() {
-        RedisAI redisAI = redisAIClient.getRedisAI();
+        RedisAI redisAI = getRedisAI();
         String key = "tensor:info";
         String script = "def bar(a, b):\n" + "    return a + b\n";
-		assertThat(redisAI.setScript(key, Device.CPU, script)).isTrue();
+        assertThat(redisAI.setScript(key, Device.CPU, script)).isTrue();
         // not exist
         Map<String, Object> infoMap;
         assertThrows(RedisException.class, () -> {
@@ -111,23 +111,23 @@ public class RedisAITest extends AbstractTest {
 
         // first inited info
         infoMap = redisAI.getInfo(key);
-		assertThat(infoMap).isNotNull();
-		assertThat(infoMap.get("key")).isEqualTo(key);
-		assertThat(infoMap.get("device")).isEqualTo(Device.CPU.name());
-		assertThat(infoMap.get("calls")).isEqualTo(0L);
+        assertThat(infoMap).isNotNull();
+        assertThat(infoMap.get("key")).isEqualTo(key);
+        assertThat(infoMap.get("device")).isEqualTo(Device.CPU.name());
+        assertThat(infoMap.get("calls")).isEqualTo(0L);
 
-        redisAI.setTensor("a1", DataType.FLOAT, new int[] {2}, null, new String[] {"2", "3"});
-        redisAI.setTensor("b1", DataType.FLOAT, new int[] {2}, null, new String[] {"2", "3"});
-		assertThat(redisAI.runScript(key, "bar", new String[] {"a1", "b1"}, new String[] {"c1"})).isTrue();
+        redisAI.setTensor("a1", DataType.FLOAT, new int[]{2}, null, new String[]{"2", "3"});
+        redisAI.setTensor("b1", DataType.FLOAT, new int[]{2}, null, new String[]{"2", "3"});
+        assertThat(redisAI.runScript(key, "bar", new String[]{"a1", "b1"}, new String[]{"c1"})).isTrue();
 
         // one model runs
         infoMap = redisAI.getInfo(key);
-		assertThat(infoMap.get("calls")).isEqualTo(1L);
+        assertThat(infoMap.get("calls")).isEqualTo(1L);
 
         // reset
-		assertThat(redisAI.resetStat(key)).isTrue();
+        assertThat(redisAI.resetStat(key)).isTrue();
         infoMap = redisAI.getInfo(key);
-		assertThat(infoMap.get("calls")).isEqualTo(0L);
+        assertThat(infoMap.get("calls")).isEqualTo(0L);
 
         assertThrows(RedisException.class, () -> {
             // ERR cannot find run info for key

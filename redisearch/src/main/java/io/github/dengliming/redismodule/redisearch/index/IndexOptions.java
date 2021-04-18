@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package io.github.dengliming.redismodule.redisearch.index;
 
 import io.github.dengliming.redismodule.redisearch.protocol.Keywords;
@@ -24,120 +25,120 @@ import java.util.List;
  */
 public class IndexOptions {
 
-	private long expire;
-	private boolean maxTextFields;
-	private boolean noOffsets;
-	private boolean noFreqs;
-	private boolean noFields;
-	private boolean noHL;
-	private List<String> stopwords;
-	private List<String> prefixes;
+    private long expire;
+    private boolean maxTextFields;
+    private boolean noOffsets;
+    private boolean noFreqs;
+    private boolean noFields;
+    private boolean noHL;
+    private List<String> stopwords;
+    private List<String> prefixes;
 
-	public long getExpire() {
-		return expire;
-	}
+    public long getExpire() {
+        return expire;
+    }
 
-	public void setExpire(long expire) {
-		this.expire = expire;
-	}
+    public void setExpire(long expire) {
+        this.expire = expire;
+    }
 
-	public boolean isMaxTextFields() {
-		return maxTextFields;
-	}
+    public boolean isMaxTextFields() {
+        return maxTextFields;
+    }
 
-	public IndexOptions maxTextFields() {
-		this.maxTextFields = true;
-		return this;
-	}
+    public IndexOptions maxTextFields() {
+        this.maxTextFields = true;
+        return this;
+    }
 
-	public boolean isNoOffsets() {
-		return noOffsets;
-	}
+    public boolean isNoOffsets() {
+        return noOffsets;
+    }
 
-	public IndexOptions noOffsets() {
-		this.noOffsets = true;
-		return this;
-	}
+    public IndexOptions noOffsets() {
+        this.noOffsets = true;
+        return this;
+    }
 
-	public boolean isNoFreqs() {
-		return noFreqs;
-	}
+    public boolean isNoFreqs() {
+        return noFreqs;
+    }
 
-	public IndexOptions noFreqs() {
-		this.noFreqs = true;
-		return this;
-	}
+    public IndexOptions noFreqs() {
+        this.noFreqs = true;
+        return this;
+    }
 
-	public boolean isNoFields() {
-		return noFields;
-	}
+    public boolean isNoFields() {
+        return noFields;
+    }
 
-	public IndexOptions noFields() {
-		this.noFields = true;
-		return this;
-	}
+    public IndexOptions noFields() {
+        this.noFields = true;
+        return this;
+    }
 
-	public boolean isNoHL() {
-		return noHL;
-	}
+    public boolean isNoHL() {
+        return noHL;
+    }
 
-	public IndexOptions noHL() {
-		this.noHL = true;
-		return this;
-	}
+    public IndexOptions noHL() {
+        this.noHL = true;
+        return this;
+    }
 
-	public List<String> getStopwords() {
-		return stopwords;
-	}
+    public List<String> getStopwords() {
+        return stopwords;
+    }
 
-	public IndexOptions stopwords(List<String> stopwords) {
-		this.stopwords = stopwords;
-		return this;
-	}
+    public IndexOptions stopwords(List<String> stopwords) {
+        this.stopwords = stopwords;
+        return this;
+    }
 
-	public List<String> getPrefixes() {
-		return prefixes;
-	}
+    public List<String> getPrefixes() {
+        return prefixes;
+    }
 
-	public IndexOptions prefixes(List<String> prefixes) {
-		this.prefixes = prefixes;
-		return this;
-	}
+    public IndexOptions prefixes(List<String> prefixes) {
+        this.prefixes = prefixes;
+        return this;
+    }
 
-	public static IndexOptions defaultOptions() {
-		return new IndexOptions();
-	}
+    public static IndexOptions defaultOptions() {
+        return new IndexOptions();
+    }
 
-	public void build(List<Object> args) {
+    public void build(List<Object> args) {
 
-		if (getPrefixes() != null) {
-			args.add(Keywords.PREFIX.name());
-			args.add(getPrefixes().size());
-			args.addAll(getPrefixes());
-		}
-		if (isMaxTextFields()) {
-			args.add(Keywords.MAXTEXTFIELDS.name());
-		}
-		if (getExpire() > 0) {
-			args.add(Keywords.TEMPORARY.name());
-			args.add(getExpire());
-		}
-		if (isNoOffsets()) {
-			args.add(Keywords.NOOFFSETS.name());
-		}
-		if (isNoHL()) {
-			args.add(Keywords.NOHL.name());
-		}
-		if (isNoFields()) {
-			args.add(Keywords.NOFIELDS.name());
-		}
-		if (isNoFreqs()) {
-			args.add(Keywords.NOFREQS.name());
-		}
-		if (getStopwords() != null) {
-			args.add(Keywords.STOPWORDS.name());
-			args.add(getStopwords().size());
-			args.addAll(getStopwords());
-		}
-	}
+        if (getPrefixes() != null) {
+            args.add(Keywords.PREFIX.name());
+            args.add(getPrefixes().size());
+            args.addAll(getPrefixes());
+        }
+        if (isMaxTextFields()) {
+            args.add(Keywords.MAXTEXTFIELDS.name());
+        }
+        if (getExpire() > 0) {
+            args.add(Keywords.TEMPORARY.name());
+            args.add(getExpire());
+        }
+        if (isNoOffsets()) {
+            args.add(Keywords.NOOFFSETS.name());
+        }
+        if (isNoHL()) {
+            args.add(Keywords.NOHL.name());
+        }
+        if (isNoFields()) {
+            args.add(Keywords.NOFIELDS.name());
+        }
+        if (isNoFreqs()) {
+            args.add(Keywords.NOFREQS.name());
+        }
+        if (getStopwords() != null) {
+            args.add(Keywords.STOPWORDS.name());
+            args.add(getStopwords().size());
+            args.addAll(getStopwords());
+        }
+    }
 }

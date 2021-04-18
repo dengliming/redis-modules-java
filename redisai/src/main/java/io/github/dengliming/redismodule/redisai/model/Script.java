@@ -20,35 +20,35 @@ import io.github.dengliming.redismodule.redisai.Device;
 
 public class Script {
 
-	/**
-	 * the device that will execute the model. can be of CPU or GPU
-	 */
-	private final Device device;
-	/**
-	 * tag is an optional string for tagging the model such as a version number or any arbitrary
-	 * identifier
-	 */
-	private final String tag;
-	/**
-	 * a string containing TorchScript source code
-	 */
-	private final String source;
+    /**
+     * the device that will execute the model. can be of CPU or GPU
+     */
+    private final Device device;
+    /**
+     * tag is an optional string for tagging the model such as a version number or any arbitrary
+     * identifier
+     */
+    private final String tag;
+    /**
+     * a string containing TorchScript source code
+     */
+    private final String source;
 
-	public Script(Device device, String tag, String source) {
-		this.device = device;
-		this.tag = tag;
-		this.source = source;
-	}
+    public Script(Device device, String tag, String source) {
+        this.device = device;
+        this.tag = tag;
+        this.source = source;
+    }
 
-	public Device getDevice() {
-		return device;
-	}
+    public Device getDevice() {
+        return device;
+    }
 
-	public String getTag() {
-		return tag;
-	}
+    public String getTag() {
+        return tag;
+    }
 
-	public String getSource() {
-		return source;
-	}
+    public String getSource() {
+        return source;
+    }
 }

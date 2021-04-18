@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package io.github.dengliming.redismodule.redisearch.search;
 
 import io.github.dengliming.redismodule.redisearch.protocol.Keywords;
@@ -24,10 +25,8 @@ import java.util.List;
  */
 public class Page {
 
-    public final static int DEFAULT_OFFSET = 0;
-    public final static int DEFAULT_NUM = 10;
-    public int offset = DEFAULT_OFFSET;
-    public int num = DEFAULT_NUM;
+    private int offset;
+    private int num = 10;
 
     public Page(int offset, int num) {
         this.offset = offset;

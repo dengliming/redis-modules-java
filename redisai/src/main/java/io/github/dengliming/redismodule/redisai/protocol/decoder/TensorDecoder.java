@@ -26,40 +26,40 @@ import java.util.List;
 
 public class TensorDecoder implements MultiDecoder<Tensor> {
 
-	@Override
-	public Decoder<Object> getDecoder(int i, State state) {
-		return null;
-	}
+    @Override
+    public Decoder<Object> getDecoder(int i, State state) {
+        return null;
+    }
 
-	@Override
-	public Tensor decode(List<Object> list, State state) {
-		DataType dataType = null;
-		long[] shape = null;
-		Object values = null;
-		for (int i = 0; i < list.size(); i += 2) {
-			String key = String.valueOf(list.get(i));
-			switch (key) {
-				case "dtype":
-					dataType = DataType.valueOf(String.valueOf(list.get(i + 1)));
-					break;
-				case "shape":
-					List<Long> shapeResp = (List<Long>) list.get(i + 1);
-					if (shapeResp == null) {
-						break;
-					}
-					shape = new long[shapeResp.size()];
-					for (int j = 0; j < shapeResp.size(); j++) {
-						shape[j] = shapeResp.get(j);
-					}
-					break;
-				case "values":
-				case "blob":
-					values = list.get(i + 1);
-					break;
-				default:
-					break;
-			}
-		}
-		return new Tensor(dataType, shape, values);
-	}
+    @Override
+    public Tensor decode(List<Object> list, State state) {
+        DataType dataType = null;
+        long[] shape = null;
+        Object values = null;
+        for (int i = 0; i < list.size(); i += 2) {
+            String key = String.valueOf(list.get(i));
+            switch (key) {
+                case "dtype":
+                    dataType = DataType.valueOf(String.valueOf(list.get(i + 1)));
+                    break;
+                case "shape":
+                    List<Long> shapeResp = (List<Long>) list.get(i + 1);
+                    if (shapeResp == null) {
+                        break;
+                    }
+                    shape = new long[shapeResp.size()];
+                    for (int j = 0; j < shapeResp.size(); j++) {
+                        shape[j] = shapeResp.get(j);
+                    }
+                    break;
+                case "values":
+                case "blob":
+                    values = list.get(i + 1);
+                    break;
+                default:
+                    break;
+            }
+        }
+        return new Tensor(dataType, shape, values);
+    }
 }

@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package io.github.dengliming.redismodule.redisai;
 
 import io.github.dengliming.redismodule.common.util.RAssert;
@@ -31,15 +32,26 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import static io.github.dengliming.redismodule.redisai.protocol.RedisCommands.*;
+import static io.github.dengliming.redismodule.redisai.protocol.RedisCommands.AI_CONFIG;
+import static io.github.dengliming.redismodule.redisai.protocol.RedisCommands.AI_INFO;
+import static io.github.dengliming.redismodule.redisai.protocol.RedisCommands.AI_INFO_RESETSTAT;
+import static io.github.dengliming.redismodule.redisai.protocol.RedisCommands.AI_MODELDEL;
+import static io.github.dengliming.redismodule.redisai.protocol.RedisCommands.AI_MODELGET;
+import static io.github.dengliming.redismodule.redisai.protocol.RedisCommands.AI_MODELSET;
+import static io.github.dengliming.redismodule.redisai.protocol.RedisCommands.AI_SCRIPTDEL;
+import static io.github.dengliming.redismodule.redisai.protocol.RedisCommands.AI_SCRIPTGET;
+import static io.github.dengliming.redismodule.redisai.protocol.RedisCommands.AI_SCRIPTRUN;
+import static io.github.dengliming.redismodule.redisai.protocol.RedisCommands.AI_SCRIPTSET;
+import static io.github.dengliming.redismodule.redisai.protocol.RedisCommands.AI_TENSORGET;
+import static io.github.dengliming.redismodule.redisai.protocol.RedisCommands.AI_TENSORSET;
 
 /**
  * @author dengliming
  */
 public class RedisAI {
 
-    protected final CommandAsyncExecutor commandExecutor;
-    protected final Codec codec;
+    private final CommandAsyncExecutor commandExecutor;
+    private final Codec codec;
 
     public RedisAI(CommandAsyncExecutor commandExecutor) {
         this.commandExecutor = commandExecutor;
@@ -61,9 +73,9 @@ public class RedisAI {
     }
 
     public RFuture<Boolean> setTensorAsync(String key, DataType type, int[] dimensions, byte[] data, String[] values) {
-		RAssert.notNull(key, "key must not be null");
-		RAssert.notNull(type, "type must not be null");
-		RAssert.notEmpty(dimensions, "dimensions must not be empty");
+        RAssert.notNull(key, "key must not be null");
+        RAssert.notNull(type, "type must not be null");
+        RAssert.notEmpty(dimensions, "dimensions must not be empty");
 
         List<Object> args = new ArrayList<>();
         args.add(key);
@@ -86,23 +98,23 @@ public class RedisAI {
         return commandExecutor.writeAsync(getName(), codec, AI_TENSORSET, args.toArray());
     }
 
-	/**
-	 * stores a model as the value of a key.
-	 *
-	 * @param key
-	 * @param args
-	 * @return
-	 */
+    /**
+     * stores a model as the value of a key.
+     *
+     * @param key
+     * @param args
+     * @return
+     */
     public boolean setModel(String key, SetModelArgs args) {
         return commandExecutor.get(setModelAsync(key, args));
     }
 
     public RFuture<Boolean> setModelAsync(String key, SetModelArgs modelArgs) {
-		RAssert.notNull(key, "key must not be null");
+        RAssert.notNull(key, "key must not be null");
 
-		List<Object> args = new ArrayList<>();
-		args.add(key);
-		modelArgs.build(args);
+        List<Object> args = new ArrayList<>();
+        args.add(key);
+        modelArgs.build(args);
         return commandExecutor.writeAsync(getName(), ByteArrayCodec.INSTANCE, AI_MODELSET, args.toArray());
     }
 
@@ -247,55 +259,55 @@ public class RedisAI {
         return commandExecutor.readAsync(getName(), StringCodec.INSTANCE, AI_INFO_RESETSTAT, key, Keywords.RESETSTAT);
     }
 
-	/**
-	 * Returns a tensor stored as key's value.
-	 *
-	 * @param key the tensor's key name
-	 * @return
-	 */
-	public Tensor getTensor(String key) {
-		return commandExecutor.get(getTensorAsync(key));
-	}
+    /**
+     * Returns a tensor stored as key's value.
+     *
+     * @param key the tensor's key name
+     * @return
+     */
+    public Tensor getTensor(String key) {
+        return commandExecutor.get(getTensorAsync(key));
+    }
 
-	public RFuture<Tensor> getTensorAsync(String key) {
-		RAssert.notNull(key, "key must not be null");
+    public RFuture<Tensor> getTensorAsync(String key) {
+        RAssert.notNull(key, "key must not be null");
 
-		return commandExecutor.readAsync(getName(), StringCodec.INSTANCE, AI_TENSORGET, key, Keywords.META, Keywords.BLOB);
-	}
+        return commandExecutor.readAsync(getName(), StringCodec.INSTANCE, AI_TENSORGET, key, Keywords.META, Keywords.BLOB);
+    }
 
-	/**
-	 * Returns a model's metadata and blob stored as a key's value.
-	 *
-	 * @param key the tensor's key name
-	 * @return
-	 */
-	public Model getModel(String key) {
-		return commandExecutor.get(getModelAsync(key));
-	}
+    /**
+     * Returns a model's metadata and blob stored as a key's value.
+     *
+     * @param key the tensor's key name
+     * @return
+     */
+    public Model getModel(String key) {
+        return commandExecutor.get(getModelAsync(key));
+    }
 
-	public RFuture<Model> getModelAsync(String key) {
-		RAssert.notNull(key, "key must not be null");
+    public RFuture<Model> getModelAsync(String key) {
+        RAssert.notNull(key, "key must not be null");
 
-		return commandExecutor.readAsync(getName(), StringCodec.INSTANCE, AI_MODELGET, key, Keywords.META, Keywords.BLOB);
-	}
+        return commandExecutor.readAsync(getName(), StringCodec.INSTANCE, AI_MODELGET, key, Keywords.META, Keywords.BLOB);
+    }
 
-	/**
-	 * Returns the TorchScript stored as a key's value.
-	 *
-	 * AI.SCRIPTGET <key> [META] [SOURCE]
-	 *
-	 * @param key name of key to get the Script from RedisAI server
-	 * @return
-	 */
-	public Script getScript(String key) {
-		return commandExecutor.get(getScriptAsync(key));
-	}
+    /**
+     * Returns the TorchScript stored as a key's value.
+     * <p>
+     * AI.SCRIPTGET <key> [META] [SOURCE]
+     *
+     * @param key name of key to get the Script from RedisAI server
+     * @return
+     */
+    public Script getScript(String key) {
+        return commandExecutor.get(getScriptAsync(key));
+    }
 
-	public RFuture<Script> getScriptAsync(String key) {
-		RAssert.notNull(key, "key must not be null");
+    public RFuture<Script> getScriptAsync(String key) {
+        RAssert.notNull(key, "key must not be null");
 
-		return commandExecutor.readAsync(getName(), StringCodec.INSTANCE, AI_SCRIPTGET, key, Keywords.META, Keywords.SOURCE);
-	}
+        return commandExecutor.readAsync(getName(), StringCodec.INSTANCE, AI_SCRIPTGET, key, Keywords.META, Keywords.SOURCE);
+    }
 
     public String getName() {
         return null;

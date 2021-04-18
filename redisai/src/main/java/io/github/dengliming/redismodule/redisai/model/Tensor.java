@@ -18,28 +18,27 @@ package io.github.dengliming.redismodule.redisai.model;
 
 import io.github.dengliming.redismodule.redisai.DataType;
 
-
 public class Tensor {
 
-	private final DataType dataType;
-	private final long[] shape;
-	private final Object values;
+    private final DataType dataType;
+    private final long[] shape;
+    private final Object values;
 
-	public Tensor(DataType dataType, long[] shape, Object values) {
-		this.dataType = dataType;
-		this.shape = shape;
-		this.values = values;
-	}
+    public Tensor(DataType dataType, long[] shape, Object values) {
+        this.dataType = dataType;
+        this.shape = shape;
+        this.values = values;
+    }
 
-	public DataType getDataType() {
-		return dataType;
-	}
+    public DataType getDataType() {
+        return dataType;
+    }
 
-	public long[] getShape() {
-		return shape;
-	}
+    public long[] getShape() {
+        return shape;
+    }
 
-	public Object getValues() {
-		return values;
-	}
+    public Object getValues() {
+        return values;
+    }
 }

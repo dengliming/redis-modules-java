@@ -13,13 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package io.github.dengliming.redismodule.redisbloom;
 
+import io.github.dengliming.redismodule.common.util.ArgsUtil;
+import io.github.dengliming.redismodule.common.util.RAssert;
 import io.github.dengliming.redismodule.redisbloom.model.BloomFilterInfo;
 import io.github.dengliming.redismodule.redisbloom.model.ChunksData;
 import io.github.dengliming.redismodule.redisbloom.model.InsertArgs;
-import io.github.dengliming.redismodule.common.util.ArgsUtil;
-import io.github.dengliming.redismodule.common.util.RAssert;
 import io.github.dengliming.redismodule.redisbloom.protocol.Keywords;
 import org.redisson.RedissonObject;
 import org.redisson.api.RFuture;
@@ -31,7 +32,15 @@ import org.redisson.command.CommandAsyncExecutor;
 import java.util.ArrayList;
 import java.util.List;
 
-import static io.github.dengliming.redismodule.redisbloom.protocol.RedisCommands.*;
+import static io.github.dengliming.redismodule.redisbloom.protocol.RedisCommands.BF_ADD;
+import static io.github.dengliming.redismodule.redisbloom.protocol.RedisCommands.BF_EXISTS;
+import static io.github.dengliming.redismodule.redisbloom.protocol.RedisCommands.BF_INFO;
+import static io.github.dengliming.redismodule.redisbloom.protocol.RedisCommands.BF_INSERT;
+import static io.github.dengliming.redismodule.redisbloom.protocol.RedisCommands.BF_LOADCHUNK;
+import static io.github.dengliming.redismodule.redisbloom.protocol.RedisCommands.BF_MADD;
+import static io.github.dengliming.redismodule.redisbloom.protocol.RedisCommands.BF_MEXISTS;
+import static io.github.dengliming.redismodule.redisbloom.protocol.RedisCommands.BF_RESERVE;
+import static io.github.dengliming.redismodule.redisbloom.protocol.RedisCommands.BF_SCANDUMP;
 
 /**
  * @author dengliming

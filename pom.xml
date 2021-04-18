@@ -61,6 +61,7 @@
 		<surefire-plugin.version>3.0.0-M3</surefire-plugin.version>
 		<assertj-core.version>3.17.2</assertj-core.version>
 		<hamcrest-library.version>2.2</hamcrest-library.version>
+		<maven-checkstyle-plugin.version>3.1.0</maven-checkstyle-plugin.version>
     </properties>
 
     <dependencyManagement>
@@ -205,6 +206,25 @@
                     </execution>
                 </executions>
             </plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-checkstyle-plugin</artifactId>
+				<version>${maven-checkstyle-plugin.version}</version>
+				<configuration>
+					<configLocation>/checkstyle.xml</configLocation>
+					<includeTestSourceDirectory>true</includeTestSourceDirectory>
+				</configuration>
+				<executions>
+					<execution>
+						<id>validate</id>
+						<phase>validate</phase>
+						<goals>
+							<goal>check</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
