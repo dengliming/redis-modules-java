@@ -13,12 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package io.github.dengliming.redismodule.redisearch.aggregate;
 
 import io.github.dengliming.redismodule.redisearch.protocol.Keywords;
 import org.redisson.api.SortOrder;
-import java.util.List;
 
+import java.util.List;
 
 /**
  * @author dengliming
@@ -88,7 +89,7 @@ public final class Reducers {
      * @return
      */
     public static Reducer sum(String field) {
-         return buildSingleFieldReducer(Keywords.SUM, field);
+        return buildSingleFieldReducer(Keywords.SUM, field);
     }
 
     /**
@@ -152,9 +153,8 @@ public final class Reducers {
     }
 
     /**
-     *
      * @param field
-     * @param by If no BY is specified, we return the first value we encounter in the group
+     * @param by    If no BY is specified, we return the first value we encounter in the group
      * @return
      */
     public static Reducer firstValue(String field, String by) {
@@ -176,13 +176,29 @@ public final class Reducers {
         return new RandomSample(field, sampleSize);
     }
 
+    private static Reducer buildSingleFieldReducer(Keywords name, String field) {
+        return new Reducer(field) {
+            @Override
+            public void build(List<Object> args) {
+                args.add(Keywords.REDUCE);
+                args.add(name);
+                args.add(1);
+                args.add(field);
+                if (getAlias() != null) {
+                    args.add(Keywords.AS);
+                    args.add(getAlias());
+                }
+            }
+        };
+    }
+
     private static class FirstValue extends Reducer {
 
         private int nargs = 1;
         private String by;
         private SortOrder order;
 
-        public FirstValue(String field) {
+        FirstValue(String field) {
             super(field);
         }
 
@@ -220,7 +236,7 @@ public final class Reducers {
 
         private int sampleSize;
 
-        public RandomSample(String field, int sampleSize) {
+        RandomSample(String field, int sampleSize) {
             super(field);
             this.sampleSize = sampleSize;
         }
@@ -233,21 +249,5 @@ public final class Reducers {
             args.add(getField());
             args.add(sampleSize);
         }
-    }
-
-    private static Reducer buildSingleFieldReducer(Keywords name, String field) {
-        return new Reducer(field) {
-            @Override
-            public void build(List<Object> args) {
-                args.add(Keywords.REDUCE);
-                args.add(name);
-                args.add(1);
-                args.add(field);
-                if (getAlias() != null) {
-                    args.add(Keywords.AS);
-                    args.add(getAlias());
-                }
-            }
-        };
     }
 }

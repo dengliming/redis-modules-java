@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package io.github.dengliming.redismodule.redisearch.search;
 
 import io.github.dengliming.redismodule.redisearch.protocol.Keywords;
@@ -80,6 +81,6 @@ public class NumericFilter extends Filter {
             return "-inf";
         }
 
-        return exclude ?  "(" + num  : String.valueOf(num);
+        return exclude ? "(" + num : String.valueOf(num);
     }
 }

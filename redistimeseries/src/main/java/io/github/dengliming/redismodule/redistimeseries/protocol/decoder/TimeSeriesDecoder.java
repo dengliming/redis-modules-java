@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package io.github.dengliming.redismodule.redistimeseries.protocol.decoder;
 
 import io.github.dengliming.redismodule.redistimeseries.TimeSeries;
@@ -59,9 +60,8 @@ public class TimeSeriesDecoder implements MultiDecoder<List<TimeSeries>> {
             // all samples
             if (objects.get(0) instanceof List) {
                 ((List<List<Object>>) o.get(2)).forEach(valueObject -> values.add(valueDecoder.decode(valueObject, state)));
-            }
-            // the last sample
-            else {
+            } else {
+                // the last sample
                 values.add(valueDecoder.decode((List<Object>) o.get(2), state));
             }
             series.values(values);

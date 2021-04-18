@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package io.github.dengliming.redismodule.redistimeseries;
 
 import io.github.dengliming.redismodule.redistimeseries.protocol.Keywords;
@@ -28,7 +29,7 @@ public class TimeSeriesOptions {
     private boolean unCompressed;
     private Label[] labels;
     private DuplicatePolicy duplicatePolicy;
-	private boolean isAdd = false;
+    private boolean isAdd;
 
     public TimeSeriesOptions retentionTime(long retentionTime) {
         this.retentionTime = retentionTime;
@@ -45,15 +46,15 @@ public class TimeSeriesOptions {
         return this;
     }
 
-	public TimeSeriesOptions duplicatePolicy(DuplicatePolicy duplicatePolicy) {
-		this.duplicatePolicy = duplicatePolicy;
-		return this;
-	}
+    public TimeSeriesOptions duplicatePolicy(DuplicatePolicy duplicatePolicy) {
+        this.duplicatePolicy = duplicatePolicy;
+        return this;
+    }
 
-	public TimeSeriesOptions isAdd(boolean add) {
-		this.isAdd = add;
-		return this;
-	}
+    public TimeSeriesOptions isAdd(boolean add) {
+        this.isAdd = add;
+        return this;
+    }
 
     public void build(List<Object> args) {
         if (retentionTime > 0) {
@@ -66,9 +67,9 @@ public class TimeSeriesOptions {
         }
 
         if (duplicatePolicy != null) {
-			args.add(isAdd ? Keywords.ON_DUPLICATE : Keywords.DUPLICATE_POLICY);
-			args.add(duplicatePolicy.name());
-		}
+            args.add(isAdd ? Keywords.ON_DUPLICATE : Keywords.DUPLICATE_POLICY);
+            args.add(duplicatePolicy.name());
+        }
 
         if (labels != null) {
             args.add(Keywords.LABELS);

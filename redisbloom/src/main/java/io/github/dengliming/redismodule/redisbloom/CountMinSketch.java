@@ -13,11 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package io.github.dengliming.redismodule.redisbloom;
 
-import io.github.dengliming.redismodule.redisbloom.model.CountMinSketchInfo;
 import io.github.dengliming.redismodule.common.util.ArgsUtil;
 import io.github.dengliming.redismodule.common.util.RAssert;
+import io.github.dengliming.redismodule.redisbloom.model.CountMinSketchInfo;
 import io.github.dengliming.redismodule.redisbloom.protocol.Keywords;
 import org.redisson.RedissonObject;
 import org.redisson.api.RFuture;
@@ -26,9 +27,13 @@ import org.redisson.command.CommandAsyncExecutor;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
-import static io.github.dengliming.redismodule.redisbloom.protocol.RedisCommands.*;
+import static io.github.dengliming.redismodule.redisbloom.protocol.RedisCommands.CMS_INCRBY;
+import static io.github.dengliming.redismodule.redisbloom.protocol.RedisCommands.CMS_INFO;
+import static io.github.dengliming.redismodule.redisbloom.protocol.RedisCommands.CMS_INITBYDIM;
+import static io.github.dengliming.redismodule.redisbloom.protocol.RedisCommands.CMS_INITBYPROB;
+import static io.github.dengliming.redismodule.redisbloom.protocol.RedisCommands.CMS_MERGE;
+import static io.github.dengliming.redismodule.redisbloom.protocol.RedisCommands.CMS_QUERY;
 
 /**
  * @author dengliming

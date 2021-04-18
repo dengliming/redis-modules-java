@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package io.github.dengliming.redismodule.redisbloom;
 
 import io.github.dengliming.redismodule.redisbloom.client.RedisBloomClient;
@@ -29,7 +30,7 @@ public abstract class AbstractTest {
     public static final int DEFAULT_PORT = Integer.valueOf(System.getProperty("REDIS_PORT", "6379"));
     public static final String DEFAULT_PASSWORD = System.getProperty("REDIS_PASSWORD", "");
 
-    protected RedisBloomClient redisBloomClient;
+    private RedisBloomClient redisBloomClient;
 
     @BeforeEach
     public void init() {
@@ -44,5 +45,9 @@ public abstract class AbstractTest {
         if (redisBloomClient != null) {
             redisBloomClient.shutdown();
         }
+    }
+
+    public RedisBloomClient getRedisBloomClient() {
+        return redisBloomClient;
     }
 }

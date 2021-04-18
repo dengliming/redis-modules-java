@@ -26,32 +26,32 @@ import java.util.List;
 
 public class ScriptDecoder implements MultiDecoder<Script> {
 
-	@Override
-	public Decoder<Object> getDecoder(int i, State state) {
-		return null;
-	}
+    @Override
+    public Decoder<Object> getDecoder(int i, State state) {
+        return null;
+    }
 
-	@Override
-	public Script decode(List<Object> list, State state) {
-		String source = null;
-		Device device = null;
-		String tag = null;
-		for (int i = 0; i < list.size(); i += 2) {
-			String key = String.valueOf(list.get(i));
-			switch (key) {
-				case "source":
-					source = String.valueOf(list.get(i + 1));
-					break;
-				case "device":
-					device = Device.valueOf(String.valueOf(list.get(i + 1)));
-					break;
-				case "tag":
-					tag = String.valueOf(list.get(i + 1));
-					break;
-				default:
-					break;
-			}
-		}
-		return new Script(device, tag, source);
-	}
+    @Override
+    public Script decode(List<Object> list, State state) {
+        String source = null;
+        Device device = null;
+        String tag = null;
+        for (int i = 0; i < list.size(); i += 2) {
+            String key = String.valueOf(list.get(i));
+            switch (key) {
+                case "source":
+                    source = String.valueOf(list.get(i + 1));
+                    break;
+                case "device":
+                    device = Device.valueOf(String.valueOf(list.get(i + 1)));
+                    break;
+                case "tag":
+                    tag = String.valueOf(list.get(i + 1));
+                    break;
+                default:
+                    break;
+            }
+        }
+        return new Script(device, tag, source);
+    }
 }

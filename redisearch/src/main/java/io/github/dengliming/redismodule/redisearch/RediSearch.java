@@ -13,18 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package io.github.dengliming.redismodule.redisearch;
 
 import io.github.dengliming.redismodule.common.util.ArgsUtil;
 import io.github.dengliming.redismodule.common.util.RAssert;
 import io.github.dengliming.redismodule.redisearch.aggregate.AggregateOptions;
 import io.github.dengliming.redismodule.redisearch.aggregate.AggregateResult;
-import io.github.dengliming.redismodule.redisearch.index.*;
-import io.github.dengliming.redismodule.redisearch.protocol.Keywords;
+import io.github.dengliming.redismodule.redisearch.index.ConfigOption;
+import io.github.dengliming.redismodule.redisearch.index.Document;
+import io.github.dengliming.redismodule.redisearch.index.DocumentOptions;
+import io.github.dengliming.redismodule.redisearch.index.IndexOptions;
+import io.github.dengliming.redismodule.redisearch.index.RSLanguage;
+import io.github.dengliming.redismodule.redisearch.index.Suggestion;
+import io.github.dengliming.redismodule.redisearch.index.SuggestionOptions;
 import io.github.dengliming.redismodule.redisearch.index.schema.Field;
 import io.github.dengliming.redismodule.redisearch.index.schema.Schema;
 import io.github.dengliming.redismodule.redisearch.index.schema.TagField;
 import io.github.dengliming.redismodule.redisearch.index.schema.TextField;
+import io.github.dengliming.redismodule.redisearch.protocol.Keywords;
 import io.github.dengliming.redismodule.redisearch.search.MisspelledTerm;
 import io.github.dengliming.redismodule.redisearch.search.SearchOptions;
 import io.github.dengliming.redismodule.redisearch.search.SearchResult;
@@ -34,13 +41,42 @@ import org.redisson.api.RFuture;
 import org.redisson.client.codec.Codec;
 import org.redisson.client.codec.StringCodec;
 import org.redisson.command.CommandAsyncExecutor;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Stream;
 
-import static io.github.dengliming.redismodule.redisearch.protocol.RedisCommands.*;
+import static io.github.dengliming.redismodule.redisearch.protocol.RedisCommands.FT_ADD;
+import static io.github.dengliming.redismodule.redisearch.protocol.RedisCommands.FT_ADDHASH;
+import static io.github.dengliming.redismodule.redisearch.protocol.RedisCommands.FT_AGGREGATE;
+import static io.github.dengliming.redismodule.redisearch.protocol.RedisCommands.FT_ALIASADD;
+import static io.github.dengliming.redismodule.redisearch.protocol.RedisCommands.FT_ALIASDEL;
+import static io.github.dengliming.redismodule.redisearch.protocol.RedisCommands.FT_ALIASUPDATE;
+import static io.github.dengliming.redismodule.redisearch.protocol.RedisCommands.FT_ALTER;
+import static io.github.dengliming.redismodule.redisearch.protocol.RedisCommands.FT_CONFIG_GET;
+import static io.github.dengliming.redismodule.redisearch.protocol.RedisCommands.FT_CONFIG_HELP;
+import static io.github.dengliming.redismodule.redisearch.protocol.RedisCommands.FT_CONFIG_SET;
+import static io.github.dengliming.redismodule.redisearch.protocol.RedisCommands.FT_CREATE;
+import static io.github.dengliming.redismodule.redisearch.protocol.RedisCommands.FT_DEL;
+import static io.github.dengliming.redismodule.redisearch.protocol.RedisCommands.FT_DICTADD;
+import static io.github.dengliming.redismodule.redisearch.protocol.RedisCommands.FT_DICTDEL;
+import static io.github.dengliming.redismodule.redisearch.protocol.RedisCommands.FT_DICTDUMP;
+import static io.github.dengliming.redismodule.redisearch.protocol.RedisCommands.FT_DROP;
+import static io.github.dengliming.redismodule.redisearch.protocol.RedisCommands.FT_EXPLAIN;
+import static io.github.dengliming.redismodule.redisearch.protocol.RedisCommands.FT_GET;
+import static io.github.dengliming.redismodule.redisearch.protocol.RedisCommands.FT_INFO;
+import static io.github.dengliming.redismodule.redisearch.protocol.RedisCommands.FT_MGET;
+import static io.github.dengliming.redismodule.redisearch.protocol.RedisCommands.FT_SEARCH;
+import static io.github.dengliming.redismodule.redisearch.protocol.RedisCommands.FT_SPELLCHECK;
+import static io.github.dengliming.redismodule.redisearch.protocol.RedisCommands.FT_SUGADD;
+import static io.github.dengliming.redismodule.redisearch.protocol.RedisCommands.FT_SUGDEL;
+import static io.github.dengliming.redismodule.redisearch.protocol.RedisCommands.FT_SUGGET;
+import static io.github.dengliming.redismodule.redisearch.protocol.RedisCommands.FT_SUGLEN;
+import static io.github.dengliming.redismodule.redisearch.protocol.RedisCommands.FT_SYNADD;
+import static io.github.dengliming.redismodule.redisearch.protocol.RedisCommands.FT_SYNDUMP;
+import static io.github.dengliming.redismodule.redisearch.protocol.RedisCommands.FT_SYNUPDATE;
+import static io.github.dengliming.redismodule.redisearch.protocol.RedisCommands.FT_TAGVALS;
 
 /**
  * @author dengliming
@@ -117,6 +153,8 @@ public class RediSearch extends RedissonObject {
                     args.add(Keywords.PHONETIC.name());
                     args.add(textField.getPhonetic().name());
                 }
+                break;
+            default:
                 break;
         }
 

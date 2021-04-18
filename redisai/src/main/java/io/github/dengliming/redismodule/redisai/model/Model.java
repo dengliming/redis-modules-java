@@ -23,56 +23,56 @@ import java.util.List;
 
 public class Model {
 
-	private final Backend backend;
-	private final Device device;
-	private final List<String> inputs;
-	private final List<String> outputs;
-	private final byte[] blob;
-	private final String tag;
-	private final long batchSize;
-	private final long minBatchSize;
+    private final Backend backend;
+    private final Device device;
+    private final List<String> inputs;
+    private final List<String> outputs;
+    private final byte[] blob;
+    private final String tag;
+    private final long batchSize;
+    private final long minBatchSize;
 
-	public Model(Backend backend, Device device, List<String> inputs, List<String> outputs, byte[] blob,
-				 String tag, long batchSize, long minBatchSize) {
-		this.backend = backend;
-		this.device = device;
-		this.inputs = inputs;
-		this.outputs = outputs;
-		this.blob = blob;
-		this.tag = tag;
-		this.batchSize = batchSize;
-		this.minBatchSize = minBatchSize;
-	}
+    public Model(Backend backend, Device device, List<String> inputs, List<String> outputs, byte[] blob,
+                 String tag, long batchSize, long minBatchSize) {
+        this.backend = backend;
+        this.device = device;
+        this.inputs = inputs;
+        this.outputs = outputs;
+        this.blob = blob;
+        this.tag = tag;
+        this.batchSize = batchSize;
+        this.minBatchSize = minBatchSize;
+    }
 
-	public Backend getBackend() {
-		return backend;
-	}
+    public Backend getBackend() {
+        return backend;
+    }
 
-	public Device getDevice() {
-		return device;
-	}
+    public Device getDevice() {
+        return device;
+    }
 
-	public List<String> getInputs() {
-		return inputs;
-	}
+    public List<String> getInputs() {
+        return inputs;
+    }
 
-	public List<String> getOutputs() {
-		return outputs;
-	}
+    public List<String> getOutputs() {
+        return outputs;
+    }
 
-	public byte[] getBlob() {
-		return blob;
-	}
+    public byte[] getBlob() {
+        return blob;
+    }
 
-	public String getTag() {
-		return tag;
-	}
+    public String getTag() {
+        return tag;
+    }
 
-	public long getBatchSize() {
-		return batchSize;
-	}
+    public long getBatchSize() {
+        return batchSize;
+    }
 
-	public long getMinBatchSize() {
-		return minBatchSize;
-	}
+    public long getMinBatchSize() {
+        return minBatchSize;
+    }
 }
