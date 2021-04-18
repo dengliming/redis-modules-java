@@ -38,7 +38,9 @@ public interface RedisCommands {
 
     RedisCommand FT_INFO = new RedisCommand<>("FT.INFO", new ListMultiDecoder2(new StringMapInfoDecoder(), new CodecDecoder(), new CodecDecoder()));
     RedisCommand FT_SEARCH = new RedisCommand<>("FT.SEARCH", new ListMultiDecoder2(new SearchResultDecoder(), new StringMapInfoDecoder()));
+    RedisCommand FT_SEARCH_WITH_SCORES = new RedisCommand<>("FT.SEARCH", new ListMultiDecoder2(new SearchResultDecoder(true), new StringMapInfoDecoder()));
     RedisCommand FT_AGGREGATE = new RedisCommand<>("FT.AGGREGATE", new ListMultiDecoder2(new AggregateDecoder(), new ObjectMapReplayDecoder()));
+
     RedisCommand FT_EXPLAIN = new RedisCommand<>("FT.EXPLAIN");
     RedisCommand FT_EXPLAINCLI = new RedisCommand<>("FT.EXPLAINCLI");
     RedisCommand FT_DEL = new RedisCommand<>("FT.DEL", new BooleanReplayConvertor());

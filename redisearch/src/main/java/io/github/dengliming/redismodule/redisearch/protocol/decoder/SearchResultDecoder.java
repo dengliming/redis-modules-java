@@ -22,7 +22,6 @@ import org.redisson.client.protocol.Decoder;
 import org.redisson.client.protocol.decoder.MultiDecoder;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -30,6 +29,16 @@ import java.util.Map;
  * @author dengliming
  */
 public class SearchResultDecoder implements MultiDecoder<SearchResult> {
+
+	private final boolean withScores;
+
+	public SearchResultDecoder() {
+		withScores = false;
+	}
+
+	public SearchResultDecoder(boolean b) {
+		withScores = b;
+	}
 
 	@Override
 	public Decoder<Object> getDecoder(int paramNum, State state) {
@@ -39,17 +48,9 @@ public class SearchResultDecoder implements MultiDecoder<SearchResult> {
 	@Override
 	public SearchResult decode(List<Object> parts, State state) {
 
-		int documentSize = 0;
 		Long total = (Long) parts.get(0);
+		int documentSize = withScores ? 3 : 2;
 		boolean noContent = total == parts.size() + 1;
-
-		// Calculates Document Size searching for the first LinkedHashMap on parts...
-		// It would be better if I could access the commands parameters to check if we are dealing with the Score values...
-		if (!noContent && total > 0) {
-			do {
-				documentSize++;
-			} while (parts.get(documentSize).getClass() != LinkedHashMap.class);
-		}
 
 		List<Document> documents = new ArrayList<>(total.intValue());
 
@@ -67,7 +68,7 @@ public class SearchResultDecoder implements MultiDecoder<SearchResult> {
 				}
 			}
 
-		} else if (documentSize == 3) {
+		} else {
 
 			//Key, score and parts
 			for (int i = 1; i < parts.size(); i += documentSize) {
