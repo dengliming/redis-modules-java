@@ -157,11 +157,11 @@ public class SearchOptions {
         return this;
     }
 
-	public boolean isWithScores() {
-		return withScores;
-	}
+    public boolean isWithScores() {
+        return withScores;
+    }
 
-	public void build(List<Object> args) {
+    public void build(List<Object> args) {
         if (noContent) {
             args.add(Keywords.NOCONTENT);
         }

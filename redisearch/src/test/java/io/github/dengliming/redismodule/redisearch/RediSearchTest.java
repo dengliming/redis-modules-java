@@ -152,8 +152,13 @@ public class RediSearchTest extends AbstractTest {
         searchResult = rediSearch.search("number", new SearchOptions()
                 .noStopwords()
                 .language(RSLanguage.ENGLISH)
+                .withScores()
                 .filter(new GeoFilter("location", 15, 37, 200, GeoFilter.Unit.KILOMETERS)));
         assertThat(searchResult.getTotal()).isEqualTo(1);
+        assertThat(searchResult.getDocuments()).hasSize(1);
+        Document document = searchResult.getDocuments().get(0);
+        assertThat(document.getFields()).containsEntry("title", "hello");
+        assertThat(document.getScore()).isGreaterThanOrEqualTo(0);
     }
 
     @Test

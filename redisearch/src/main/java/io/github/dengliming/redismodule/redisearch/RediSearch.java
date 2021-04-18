@@ -68,6 +68,7 @@ import static io.github.dengliming.redismodule.redisearch.protocol.RedisCommands
 import static io.github.dengliming.redismodule.redisearch.protocol.RedisCommands.FT_INFO;
 import static io.github.dengliming.redismodule.redisearch.protocol.RedisCommands.FT_MGET;
 import static io.github.dengliming.redismodule.redisearch.protocol.RedisCommands.FT_SEARCH;
+import static io.github.dengliming.redismodule.redisearch.protocol.RedisCommands.FT_SEARCH_WITH_SCORES;
 import static io.github.dengliming.redismodule.redisearch.protocol.RedisCommands.FT_SPELLCHECK;
 import static io.github.dengliming.redismodule.redisearch.protocol.RedisCommands.FT_SUGADD;
 import static io.github.dengliming.redismodule.redisearch.protocol.RedisCommands.FT_SUGDEL;
@@ -606,17 +607,17 @@ public class RediSearch extends RedissonObject {
         checkQueryArgument(query);
         RAssert.notNull(searchOptions, "SearchOptions must be not null");
 
-		List<Object> args = new ArrayList<>();
-		args.add(getName());
-		args.add(query);
-		searchOptions.build(args);
-		return commandExecutor.readAsync(
-				getName(),
-				StringCodec.INSTANCE,
-				searchOptions.isWithScores() ? FT_SEARCH_WITH_SCORES : FT_SEARCH,
-				args.toArray()
-		);
-	}
+        List<Object> args = new ArrayList<>();
+        args.add(getName());
+        args.add(query);
+        searchOptions.build(args);
+        return commandExecutor.readAsync(
+                getName(),
+                StringCodec.INSTANCE,
+                searchOptions.isWithScores() ? FT_SEARCH_WITH_SCORES : FT_SEARCH,
+                args.toArray()
+        );
+    }
 
     /**
      * Runs a search query on an index, and performs aggregate transformations on the results.
