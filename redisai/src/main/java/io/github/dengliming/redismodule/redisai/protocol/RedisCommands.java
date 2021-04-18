@@ -15,11 +15,15 @@
  */
 package io.github.dengliming.redismodule.redisai.protocol;
 
+import io.github.dengliming.redismodule.redisai.protocol.decoder.ModelDecoder;
+import io.github.dengliming.redismodule.redisai.protocol.decoder.ScriptDecoder;
+import io.github.dengliming.redismodule.redisai.protocol.decoder.TensorDecoder;
 import org.redisson.client.protocol.RedisCommand;
 import org.redisson.client.protocol.convertor.BooleanReplayConvertor;
 import org.redisson.client.protocol.convertor.VoidReplayConvertor;
+import org.redisson.client.protocol.decoder.ListMultiDecoder2;
+import org.redisson.client.protocol.decoder.ObjectListReplayDecoder;
 import org.redisson.client.protocol.decoder.ObjectMapReplayDecoder;
-import org.redisson.client.protocol.decoder.StringMapDataDecoder;
 
 /**
  * @author dengliming
@@ -27,14 +31,14 @@ import org.redisson.client.protocol.decoder.StringMapDataDecoder;
 public interface RedisCommands {
 
     RedisCommand AI_TENSORSET = new RedisCommand<>("AI.TENSORSET", new BooleanReplayConvertor());
-    RedisCommand AI_TENSORGET = new RedisCommand<>("AI.TENSORGET", new VoidReplayConvertor());
+    RedisCommand AI_TENSORGET = new RedisCommand<>("AI.TENSORGET", new ListMultiDecoder2<>(new TensorDecoder(), new ObjectListReplayDecoder<>()));
     RedisCommand AI_MODELSET = new RedisCommand<>("AI.MODELSET", new BooleanReplayConvertor());
-    RedisCommand AI_MODELGET = new RedisCommand<>("AI.MODELGET", new VoidReplayConvertor());
+    RedisCommand AI_MODELGET = new RedisCommand<>("AI.MODELGET", new ListMultiDecoder2<>(new ModelDecoder(), new ObjectListReplayDecoder<>()));
     RedisCommand AI_MODELDEL = new RedisCommand<>("AI.MODELDEL", new BooleanReplayConvertor());
     RedisCommand AI_MODELRUN = new RedisCommand<>("AI.MODELRUN", new VoidReplayConvertor());
     RedisCommand AI_MODELSCAN = new RedisCommand<>("AI._MODELSCAN", new VoidReplayConvertor());
     RedisCommand AI_SCRIPTSET = new RedisCommand<>("AI.SCRIPTSET", new BooleanReplayConvertor());
-    RedisCommand AI_SCRIPTGET = new RedisCommand<>("AI.SCRIPTGET", new VoidReplayConvertor());
+    RedisCommand AI_SCRIPTGET = new RedisCommand<>("AI.SCRIPTGET", new ListMultiDecoder2<>(new ScriptDecoder(), new ObjectListReplayDecoder<>()));
     RedisCommand AI_SCRIPTDEL = new RedisCommand<>("AI.SCRIPTDEL", new BooleanReplayConvertor());
     RedisCommand AI_SCRIPTRUN = new RedisCommand<>("AI.SCRIPTRUN", new BooleanReplayConvertor());
     RedisCommand AI_SCRIPTSCAN = new RedisCommand<>("AI._SCRIPTSCAN", new VoidReplayConvertor());

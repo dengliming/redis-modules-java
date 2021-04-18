@@ -18,9 +18,36 @@
     </modules>
 
     <name>Redis-Modules-Java</name>
+	<description>Java Client libraries for redis-modules.</description>
     <url>https://github.com/dengliming/redis-modules-java</url>
 
-    <properties>
+	<scm>
+		<url>git:git@github.com:dengliming/redis-modules-java.git</url>
+		<connection>scm:git:git@github.com:dengliming/redis-modules-java.git</connection>
+		<developerConnection>scm:git:git@github.com:dengliming/redis-modules-java.git</developerConnection>
+		<tag>HEAD</tag>
+	</scm>
+
+	<licenses>
+		<license>
+			<name>Apache License, Version 2.0</name>
+			<url>http://www.apache.org/licenses/LICENSE-2.0</url>
+		</license>
+	</licenses>
+
+	<developers>
+		<developer>
+			<id>dengliming</id>
+			<name>dengliming</name>
+			<email>liming.d.pro@gmail.com</email>
+			<roles>
+				<role>Founder</role>
+				<role>Developer</role>
+			</roles>
+		</developer>
+	</developers>
+
+	<properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <redisson.version>3.13.4</redisson.version>
         <junit.version>5.6.2</junit.version>
@@ -29,14 +56,12 @@
         <maven-shade-plugin.version>3.2.1</maven-shade-plugin.version>
 		<maven-release-plugin.version>2.5.3</maven-release-plugin.version>
 		<jacoco-maven-plugin.version>0.8.5</jacoco-maven-plugin.version>
+		<gpg-plugin.version>1.6</gpg-plugin.version>
+		<maven-javadoc-plugin.version>2.10.4</maven-javadoc-plugin.version>
+		<surefire-plugin.version>3.0.0-M3</surefire-plugin.version>
+		<assertj-core.version>3.17.2</assertj-core.version>
+		<hamcrest-library.version>2.2</hamcrest-library.version>
     </properties>
-
-	<scm>
-		<url>scm:git:git@github.com:dengliming/redis-modules-java.git</url>
-		<connection>scm:git:git@github.com:dengliming/redis-modules-java.git</connection>
-		<developerConnection>scm:git:git@github.com:dengliming/redis-modules-java.git</developerConnection>
-		<tag>HEAD</tag>
-	</scm>
 
     <dependencyManagement>
         <dependencies>
@@ -81,16 +106,24 @@
                 <artifactId>redistimeseries</artifactId>
                 <version>${project.version}</version>
             </dependency>
-
-            <dependency>
-                <groupId>org.redisson</groupId>
-                <artifactId>redisson</artifactId>
-                <version>${redisson.version}</version>
-            </dependency>
         </dependencies>
     </dependencyManagement>
 
     <dependencies>
+		<dependency>
+			<groupId>org.assertj</groupId>
+			<artifactId>assertj-core</artifactId>
+			<version>${assertj-core.version}</version>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.hamcrest</groupId>
+			<artifactId>hamcrest-library</artifactId>
+			<version>${hamcrest-library.version}</version>
+			<scope>test</scope>
+		</dependency>
+
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
@@ -110,6 +143,12 @@
             <version>${junit.version}</version>
             <scope>test</scope>
         </dependency>
+
+		<dependency>
+			<groupId>org.redisson</groupId>
+			<artifactId>redisson</artifactId>
+			<version>${redisson.version}</version>
+		</dependency>
     </dependencies>
 
     <build>
@@ -136,6 +175,23 @@
                 </configuration>
             </plugin>
 
+			<plugin>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>${maven-javadoc-plugin.version}</version>
+				<configuration>
+					<aggregate>true</aggregate>
+					<additionalparam>-Xdoclint:none</additionalparam>
+				</configuration>
+				<executions>
+					<execution>
+						<id>attach-javadoc</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
@@ -149,6 +205,12 @@
                     </execution>
                 </executions>
             </plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>${surefire-plugin.version}</version>
+			</plugin>
 
 			<plugin>
 				<groupId>org.jacoco</groupId>
@@ -169,19 +231,32 @@
 					</execution>
 				</executions>
 			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-gpg-plugin</artifactId>
+				<version>${gpg-plugin.version}</version>
+				<executions>
+					<execution>
+						<id>sign-artifacts</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>sign</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
         </plugins>
     </build>
 
 	<distributionManagement>
-		<repository>
-			<id>releases</id>
-			<name>releases</name>
-			<url>file:/data/mvn-repo/repository/releases/</url>
-		</repository>
 		<snapshotRepository>
-			<id>snapshot</id>
-			<name>snapshot</name>
-			<url>file:/data/mvn-repo/repository/snapshots/</url>
+			<id>oss</id>
+			<url>https://s01.oss.sonatype.org/content/repositories/snapshots</url>
 		</snapshotRepository>
+		<repository>
+			<id>oss</id>
+			<url>https://s01.oss.sonatype.org/service/local/staging/deploy/maven2</url>
+		</repository>
 	</distributionManagement>
 </project>

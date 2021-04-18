@@ -1,4 +1,4 @@
-![build](https://github.com/dengliming/redis-modules-java/workflows/build/badge.svg) ![java-version](https://img.shields.io/badge/JDK-1.8+-brightgreen.svg) ![maven](https://img.shields.io/badge/maven-3.5+-brightgreen.svg) [![license](https://img.shields.io/github/license/dengliming/redis-modules-java)](/LICENSE) [![codecov](https://codecov.io/gh/dengliming/redis-modules-java/branch/master/graph/badge.svg?token=U8BA091JD5)](https://codecov.io/gh/dengliming/redis-modules-java)
+![build](https://github.com/dengliming/redis-modules-java/workflows/build/badge.svg) ![java-version](https://img.shields.io/badge/JDK-1.8+-brightgreen.svg) [![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.github.dengliming.redismodule/redis-modules-java/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.github.dengliming.redismodule/redis-modules-java) [![license](https://img.shields.io/github/license/dengliming/redis-modules-java)](/LICENSE) [![codecov](https://codecov.io/gh/dengliming/redis-modules-java/branch/master/graph/badge.svg?token=U8BA091JD5)](https://codecov.io/gh/dengliming/redis-modules-java)
 
 
 Java Client libraries for [redis-modules](https://redis.io/modules), based on [Redisson](https://github.com/redisson/redisson).
@@ -17,31 +17,10 @@ Java Client libraries for [redis-modules](https://redis.io/modules), based on [R
 ## Installing
 
 #### Build from source
-Execute ./mvnw clean install -DskipTests=true. The build process requires JDK8+.
+Execute ./mvnw clean install -DskipTests=true -Dgpg.skip. The build process requires JDK8+.
+
 #### Maven repository
-repositories
-```xml
-<repositories>
-    <repository>
-        <id>snapshots-repo</id>
-        <url>https://raw.githubusercontent.com/dengliming/mvn-repo/master/snapshots</url>
-    </repository>
-    <repository>
-        <id>releases-repo</id>
-        <url>https://raw.githubusercontent.com/dengliming/mvn-repo/master/releases</url>
-    </repository>
-</repositories>
-```
 Include all
-```xml
-<!-- snapshot -->
-<dependency>
-    <groupId>io.github.dengliming.redismodule</groupId>
-    <artifactId>all</artifactId>
-    <version>1.0.1-SNAPSHOT</version>
-</dependency>
-```
-or
 ```xml
 <!-- release -->
 <dependency>
@@ -52,15 +31,6 @@ or
 ```
 Include single module like:
 ```xml
-<!-- snapshot -->
-<dependency>
-    <groupId>io.github.dengliming.redismodule</groupId>
-    <artifactId>redistimeseries</artifactId>
-    <version>1.0.1-SNAPSHOT</version>
-</dependency>
-```
-or
-```xml
 <!-- release -->
 <dependency>
     <groupId>io.github.dengliming.redismodule</groupId>
@@ -68,6 +38,7 @@ or
     <version>1.0.0</version>
 </dependency>
 ```
+
 ## Usage example
 RedisBloom
 ```java
@@ -142,6 +113,17 @@ redisTimeSeries.add(new Sample("temperature:2:32", Sample.Value.of(timestamp, 26
                 .unCompressed()
                 .labels(new Label("sensor_id", "2"), new Label("area_id", "32")));
 redisTimeSeriesClient.shutdown();
+```
+
+RedisAI
+```java
+Config config = new Config();
+config.useSingleServer().setAddress("redis://127.0.0.1:6379");
+RedisAIClient redisAIClient = new RedisAIClient(config);
+
+RedisAI redisAI = redisAIClient.getRedisAI();
+redisAI.setTensor("tensor1", DataType.FLOAT, new int[]{2, 2}, null, new String[]{"1", "2", "3", "4"});
+redisAIClient.shutdown();
 ```
 ## License
 

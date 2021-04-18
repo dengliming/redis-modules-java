@@ -16,8 +16,13 @@
 package io.github.dengliming.redismodule.redisai;
 
 import io.github.dengliming.redismodule.common.util.RAssert;
+import io.github.dengliming.redismodule.redisai.args.SetModelArgs;
+import io.github.dengliming.redismodule.redisai.model.Model;
+import io.github.dengliming.redismodule.redisai.model.Script;
+import io.github.dengliming.redismodule.redisai.model.Tensor;
 import io.github.dengliming.redismodule.redisai.protocol.Keywords;
 import org.redisson.api.RFuture;
+import org.redisson.client.codec.ByteArrayCodec;
 import org.redisson.client.codec.Codec;
 import org.redisson.client.codec.StringCodec;
 import org.redisson.command.CommandAsyncExecutor;
@@ -52,14 +57,14 @@ public class RedisAI {
      * @return
      */
     public boolean setTensor(String key, DataType type, int[] dimensions, byte[] data, String[] values) {
-        RAssert.notNull(key, "key must not be null");
-        RAssert.notNull(type, "type must not be null");
-        RAssert.notEmpty(dimensions, "dimensions must not be empty");
-
         return commandExecutor.get(setTensorAsync(key, type, dimensions, data, values));
     }
 
     public RFuture<Boolean> setTensorAsync(String key, DataType type, int[] dimensions, byte[] data, String[] values) {
+		RAssert.notNull(key, "key must not be null");
+		RAssert.notNull(type, "type must not be null");
+		RAssert.notEmpty(dimensions, "dimensions must not be empty");
+
         List<Object> args = new ArrayList<>();
         args.add(key);
         if (dimensions != null) {
@@ -81,12 +86,24 @@ public class RedisAI {
         return commandExecutor.writeAsync(getName(), codec, AI_TENSORSET, args.toArray());
     }
 
-    public boolean setModel(String key, Backend backEnd, Device device, byte[] model) {
-        return commandExecutor.get(setModelAsync());
+	/**
+	 * stores a model as the value of a key.
+	 *
+	 * @param key
+	 * @param args
+	 * @return
+	 */
+    public boolean setModel(String key, SetModelArgs args) {
+        return commandExecutor.get(setModelAsync(key, args));
     }
 
-    public RFuture<Boolean> setModelAsync() {
-        return commandExecutor.writeAsync(getName(), codec, AI_TENSORSET);
+    public RFuture<Boolean> setModelAsync(String key, SetModelArgs modelArgs) {
+		RAssert.notNull(key, "key must not be null");
+
+		List<Object> args = new ArrayList<>();
+		args.add(key);
+		modelArgs.build(args);
+        return commandExecutor.writeAsync(getName(), ByteArrayCodec.INSTANCE, AI_MODELSET, args.toArray());
     }
 
     /**
@@ -229,6 +246,56 @@ public class RedisAI {
     public RFuture<Boolean> resetStatAsync(String key) {
         return commandExecutor.readAsync(getName(), StringCodec.INSTANCE, AI_INFO_RESETSTAT, key, Keywords.RESETSTAT);
     }
+
+	/**
+	 * Returns a tensor stored as key's value.
+	 *
+	 * @param key the tensor's key name
+	 * @return
+	 */
+	public Tensor getTensor(String key) {
+		return commandExecutor.get(getTensorAsync(key));
+	}
+
+	public RFuture<Tensor> getTensorAsync(String key) {
+		RAssert.notNull(key, "key must not be null");
+
+		return commandExecutor.readAsync(getName(), StringCodec.INSTANCE, AI_TENSORGET, key, Keywords.META, Keywords.BLOB);
+	}
+
+	/**
+	 * Returns a model's metadata and blob stored as a key's value.
+	 *
+	 * @param key the tensor's key name
+	 * @return
+	 */
+	public Model getModel(String key) {
+		return commandExecutor.get(getModelAsync(key));
+	}
+
+	public RFuture<Model> getModelAsync(String key) {
+		RAssert.notNull(key, "key must not be null");
+
+		return commandExecutor.readAsync(getName(), StringCodec.INSTANCE, AI_MODELGET, key, Keywords.META, Keywords.BLOB);
+	}
+
+	/**
+	 * Returns the TorchScript stored as a key's value.
+	 *
+	 * AI.SCRIPTGET <key> [META] [SOURCE]
+	 *
+	 * @param key name of key to get the Script from RedisAI server
+	 * @return
+	 */
+	public Script getScript(String key) {
+		return commandExecutor.get(getScriptAsync(key));
+	}
+
+	public RFuture<Script> getScriptAsync(String key) {
+		RAssert.notNull(key, "key must not be null");
+
+		return commandExecutor.readAsync(getName(), StringCodec.INSTANCE, AI_SCRIPTGET, key, Keywords.META, Keywords.SOURCE);
+	}
 
     public String getName() {
         return null;

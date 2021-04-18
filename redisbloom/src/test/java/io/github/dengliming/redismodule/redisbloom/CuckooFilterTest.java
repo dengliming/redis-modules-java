@@ -17,11 +17,12 @@ package io.github.dengliming.redismodule.redisbloom;
 
 import io.github.dengliming.redismodule.redisbloom.model.ChunksData;
 import io.github.dengliming.redismodule.redisbloom.model.CuckooFilterInfo;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author dengliming
@@ -31,41 +32,41 @@ public class CuckooFilterTest extends AbstractTest {
     @Test
     public void testReserve() {
         CuckooFilter cuckooFilter = redisBloomClient.getCuckooFilter("cf_reserve");
-        Assert.assertTrue(cuckooFilter.reserve(100));
+		assertThat(cuckooFilter.reserve(100)).isTrue();
     }
 
     @Test
     public void testAdd() {
         CuckooFilter cuckooFilter = redisBloomClient.getCuckooFilter("cf_add");
-        Assert.assertTrue(cuckooFilter.reserve(100));
-        Assert.assertTrue(cuckooFilter.add("a"));
-        Assert.assertTrue(cuckooFilter.exists("a"));
-        Assert.assertTrue(cuckooFilter.count("a") == 1);
-        Assert.assertFalse(cuckooFilter.addNx("a"));
-        Assert.assertTrue(cuckooFilter.delete("a"));
+		assertThat(cuckooFilter.reserve(100)).isTrue();
+		assertThat(cuckooFilter.add("a")).isTrue();
+		assertThat(cuckooFilter.exists("a")).isTrue();
+		assertThat(cuckooFilter.count("a")).isEqualTo(1);
+		assertThat(cuckooFilter.addNx("a")).isFalse();
+		assertThat(cuckooFilter.delete("a")).isTrue();
     }
 
     @Test
     public void testInsert() {
         CuckooFilter cuckooFilter = redisBloomClient.getCuckooFilter("cf_insert");
         List<Boolean> result = cuckooFilter.insert(-1L, false, "a");
-        Assert.assertNotNull(result);
-        Assert.assertTrue(result.get(0));
+		assertThat(result).isNotNull();
+		assertThat(result.get(0)).isTrue();
     }
 
     @Test
     public void testInfo() {
         CuckooFilter cuckooFilter = redisBloomClient.getCuckooFilter("cf_info");
-        Assert.assertTrue(cuckooFilter.reserve(100, 50));
+		assertThat(cuckooFilter.reserve(100, 50)).isTrue();
         CuckooFilterInfo cuckooFilterInfo = cuckooFilter.getInfo();
-        Assert.assertTrue(cuckooFilterInfo.getBucketSize().intValue() == 50);
+		assertThat(cuckooFilterInfo.getBucketSize()).isEqualTo(50);
     }
 
     @Test
     public void testScanDump() {
         CuckooFilter cuckooFilter = redisBloomClient.getCuckooFilter("bf_info");
-        Assert.assertTrue(cuckooFilter.reserve(100, 50));
-        Assert.assertTrue(cuckooFilter.add("a"));
+		assertThat(cuckooFilter.reserve(100, 50)).isTrue();
+		assertThat(cuckooFilter.add("a")).isTrue();
 
         int iter = 0;
         List<ChunksData> chunks = new ArrayList<>();
@@ -80,9 +81,9 @@ public class CuckooFilterTest extends AbstractTest {
 
         cuckooFilter.delete();
         // Load it back
-        chunks.forEach(chunksData -> Assert.assertTrue(cuckooFilter.loadChunk(chunksData)));
+        chunks.forEach(chunksData -> assertThat(cuckooFilter.loadChunk(chunksData)).isTrue());
 
         CuckooFilterInfo cuckooFilterInfo = cuckooFilter.getInfo();
-        Assert.assertTrue(cuckooFilterInfo.getBucketSize().intValue() == 50);
+		assertThat(cuckooFilterInfo.getBucketSize().intValue()).isEqualTo(50);
     }
 }

@@ -23,7 +23,7 @@ jobs:
         ports:
           - 6379:6379
       redisearch:
-        image: redislabs/redisearch:1.6.13
+        image: redislabs/redisearch:latest
         options: >-
           --health-cmd "redis-cli ping"
           --health-interval 10s
@@ -58,7 +58,7 @@ jobs:
           java-version: 1.8
 
       - name: Build with Maven
-        run: mvn clean install -DskipTests=true --file pom.xml
+        run: mvn clean install -DskipTests=true -Dgpg.skip --file pom.xml
 
       - name: Test RedisBloom
         run: mvn test -pl redisbloom -DREDIS_HOST=localhost --file pom.xml

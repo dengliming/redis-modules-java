@@ -16,8 +16,8 @@
 package io.github.dengliming.redismodule.redisearch;
 
 import io.github.dengliming.redismodule.redisearch.client.RediSearchClient;
-import org.junit.After;
-import org.junit.Before;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.redisson.config.Config;
 
 /**
@@ -31,7 +31,7 @@ public abstract class AbstractTest {
 
     protected RediSearchClient rediSearchClient;
 
-    @Before
+    @BeforeEach
     public void init() {
         Config config = new Config();
         config.useSingleServer().setAddress("redis://" + DEFAULT_HOST + ":" + DEFAULT_PORT);
@@ -39,8 +39,8 @@ public abstract class AbstractTest {
         rediSearchClient.flushall();
     }
 
-    @After
-    public void destory() {
+    @AfterEach
+    public void destroy() {
         if (rediSearchClient != null) {
             rediSearchClient.shutdown();
         }

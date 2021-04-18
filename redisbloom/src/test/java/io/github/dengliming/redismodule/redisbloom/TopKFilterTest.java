@@ -16,12 +16,13 @@
 package io.github.dengliming.redismodule.redisbloom;
 
 import io.github.dengliming.redismodule.redisbloom.model.TopKFilterInfo;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 
 /**
@@ -32,29 +33,30 @@ public class TopKFilterTest extends AbstractTest {
     @Test
     public void testReserve() {
         TopKFilter topKFilter = redisBloomClient.getTopKFilter("topk_reserve");
-        Assert.assertTrue(topKFilter.reserve(10, 2000, 7, 0.925d));
+		assertThat(topKFilter.reserve(10, 2000, 7, 0.925d)).isTrue();
     }
 
     @Test
     public void testAdd() {
         TopKFilter topKFilter = redisBloomClient.getTopKFilter("topk_add");
-        Assert.assertTrue(topKFilter.reserve(1, 2000, 7, 0.925d));
+		assertThat(topKFilter.reserve(1, 2000, 7, 0.925d)).isTrue();
         topKFilter.add("test");
         List<Boolean> itemExits = topKFilter.query("test");
-        Assert.assertTrue(itemExits != null && itemExits.size() == 1 && itemExits.get(0));
+		assertThat(itemExits).isNotEmpty().hasSize(1);
+		assertThat(itemExits.get(0)).isTrue();
         Map<String, Integer> itemIncrement = new HashMap<>();
         itemIncrement.put("test", 3);
         topKFilter.incrby(itemIncrement);
         List<String> allItems = topKFilter.list();
-        Assert.assertNotNull(allItems);
-        Assert.assertEquals("test", allItems.get(0));
+		assertThat(allItems).isNotEmpty();
+		assertThat(allItems.get(0)).isEqualTo("test");
     }
 
     @Test
     public void testInfo() {
         TopKFilter topKFilter = redisBloomClient.getTopKFilter("topk_info");
-        Assert.assertTrue(topKFilter.reserve(10, 2000, 7, 0.925d));
+		assertThat(topKFilter.reserve(10, 2000, 7, 0.925d)).isTrue();
         TopKFilterInfo topKFilterInfo = topKFilter.getInfo();
-        Assert.assertTrue(topKFilterInfo.getDepth().intValue() == 7);
+		assertThat(topKFilterInfo.getDepth()).isEqualTo(7);
     }
 }
