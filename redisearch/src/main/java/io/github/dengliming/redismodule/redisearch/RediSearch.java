@@ -66,6 +66,7 @@ import static io.github.dengliming.redismodule.redisearch.protocol.RedisCommands
 import static io.github.dengliming.redismodule.redisearch.protocol.RedisCommands.FT_EXPLAIN;
 import static io.github.dengliming.redismodule.redisearch.protocol.RedisCommands.FT_GET;
 import static io.github.dengliming.redismodule.redisearch.protocol.RedisCommands.FT_INFO;
+import static io.github.dengliming.redismodule.redisearch.protocol.RedisCommands.FT_LIST;
 import static io.github.dengliming.redismodule.redisearch.protocol.RedisCommands.FT_MGET;
 import static io.github.dengliming.redismodule.redisearch.protocol.RedisCommands.FT_SEARCH;
 import static io.github.dengliming.redismodule.redisearch.protocol.RedisCommands.FT_SEARCH_WITH_SCORES;
@@ -662,6 +663,19 @@ public class RediSearch extends RedissonObject {
             options.build(args);
         }
         return commandExecutor.readAsync(getName(), StringCodec.INSTANCE, FT_SPELLCHECK, args.toArray());
+    }
+
+    /**
+     * Returns a list of all existing indexes.
+     *
+     * @return
+     */
+    public List<String> listIndexes() {
+        return get(listIndexesAsync());
+    }
+
+    public RFuture<List<String>> listIndexesAsync() {
+        return commandExecutor.readAsync(getName(), StringCodec.INSTANCE, FT_LIST);
     }
 
     private void checkQueryArgument(String query) {

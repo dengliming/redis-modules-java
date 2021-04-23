@@ -62,6 +62,14 @@ public class RediSearchTest extends AbstractTest {
         assertThat(indexInfo.get("index_name")).isEqualTo("index1");
         assertThat(((List) (indexInfo.get("index_options"))).get(0)).isEqualTo("MAXTEXTFIELDS");
         assertThat(((List<List<Object>>) (indexInfo.get("fields"))).get(0).get(0)).isEqualTo("title");
+
+        List<String> indexes = rediSearch.listIndexes();
+        assertThat(indexes).hasSize(1);
+        assertThat(indexes).containsExactly("index1");
+
+        rediSearch.dropIndex();
+        indexes = rediSearch.listIndexes();
+        assertThat(indexes).isEmpty();
     }
 
     @Test

@@ -31,6 +31,7 @@ import org.redisson.client.protocol.decoder.ListResultReplayDecoder;
 import org.redisson.client.protocol.decoder.ObjectListReplayDecoder;
 import org.redisson.client.protocol.decoder.ObjectMapReplayDecoder;
 import org.redisson.client.protocol.decoder.ObjectMapReplayDecoder2;
+import org.redisson.client.protocol.decoder.StringListReplayDecoder;
 
 /**
  * @author dengliming
@@ -76,4 +77,6 @@ public interface RedisCommands {
     RedisCommand FT_CONFIG_SET = new RedisCommand<>("FT.CONFIG", "SET", new BooleanReplayConvertor());
     RedisCommand FT_CONFIG_GET = new RedisCommand<>("FT.CONFIG", "GET", new ListMultiDecoder2<>(new ObjectMapReplayDecoder2(), new CodecDecoder()));
     RedisCommand FT_CONFIG_HELP = new RedisCommand<>("FT.CONFIG", "HELP", new ListMultiDecoder2<>(new ObjectMapReplayDecoder2(), new CodecDecoder()));
+
+    RedisCommand FT_LIST = new RedisCommand<>("FT._LIST", new StringListReplayDecoder());
 }
