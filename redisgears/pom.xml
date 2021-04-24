@@ -10,4 +10,10 @@
     <artifactId>redisgears</artifactId>
     <name>RedisGears</name>
 
+    <dependencies>
+        <dependency>
+            <groupId>io.github.dengliming.redismodule</groupId>
+            <artifactId>commons</artifactId>
+        </dependency>
+    </dependencies>
 </project>

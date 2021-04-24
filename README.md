@@ -8,9 +8,9 @@ Java Client libraries for [redis-modules](https://redis.io/modules), based on [R
 * [RediSearch](redisearch)
 * [RedisTimeSeries](redistimeseries)
 * [RedisAI](redisai)
+* [RedisGears](redisgears)
 
 ## TODO
-* [RedisGears](https://oss.redislabs.com/redisgears/)
 * [RedisJSON](https://oss.redislabs.com/rejson/)
 * [...](https://redis.io/modules)
  
@@ -124,6 +124,17 @@ RedisAIClient redisAIClient = new RedisAIClient(config);
 RedisAI redisAI = redisAIClient.getRedisAI();
 redisAI.setTensor("tensor1", DataType.FLOAT, new int[]{2, 2}, null, new String[]{"1", "2", "3", "4"});
 redisAIClient.shutdown();
+```
+
+RedisGears
+```java
+Config config = new Config();
+config.useSingleServer().setAddress("redis://127.0.0.1:6379");
+RedisGearsClient redisGearsClient = new RedisGearsClient(config);
+
+RedisGears redisGears = redisGearsClient.getRedisGears();
+redisGears.pyExecute("GB().run()", false);
+redisGearsClient.shutdown();
 ```
 ## License
 

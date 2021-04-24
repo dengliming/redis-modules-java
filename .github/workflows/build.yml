@@ -49,6 +49,15 @@ jobs:
           --health-retries 5
         ports:
           - 6382:6379
+      redisgears:
+        image: redislabs/redisgears:edge
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 6383:6379
 
     steps:
       - uses: actions/checkout@v2
@@ -71,5 +80,8 @@ jobs:
 
       - name: Test RedisAI
         run: mvn test -pl redisai -DREDIS_HOST=localhost -DREDIS_PORT=6382 --file pom.xml
+
+      - name: Test RedisGears
+        run: mvn test -pl redisgears -DREDIS_HOST=localhost -DREDIS_PORT=6383 --file pom.xml
 
       - uses: codecov/codecov-action@v1
