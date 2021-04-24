@@ -14,6 +14,7 @@
         <module>redisai</module>
         <module>redistimeseries</module>
         <module>redisgears</module>
+		<module>redisjson</module>
         <module>commons</module>
     </modules>
 
@@ -62,6 +63,7 @@
 		<assertj-core.version>3.17.2</assertj-core.version>
 		<hamcrest-library.version>2.2</hamcrest-library.version>
 		<maven-checkstyle-plugin.version>3.1.0</maven-checkstyle-plugin.version>
+		<maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
     </properties>
 
     <dependencyManagement>
@@ -107,6 +109,12 @@
                 <artifactId>redistimeseries</artifactId>
                 <version>${project.version}</version>
             </dependency>
+
+			<dependency>
+				<groupId>io.github.dengliming.redismodule</groupId>
+				<artifactId>redisjson</artifactId>
+				<version>${project.version}</version>
+			</dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -170,6 +178,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
+				<version>${maven-compiler-plugin.version}</version>
                 <configuration>
                     <source>${java.version}</source>
                     <target>${java.version}</target>

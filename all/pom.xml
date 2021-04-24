@@ -38,5 +38,10 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>redistimeseries</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>redisjson</artifactId>
+        </dependency>
     </dependencies>
 </project>

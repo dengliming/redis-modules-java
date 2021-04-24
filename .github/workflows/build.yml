@@ -58,6 +58,15 @@ jobs:
           --health-retries 5
         ports:
           - 6383:6379
+      redisjson:
+        image: redislabs/rejson:latest
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 6384:6379
 
     steps:
       - uses: actions/checkout@v2
@@ -83,5 +92,8 @@ jobs:
 
       - name: Test RedisGears
         run: mvn test -pl redisgears -DREDIS_HOST=localhost -DREDIS_PORT=6383 --file pom.xml
+
+      - name: Test RedisJSON
+        run: mvn test -pl redisjson -DREDIS_HOST=localhost -DREDIS_PORT=6384 --file pom.xml
 
       - uses: codecov/codecov-action@v1
