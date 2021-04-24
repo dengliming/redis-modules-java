@@ -76,12 +76,6 @@
 
             <dependency>
                 <groupId>io.github.dengliming.redismodule</groupId>
-                <artifactId>commons</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>io.github.dengliming.redismodule</groupId>
                 <artifactId>redisai</artifactId>
                 <version>${project.version}</version>
             </dependency>
