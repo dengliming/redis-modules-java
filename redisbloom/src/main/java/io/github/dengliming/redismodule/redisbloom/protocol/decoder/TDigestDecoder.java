@@ -25,7 +25,6 @@ import java.util.List;
 
 public class TDigestDecoder implements MultiDecoder<TDigestInfo> {
 
-
     @Override
     public Decoder<Object> getDecoder(int paramNum, State state) {
         return null;
