@@ -19,6 +19,7 @@ package io.github.dengliming.redismodule.redisbloom.client;
 import io.github.dengliming.redismodule.redisbloom.BloomFilter;
 import io.github.dengliming.redismodule.redisbloom.CountMinSketch;
 import io.github.dengliming.redismodule.redisbloom.CuckooFilter;
+import io.github.dengliming.redismodule.redisbloom.TDigest;
 import io.github.dengliming.redismodule.redisbloom.TopKFilter;
 import org.redisson.Redisson;
 import org.redisson.client.protocol.RedisCommands;
@@ -48,6 +49,10 @@ public class RedisBloomClient extends Redisson {
 
     public TopKFilter getTopKFilter(String name) {
         return new TopKFilter(getConnectionManager().getCommandExecutor(), name);
+    }
+
+    public TDigest getTDigest(String name) {
+        return new TDigest(getConnectionManager().getCommandExecutor(), name);
     }
 
     public Void flushall() {

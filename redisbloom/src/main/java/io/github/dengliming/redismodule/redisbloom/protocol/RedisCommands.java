@@ -25,9 +25,11 @@ import io.github.dengliming.redismodule.redisbloom.protocol.decoder.BloomFilterD
 import io.github.dengliming.redismodule.redisbloom.protocol.decoder.ChunksDecoder;
 import io.github.dengliming.redismodule.redisbloom.protocol.decoder.CountMinSketchDecoder;
 import io.github.dengliming.redismodule.redisbloom.protocol.decoder.CuckooFilterDecoder;
+import io.github.dengliming.redismodule.redisbloom.protocol.decoder.TDigestDecoder;
 import io.github.dengliming.redismodule.redisbloom.protocol.decoder.TopKFilterDecoder;
 import org.redisson.client.protocol.RedisCommand;
 import org.redisson.client.protocol.convertor.BooleanReplayConvertor;
+import org.redisson.client.protocol.convertor.DoubleReplayConvertor;
 import org.redisson.client.protocol.convertor.IntegerReplayConvertor;
 import org.redisson.client.protocol.decoder.ListMultiDecoder2;
 import org.redisson.client.protocol.decoder.ObjectListReplayDecoder;
@@ -75,4 +77,14 @@ public interface RedisCommands {
     RedisCommand<List<Integer>> TOPK_COUNT = new RedisCommand<>("TOPK.COUNT", new ObjectListReplayDecoder(), new IntegerReplayConvertor());
     RedisCommand<List<String>> TOPK_LIST = new RedisCommand("TOPK.LIST", new ObjectListReplayDecoder());
     RedisCommand<TopKFilterInfo> TOPK_INFO = new RedisCommand<>("TOPK.INFO", new ListMultiDecoder2(new TopKFilterDecoder()));
+
+    RedisCommand<Boolean> TDIGEST_CREATE = new RedisCommand<>("TDIGEST.CREATE", new BooleanReplayConvertor());
+    RedisCommand<Boolean> TDIGEST_RESET = new RedisCommand<>("TDIGEST.RESET", new BooleanReplayConvertor());
+    RedisCommand TDIGEST_ADD = new RedisCommand("TDIGEST.ADD", new BooleanReplayConvertor());
+    RedisCommand TDIGEST_INFO = new RedisCommand("TDIGEST.INFO", new ListMultiDecoder2(new TDigestDecoder()));
+    RedisCommand TDIGEST_MIN = new RedisCommand("TDIGEST.MIN", new DoubleReplayConvertor());
+    RedisCommand TDIGEST_MAX = new RedisCommand("TDIGEST.MAX", new DoubleReplayConvertor());
+    RedisCommand TDIGEST_QUANTILE = new RedisCommand("TDIGEST.QUANTILE", new DoubleReplayConvertor());
+    RedisCommand TDIGEST_CDF = new RedisCommand("TDIGEST.CDF", new DoubleReplayConvertor());
+    RedisCommand TDIGEST_MERGE = new RedisCommand("TDIGEST.MERGE", new BooleanReplayConvertor());
 }

@@ -37,4 +37,13 @@ TOPK.QUERY | TopKFilter.<br/>searchOptions()<br/>queryAsync() |
 TOPK.COUNT | TopKFilter.<br/>count()<br/>countAsync() |
 TOPK.LIST | TopKFilter.<br/>list()<br/>listAsync() |
 TOPK.INFO | TopKFilter.<br/>getInfo()<br/>getInfoAsync() |
+TDIGEST.CREATE | TDigest.<br/>create()<br/>createAsync() |
+TDIGEST.RESET | TDigest.<br/>reset()<br/>resetAsync() |
+TDIGEST.ADD | TDigest.<br/>add()<br/>addAsync() |
+TDIGEST.MIN | TDigest.<br/>getMin()<br/>getMinAsync() |
+TDIGEST.MAX | TDigest.<br/>getMax()<br/>getMaxAsync() |
+TDIGEST.QUANTILE | TDigest.<br/>getQuantile()<br/>getQuantileAsync() |
+TDIGEST.CDF | TDigest.<br/>getCdf()<br/>getCdfAsync() |
+TDIGEST.MERGE | TDigest.<br/>mergeTo()<br/>mergeToAsync() |
+TDIGEST.INFO | TDigest.<br/>getInfo()<br/>getInfoAsync() |
 
