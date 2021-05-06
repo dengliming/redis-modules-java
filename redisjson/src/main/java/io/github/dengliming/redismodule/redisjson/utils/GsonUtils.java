@@ -14,13 +14,31 @@
  * limitations under the License.
  */
 
-package io.github.dengliming.redismodule.redisjson.protocol;
+package io.github.dengliming.redismodule.redisjson.utils;
 
-/**
- * @author dengliming
- */
-public enum Keywords {
+import com.google.gson.Gson;
 
-    NX, XX, INDENT, NEWLINE, SPACE, NOESCAPE
+public final class GsonUtils {
 
+    private static final Gson GSON = new Gson();
+
+    private GsonUtils() {
+
+    }
+
+    public static String toJson(Object o) {
+        return GSON.toJson(o);
+    }
+
+    /**
+     * From json to specified Class.
+     *
+     * @param <T>    the type parameter
+     * @param json   the json
+     * @param clazz the t class
+     * @return the t
+     */
+    public static <T> T fromJson(final String json, final Class<T> clazz) {
+        return GSON.fromJson(json, clazz);
+    }
 }

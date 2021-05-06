@@ -138,6 +138,22 @@ RedisGears redisGears = redisGearsClient.getRedisGears();
 redisGears.pyExecute("GB().run()", false);
 redisGearsClient.shutdown();
 ```
+
+RedisJSON
+```java
+Config config = new Config();
+config.useSingleServer().setAddress("redis://127.0.0.1:6379");
+RedisJSONClient redisJSONClient = new RedisJSONClient(config);
+
+RedisJSON redisJSON = redisJSONClient.getRedisJSON();
+String key = "foo";
+Map<String, Object> m = new HashMap<>();
+m.put("id", 1);
+m.put("name", "lisi");
+redisJSON.set(key, SetArgs.Builder.create(".", GsonUtils.toJson(m)));
+Map<String, Object> actual = redisJSON.get(key, Map.class, new GetArgs().path(".").indent("\t").newLine("\n").space(" "));
+redisJSONClient.shutdown();
+```
 ## License
 
 [Apache License 2.0](/LICENSE)
