@@ -40,4 +40,6 @@ public interface RedisCommands {
     RedisCommand JSON_ARRLEN = new RedisCommand<>("JSON.ARRLEN", new LongReplayConvertor());
     RedisCommand JSON_ARRTRIM = new RedisCommand<>("JSON.ARRTRIM", new LongReplayConvertor());
     RedisCommand JSON_ARRINSERT = new RedisCommand<>("JSON.ARRINSERT", new LongReplayConvertor());
+    RedisCommand JSON_ARRINDEX = new RedisCommand<>("JSON.ARRINDEX", new LongReplayConvertor());
+    RedisCommand JSON_ARRPOP = new RedisCommand<>("JSON.ARRPOP", new StringDataDecoder());
 }

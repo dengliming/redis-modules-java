@@ -35,8 +35,10 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static io.github.dengliming.redismodule.redisjson.protocol.RedisCommands.JSON_ARRAPPEND;
+import static io.github.dengliming.redismodule.redisjson.protocol.RedisCommands.JSON_ARRINDEX;
 import static io.github.dengliming.redismodule.redisjson.protocol.RedisCommands.JSON_ARRINSERT;
 import static io.github.dengliming.redismodule.redisjson.protocol.RedisCommands.JSON_ARRLEN;
+import static io.github.dengliming.redismodule.redisjson.protocol.RedisCommands.JSON_ARRPOP;
 import static io.github.dengliming.redismodule.redisjson.protocol.RedisCommands.JSON_ARRTRIM;
 import static io.github.dengliming.redismodule.redisjson.protocol.RedisCommands.JSON_DEL;
 import static io.github.dengliming.redismodule.redisjson.protocol.RedisCommands.JSON_GET;
@@ -138,21 +140,8 @@ public class RedisJSON {
         RAssert.notNull(clazz, "clazz must not be null");
         RAssert.notNull(getArgs, "getArgs must not be null");
 
-        RPromise result = new RedissonPromise<T>();
         RFuture<String> getFuture = commandExecutor.readAsync(getName(), StringCodec.INSTANCE, JSON_GET, getArgs.build(key).toArray());
-        getFuture.onComplete((res, e) -> {
-            if (e != null) {
-                result.tryFailure(e);
-                return;
-            }
-
-            try {
-                result.trySuccess(GsonUtils.fromJson(res, clazz));
-            } catch (Throwable t) {
-                result.tryFailure(t);
-            }
-        });
-        return result;
+        return transformRPromiseResult(getFuture, clazz);
     }
 
     /**
@@ -402,6 +391,73 @@ public class RedisJSON {
         RAssert.notNull(path, "path must not be null");
 
         return commandExecutor.readAsync(getName(), StringCodec.INSTANCE, JSON_ARRTRIM, key, path, start, stop);
+    }
+
+    /**
+     * Finds the index of the first occurrence of a scalar JSON value in the array at the given path.
+     *
+     * JSON.ARRINDEX <key> <path> <json-scalar> [start [stop]]
+     *
+     * @param key
+     * @param path
+     * @param scalar
+     * @param start
+     * @param stop
+     * @return
+     */
+    public long arrIndex(String key, String path, Object scalar, long start, long stop) {
+        return commandExecutor.get(arrIndexAsync(key, path, scalar, start, stop));
+    }
+
+    public RFuture<Long> arrIndexAsync(String key, String path, Object scalar, long start, long stop) {
+        RAssert.notEmpty(key, "key must not be empty");
+        RAssert.notNull(path, "path must not be null");
+        RAssert.notNull(scalar, "scalar must not be null");
+
+        return commandExecutor.readAsync(getName(), StringCodec.INSTANCE, JSON_ARRINDEX, key, path,
+                GsonUtils.toJson(scalar), start, stop);
+    }
+
+    /**
+     * Remove and return element from the index in the array.
+     *
+     * JSON.ARRPOP <key> [path [index]]
+     *
+     * @param key
+     * @param path
+     * @param clazz
+     * @param index
+     * @param <T>
+     * @return
+     */
+    public <T> T arrPop(String key, String path, Class<T> clazz, long index) {
+        return commandExecutor.get(arrPopAsync(key, path, clazz, index));
+    }
+
+    public <T> RFuture<T> arrPopAsync(String key, String path, Class<T> clazz, long index) {
+        RAssert.notEmpty(key, "key must not be empty");
+        RAssert.notNull(path, "path must not be null");
+        RAssert.notNull(clazz, "clazz must not be null");
+
+        RFuture<String> getFuture = commandExecutor.readAsync(getName(), StringCodec.INSTANCE, JSON_ARRPOP, key, path, index);
+        return transformRPromiseResult(getFuture, clazz);
+    }
+
+    private <T> RPromise transformRPromiseResult(RFuture<String> getFuture, Class<T> clazz) {
+        RPromise result = new RedissonPromise<Class<T>>();
+        getFuture.onComplete((res, e) -> {
+            if (e != null) {
+                result.tryFailure(e);
+                return;
+            }
+
+            try {
+                result.trySuccess(GsonUtils.fromJson(res, clazz));
+            } catch (Throwable t) {
+                result.tryFailure(t);
+            }
+        });
+        return result;
     }
 
     public String getName() {

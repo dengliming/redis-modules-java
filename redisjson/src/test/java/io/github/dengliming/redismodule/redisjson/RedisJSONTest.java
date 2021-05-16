@@ -125,6 +125,8 @@ public class RedisJSONTest extends AbstractTest {
         List<String> actualList = (List<String>) actual.get("names");
         assertThat(actualList).containsExactly("zhansan", "lisi");
 
+        assertThat(redisJSON.arrIndex(key, ".names", "lisi", 0, 2)).isEqualTo(1);
+
         assertThat(redisJSON.arrLen(key, ".names")).isEqualTo(2);
 
         assertThat(redisJSON.arrTrim(key, ".names", 1, 1)).isEqualTo(1);
@@ -137,5 +139,9 @@ public class RedisJSONTest extends AbstractTest {
         actual = redisJSON.get(key, Map.class, new GetArgs().path(".").indent("\t").newLine("\n").space(" "));
         actualList = (List<String>) actual.get("names");
         assertThat(actualList).containsExactly("wangwu", "lisi");
+
+        assertThat(redisJSON.arrLen(key, ".names")).isEqualTo(2);
+        assertThat(redisJSON.arrPop(key, ".names", String.class, 0)).isEqualTo("wangwu");
+        assertThat(redisJSON.arrLen(key, ".names")).isEqualTo(1);
     }
 }

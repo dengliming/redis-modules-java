@@ -14,10 +14,10 @@ JSON.NUMMULTBY | RedisJSON.<br/>multBy()<br/>multByAsync() |
 JSON.STRAPPEND | RedisJSON.<br/>strAppend()<br/>strAppendAsync() |
 JSON.STRLEN | RedisJSON.<br/>strLen()<br/>strLenAsync() |
 JSON.ARRAPPEND | RedisJSON.<br/>arrAppend()<br/>arrAppendAsync() |
-JSON.ARRINDEX | N/A |
+JSON.ARRINDEX | RedisJSON.<br/>arrIndex()<br/>arrIndexAsync() |
 JSON.ARRINSERT | RedisJSON.<br/>arrInsert()<br/>arrInsertAsync() |
 JSON.ARRLEN | RedisJSON.<br/>arrLen()<br/>arrLenAsync() |
-JSON.ARRPOP | N/A |
+JSON.ARRPOP | RedisJSON.<br/>arrPop()<br/>arrPopAsync() |
 JSON.ARRTRIM | RedisJSON.<br/>arrTrim()<br/>arrTrimAsync() |
 JSON.OBJKEYS | N/A |
 JSON.OBJLEN | N/A |
