@@ -22,9 +22,7 @@ import org.redisson.client.protocol.Decoder;
 import org.redisson.client.protocol.decoder.MultiDecoder;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author dengliming
@@ -46,9 +44,7 @@ public class LabelDecoder implements MultiDecoder<List<Label>> {
     public List<Label> decode(List<Object> parts, State state) {
         List<List<Object>> list = (List<List<Object>>) (Object) parts;
         List<Label> labels = new ArrayList<>(list.size());
-        Map<Object, Object> result = new LinkedHashMap<Object, Object>(parts.size() / 2);
         for (List<Object> entry : list) {
-            result.put(entry.get(0), entry.get(1));
             labels.add(new Label((String) entry.get(0), (String) entry.get(1)));
         }
         return labels;
