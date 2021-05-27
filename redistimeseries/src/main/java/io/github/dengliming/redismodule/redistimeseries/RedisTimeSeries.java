@@ -106,7 +106,7 @@ public class RedisTimeSeries {
 
         List<Object> args = new ArrayList<>();
         args.add(sample.getKey());
-        args.add(sample.getValue().getTimestamp());
+        args.add(sample.getValue().getTimestamp() > 0 ? sample.getValue().getTimestamp() : "*");
         args.add(sample.getValue().getValue());
         if (options != null) {
             options.isAdd(true).build(args);
