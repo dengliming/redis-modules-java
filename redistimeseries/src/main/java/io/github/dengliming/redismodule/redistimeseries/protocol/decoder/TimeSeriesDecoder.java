@@ -58,11 +58,14 @@ public class TimeSeriesDecoder implements MultiDecoder<List<TimeSeries>> {
             List<Value> values = new ArrayList<>();
             List<Object> objects = (List<Object>) o.get(2);
             // all samples
-            if (objects.get(0) instanceof List) {
+            if (objects.size() > 0 && (objects.get(0) instanceof List)) {
                 ((List<List<Object>>) o.get(2)).forEach(valueObject -> values.add(valueDecoder.decode(valueObject, state)));
             } else {
                 // the last sample
-                values.add(valueDecoder.decode((List<Object>) o.get(2), state));
+                Value decoded = valueDecoder.decode((List<Object>) o.get(2), state);
+                if(decoded != null) {
+                    values.add(decoded);
+                }
             }
             series.values(values);
             timeSeries.add(series);
