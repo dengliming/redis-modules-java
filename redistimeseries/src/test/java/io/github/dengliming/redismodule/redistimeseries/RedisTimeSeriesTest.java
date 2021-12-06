@@ -141,6 +141,12 @@ public class RedisTimeSeriesTest extends AbstractTest {
         assertThat(timeSeries).hasSize(1);
         assertThat(timeSeries.get(0).getKey()).isEqualTo("temperature:2:33");
 
+        // Sensor exists, but no data in range
+        timeSeries = redisTimeSeries.mrange(0, 100, new RangeOptions()
+                .max(3).withLabels(), "sensor_id=2");
+        assertThat(timeSeries).hasSize(1);
+        assertThat(timeSeries.get(0).getValues()).isEmpty();
+
         timeSeries = redisTimeSeries.mrange(timestamp, timestamp + 1, new RangeOptions()
                 .max(3).withLabels(), "sensor_id=1");
         assertThat(timeSeries).isEmpty();
