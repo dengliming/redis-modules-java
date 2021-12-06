@@ -7,7 +7,7 @@
     <groupId>io.github.dengliming.redismodule</groupId>
     <artifactId>redis-modules-java</artifactId>
     <packaging>pom</packaging>
-    <version>1.0.2</version>
+    <version>1.0.3-SNAPSHOT</version>
     <modules>
         <module>all</module>
         <module>redisbloom</module>
@@ -33,7 +33,7 @@
     <licenses>
         <license>
             <name>Apache License, Version 2.0</name>
-            <url>http://www.apache.org/licenses/LICENSE-2.0</url>
+            <url>https://www.apache.org/licenses/LICENSE-2.0</url>
         </license>
     </licenses>
 
