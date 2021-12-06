@@ -41,7 +41,7 @@ jobs:
         ports:
           - 6381:6379
       redisai:
-        image: redislabs/redisai:edge-cpu
+        image: redislabs/redisai:edge-cpu-bionic
         options: >-
           --health-cmd "redis-cli ping"
           --health-interval 10s
