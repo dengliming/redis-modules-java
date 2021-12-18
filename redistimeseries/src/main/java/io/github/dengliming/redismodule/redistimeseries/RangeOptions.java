@@ -27,6 +27,7 @@ public class RangeOptions {
 
     private int count;
     private Aggregation aggregationType;
+    private Align aggregationAlign;
     private long timeBucket;
     private boolean withLabels;
 
@@ -38,6 +39,13 @@ public class RangeOptions {
     public RangeOptions aggregationType(Aggregation aggregationType, long timeBucket) {
         this.aggregationType = aggregationType;
         this.timeBucket = timeBucket;
+        return this;
+    }
+
+    public RangeOptions aggregationType(Aggregation aggregationType, long timeBucket, Align align) {
+        this.aggregationType = aggregationType;
+        this.timeBucket = timeBucket;
+        this.aggregationAlign = align;
         return this;
     }
 
@@ -55,6 +63,10 @@ public class RangeOptions {
             args.add(Keywords.AGGREGATION);
             args.add(aggregationType.getKey());
             args.add(timeBucket);
+            if (aggregationAlign != null) {
+                args.add(Keywords.ALIGN);
+                args.add(aggregationAlign.getKey());
+            }
         }
         if (withLabels) {
             args.add(Keywords.WITHLABELS);
