@@ -14,13 +14,23 @@
  * limitations under the License.
  */
 
-package io.github.dengliming.redismodule.redistimeseries.protocol;
+package io.github.dengliming.redismodule.redistimeseries;
 
 /**
- * @author dengliming
+ * Aggregation Align type
+ *
+ * @author xdev.developer
  */
-public enum Keywords {
+public enum Align {
+    START("start"), END("end");
 
-    RETENTION, UNCOMPRESSED, LABELS, TIMESTAMP, AGGREGATION, COUNT, WITHLABELS, FILTER, DUPLICATE_POLICY, ON_DUPLICATE, ALIGN;
+    private String key;
 
+    Align(String key) {
+        this.key = key;
+    }
+
+    public String getKey() {
+        return key;
+    }
 }
