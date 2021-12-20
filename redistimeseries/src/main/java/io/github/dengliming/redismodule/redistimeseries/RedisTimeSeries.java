@@ -293,6 +293,41 @@ public class RedisTimeSeries {
     }
 
     /**
+     * Query a timestamp range across multiple time-series by filters.
+     *
+     * @param from fromTimestamp
+     * @param to to timestamp
+     * @param rangeOptions Optional args
+     * @param groupBy Optional group by args
+     * @param filters list of filters
+     * @return List of TimeSeries
+     */
+    public List<TimeSeries> mrange(long from, long to, RangeOptions rangeOptions, GroupByOptions groupBy, String... filters) {
+        return commandExecutor.get(mrangeAsync(from, to, rangeOptions, groupBy, filters));
+    }
+
+    public RFuture<List<TimeSeries>> mrangeAsync(long from, long to, RangeOptions rangeOptions, GroupByOptions groupBy, String... filters) {
+        RAssert.notEmpty(filters, "filters must not be empty");
+
+        List<Object> args = new ArrayList<>();
+        args.add(from);
+        args.add(to);
+        if (rangeOptions != null) {
+            rangeOptions.build(args);
+        }
+        args.add(Keywords.FILTER);
+        for (String filter : filters) {
+            args.add(filter);
+        }
+
+        if (groupBy != null) {
+            groupBy.build(args);
+        }
+
+        return commandExecutor.readAsync(getName(), StringCodec.INSTANCE, TS_MRANGE, args.toArray());
+    }
+
+    /**
      * Get the last sample.
      *
      * @param key Key name for timeseries
