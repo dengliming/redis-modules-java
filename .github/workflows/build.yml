@@ -32,7 +32,7 @@ jobs:
         ports:
           - 6380:6379
       redistimeseries:
-        image: redislabs/redistimeseries:latest
+        image: redislabs/redistimeseries:1.6.0
         options: >-
           --health-cmd "redis-cli ping"
           --health-interval 10s
