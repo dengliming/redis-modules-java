@@ -17,7 +17,6 @@
 package io.github.dengliming.redismodule.redistimeseries;
 
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.jupiter.api.Test;
 import org.redisson.client.RedisException;
 
@@ -28,6 +27,7 @@ import java.util.Map;
 
 import static io.github.dengliming.redismodule.redistimeseries.Sample.Value;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.tuple;
 
 /**
  * @author dengliming
@@ -179,7 +179,7 @@ public class RedisTimeSeriesTest extends AbstractTest {
         assertThat(sum.get(0).getValue()).isEqualTo(40.0d);
     }
 
-    @Ignore("Only for redis timeseries > 1.6.0")
+    @Test
     public void testAggregationsAlign() {
         RedisTimeSeries redisTimeSeries = getRedisTimeSeries();
         long from = 1L;
@@ -223,6 +223,87 @@ public class RedisTimeSeriesTest extends AbstractTest {
 
         assertThat(end.get(1).getTimestamp()).isEqualTo(4000L);
         assertThat(end.get(1).getValue()).isEqualTo(10.0d);
+    }
+
+    @Test
+    public void testGroupBy() {
+        RedisTimeSeries redisTimeSeries = getRedisTimeSeries();
+        long from = 1L;
+        long to = 10;
+
+        TimeSeriesOptions cpuSystem = new TimeSeriesOptions()
+                .labels(new Label("metric", "cpu"), new Label("name", "system"))
+                .unCompressed();
+
+        TimeSeriesOptions cpuUser = new TimeSeriesOptions()
+                .labels(new Label("metric", "cpu"), new Label("name", "user"))
+                .unCompressed();
+
+        assertThat(redisTimeSeries.add(new Sample("ts1", Value.of(1L, 90.0d)), cpuSystem).longValue()).isEqualTo(1L);
+        assertThat(redisTimeSeries.add(new Sample("ts1", Value.of(2L, 45.0d)), cpuSystem).longValue()).isEqualTo(2L);
+        assertThat(redisTimeSeries.add(new Sample("ts2", Value.of(2L, 99.0d)), cpuUser).longValue()).isEqualTo(2L);
+        assertThat(redisTimeSeries.add(new Sample("ts3", Value.of(2L, 2.0d)), cpuSystem).longValue()).isEqualTo(2L);
+
+        List<TimeSeries> max = redisTimeSeries.mrange(from, to,
+                new RangeOptions().withLabels(),
+                new GroupByOptions().groupBy("name", Reducer.MAX), "metric=cpu");
+
+        assertThat(max).hasSize(2);
+
+        assertThat(max.get(0).getLabels())
+                .extracting(Label::getKey, Label::getValue)
+                .containsExactlyInAnyOrder(
+                        tuple("name", "system"),
+                        tuple("__reducer__", "max"),
+                        tuple("__source__", "ts1,ts3"));
+
+        assertThat(max.get(0).getValues())
+                .extracting(Value::getTimestamp, Value::getValue)
+                .containsExactly(
+                        tuple(1L, 90.0d),
+                        tuple(2L, 45.0d));
+
+        assertThat(max.get(1).getLabels())
+                .extracting(Label::getKey, Label::getValue)
+                .containsExactlyInAnyOrder(
+                        tuple("name", "user"),
+                        tuple("__reducer__", "max"),
+                        tuple("__source__", "ts2"));
+
+        assertThat(max.get(1).getValues())
+                .extracting(Value::getTimestamp, Value::getValue)
+                .containsExactly(tuple(2L, 99.0d));
+
+        List<TimeSeries> min = redisTimeSeries.mrange(from, to,
+                new RangeOptions().withLabels(),
+                new GroupByOptions().groupBy("name", Reducer.MIN), "metric=cpu");
+
+        assertThat(min).hasSize(2);
+
+        assertThat(min.get(0).getLabels())
+                .extracting(Label::getKey, Label::getValue)
+                .containsExactlyInAnyOrder(
+                        tuple("name", "system"),
+                        tuple("__reducer__", "min"),
+                        tuple("__source__", "ts1,ts3"));
+
+        assertThat(min.get(0).getValues())
+                .extracting(Value::getTimestamp, Value::getValue)
+                .containsExactly(
+                        tuple(1L, 90.0d),
+                        tuple(2L, 2.0d));
+
+        assertThat(min.get(1).getLabels())
+                .extracting(Label::getKey, Label::getValue)
+                .containsExactlyInAnyOrder(
+                        tuple("name", "user"),
+                        tuple("__reducer__", "min"),
+                        tuple("__source__", "ts2"));
+
+        assertThat(min.get(1).getValues())
+                .extracting(Value::getTimestamp, Value::getValue)
+                .containsExactly(tuple(2L, 99.0d));
+
     }
 
     @Test

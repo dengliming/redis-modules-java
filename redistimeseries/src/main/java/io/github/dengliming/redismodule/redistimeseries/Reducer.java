@@ -14,13 +14,23 @@
  * limitations under the License.
  */
 
-package io.github.dengliming.redismodule.redistimeseries.protocol;
+package io.github.dengliming.redismodule.redistimeseries;
 
 /**
- * @author dengliming
+ * Group by reducer
+ *
+ * @author xdev.developer
  */
-public enum Keywords {
+public enum Reducer {
+    SUM("sum"), MIN("min"), MAX("max");
 
-    RETENTION, UNCOMPRESSED, LABELS, TIMESTAMP, AGGREGATION, COUNT, WITHLABELS, FILTER, DUPLICATE_POLICY, ON_DUPLICATE, ALIGN, GROUPBY, REDUCE;
+    private String key;
 
+    Reducer(String key) {
+        this.key = key;
+    }
+
+    public String getKey() {
+        return key;
+    }
 }
