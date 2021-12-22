@@ -18,7 +18,6 @@ package io.github.dengliming.redismodule.redisbloom.protocol.decoder;
 
 import io.github.dengliming.redismodule.redisbloom.model.TopKFilterInfo;
 import org.redisson.client.handler.State;
-import org.redisson.client.protocol.Decoder;
 import org.redisson.client.protocol.decoder.MultiDecoder;
 
 import java.util.List;
@@ -27,11 +26,6 @@ import java.util.List;
  * @author dengliming
  */
 public class TopKFilterDecoder implements MultiDecoder<TopKFilterInfo> {
-
-    @Override
-    public Decoder<Object> getDecoder(int paramNum, State state) {
-        return null;
-    }
 
     @Override
     public TopKFilterInfo decode(List<Object> parts, State state) {

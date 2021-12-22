@@ -19,17 +19,11 @@ package io.github.dengliming.redismodule.redisai.protocol.decoder;
 import io.github.dengliming.redismodule.redisai.DataType;
 import io.github.dengliming.redismodule.redisai.model.Tensor;
 import org.redisson.client.handler.State;
-import org.redisson.client.protocol.Decoder;
 import org.redisson.client.protocol.decoder.MultiDecoder;
 
 import java.util.List;
 
 public class TensorDecoder implements MultiDecoder<Tensor> {
-
-    @Override
-    public Decoder<Object> getDecoder(int i, State state) {
-        return null;
-    }
 
     @Override
     public Tensor decode(List<Object> list, State state) {

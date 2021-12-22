@@ -18,7 +18,6 @@ package io.github.dengliming.redismodule.redisbloom.protocol.decoder;
 
 import io.github.dengliming.redismodule.redisbloom.model.ChunksData;
 import org.redisson.client.handler.State;
-import org.redisson.client.protocol.Decoder;
 import org.redisson.client.protocol.decoder.MultiDecoder;
 
 import java.util.List;
@@ -27,11 +26,6 @@ import java.util.List;
  * @author dengliming
  */
 public class ChunksDecoder implements MultiDecoder<ChunksData> {
-
-    @Override
-    public Decoder<Object> getDecoder(int paramNum, State state) {
-        return null;
-    }
 
     @Override
     public ChunksData decode(List<Object> parts, State state) {

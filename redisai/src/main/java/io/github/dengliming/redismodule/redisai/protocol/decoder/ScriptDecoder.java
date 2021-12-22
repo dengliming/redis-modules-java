@@ -19,17 +19,11 @@ package io.github.dengliming.redismodule.redisai.protocol.decoder;
 import io.github.dengliming.redismodule.redisai.Device;
 import io.github.dengliming.redismodule.redisai.model.Script;
 import org.redisson.client.handler.State;
-import org.redisson.client.protocol.Decoder;
 import org.redisson.client.protocol.decoder.MultiDecoder;
 
 import java.util.List;
 
 public class ScriptDecoder implements MultiDecoder<Script> {
-
-    @Override
-    public Decoder<Object> getDecoder(int i, State state) {
-        return null;
-    }
 
     @Override
     public Script decode(List<Object> list, State state) {

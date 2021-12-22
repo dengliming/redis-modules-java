@@ -36,27 +36,27 @@ public class RedisBloomClient extends Redisson {
     }
 
     public BloomFilter getRBloomFilter(String name) {
-        return new BloomFilter(getConnectionManager().getCommandExecutor(), name);
+        return new BloomFilter(getCommandExecutor(), name);
     }
 
     public CountMinSketch getCountMinSketch(String name) {
-        return new CountMinSketch(getConnectionManager().getCommandExecutor(), name);
+        return new CountMinSketch(getCommandExecutor(), name);
     }
 
     public CuckooFilter getCuckooFilter(String name) {
-        return new CuckooFilter(getConnectionManager().getCommandExecutor(), name);
+        return new CuckooFilter(getCommandExecutor(), name);
     }
 
     public TopKFilter getTopKFilter(String name) {
-        return new TopKFilter(getConnectionManager().getCommandExecutor(), name);
+        return new TopKFilter(getCommandExecutor(), name);
     }
 
     public TDigest getTDigest(String name) {
-        return new TDigest(getConnectionManager().getCommandExecutor(), name);
+        return new TDigest(getCommandExecutor(), name);
     }
 
     public Void flushall() {
-        CommandAsyncExecutor commandExecutor = getConnectionManager().getCommandExecutor();
+        CommandAsyncExecutor commandExecutor = getCommandExecutor();
         return commandExecutor.get(commandExecutor.writeAllAsync(RedisCommands.FLUSHALL));
     }
 }

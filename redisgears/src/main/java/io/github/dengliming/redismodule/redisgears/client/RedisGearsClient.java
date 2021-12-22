@@ -29,11 +29,11 @@ public class RedisGearsClient extends Redisson {
     }
 
     public RedisGears getRedisGears() {
-        return new RedisGears(getConnectionManager().getCommandExecutor());
+        return new RedisGears(getCommandExecutor());
     }
 
     public Void flushall() {
-        CommandAsyncExecutor commandExecutor = getConnectionManager().getCommandExecutor();
+        CommandAsyncExecutor commandExecutor = getCommandExecutor();
         return commandExecutor.get(commandExecutor.writeAllAsync(RedisCommands.FLUSHALL));
     }
 }

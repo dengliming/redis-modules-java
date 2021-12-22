@@ -32,11 +32,11 @@ public class RedisTimeSeriesClient extends Redisson {
     }
 
     public RedisTimeSeries getRedisTimeSeries() {
-        return new RedisTimeSeries(getConnectionManager().getCommandExecutor());
+        return new RedisTimeSeries(getCommandExecutor());
     }
 
     public Void flushall() {
-        CommandAsyncExecutor commandExecutor = getConnectionManager().getCommandExecutor();
+        CommandAsyncExecutor commandExecutor = getCommandExecutor();
         return commandExecutor.get(commandExecutor.writeAllAsync(RedisCommands.FLUSHALL));
     }
 }

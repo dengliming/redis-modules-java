@@ -17,7 +17,6 @@
 package io.github.dengliming.redismodule.redisearch.protocol.decoder;
 
 import org.redisson.client.handler.State;
-import org.redisson.client.protocol.Decoder;
 import org.redisson.client.protocol.decoder.MultiDecoder;
 
 import java.util.LinkedHashMap;
@@ -28,11 +27,6 @@ import java.util.Map;
  * @author dengliming
  */
 public class StringMapInfoDecoder implements MultiDecoder<Map<String, Object>> {
-
-    @Override
-    public Decoder<Object> getDecoder(int paramNum, State state) {
-        return null;
-    }
 
     @Override
     public Map<String, Object> decode(List<Object> parts, State state) {

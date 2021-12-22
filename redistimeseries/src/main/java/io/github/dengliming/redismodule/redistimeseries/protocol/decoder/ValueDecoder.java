@@ -17,20 +17,16 @@
 package io.github.dengliming.redismodule.redistimeseries.protocol.decoder;
 
 import org.redisson.client.handler.State;
-import org.redisson.client.protocol.Decoder;
 import org.redisson.client.protocol.decoder.MultiDecoder;
-import static io.github.dengliming.redismodule.redistimeseries.Sample.Value;
 
 import java.util.List;
+
+import static io.github.dengliming.redismodule.redistimeseries.Sample.Value;
 
 /**
  * @author dengliming
  */
 public class ValueDecoder implements MultiDecoder<Value> {
-    @Override
-    public Decoder<Object> getDecoder(int paramNum, State state) {
-        return null;
-    }
 
     @Override
     public Value decode(List<Object> parts, State state) {

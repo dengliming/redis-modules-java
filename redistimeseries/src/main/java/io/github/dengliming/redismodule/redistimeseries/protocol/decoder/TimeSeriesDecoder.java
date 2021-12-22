@@ -18,11 +18,12 @@ package io.github.dengliming.redismodule.redistimeseries.protocol.decoder;
 
 import io.github.dengliming.redismodule.redistimeseries.TimeSeries;
 import org.redisson.client.handler.State;
-import org.redisson.client.protocol.Decoder;
 import org.redisson.client.protocol.decoder.MultiDecoder;
-import static io.github.dengliming.redismodule.redistimeseries.Sample.Value;
+
 import java.util.ArrayList;
 import java.util.List;
+
+import static io.github.dengliming.redismodule.redistimeseries.Sample.Value;
 
 /**
  * @author dengliming
@@ -31,11 +32,6 @@ public class TimeSeriesDecoder implements MultiDecoder<List<TimeSeries>> {
 
     private LabelDecoder labelDecoder = new LabelDecoder();
     private ValueDecoder valueDecoder = new ValueDecoder();
-
-    @Override
-    public Decoder<Object> getDecoder(int paramNum, State state) {
-        return null;
-    }
 
     /**
      * [temperature:2:33, [[label1, test], [label2, test1]], [1588266627081, 13]]
