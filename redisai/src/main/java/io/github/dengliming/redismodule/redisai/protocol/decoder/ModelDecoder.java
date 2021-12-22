@@ -19,6 +19,7 @@ package io.github.dengliming.redismodule.redisai.protocol.decoder;
 import io.github.dengliming.redismodule.redisai.Backend;
 import io.github.dengliming.redismodule.redisai.Device;
 import io.github.dengliming.redismodule.redisai.model.Model;
+import org.redisson.client.codec.Codec;
 import org.redisson.client.handler.State;
 import org.redisson.client.protocol.Decoder;
 import org.redisson.client.protocol.decoder.MultiDecoder;
@@ -28,7 +29,7 @@ import java.util.List;
 public class ModelDecoder implements MultiDecoder<Model> {
 
     @Override
-    public Decoder<Object> getDecoder(int i, State state) {
+    public Decoder<Object> getDecoder(Codec codec, int paramNum, State state) {
         return null;
     }
 

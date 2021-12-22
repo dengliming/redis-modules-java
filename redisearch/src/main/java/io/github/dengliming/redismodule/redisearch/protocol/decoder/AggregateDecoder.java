@@ -17,6 +17,7 @@
 package io.github.dengliming.redismodule.redisearch.protocol.decoder;
 
 import io.github.dengliming.redismodule.redisearch.aggregate.AggregateResult;
+import org.redisson.client.codec.Codec;
 import org.redisson.client.handler.State;
 import org.redisson.client.protocol.Decoder;
 import org.redisson.client.protocol.decoder.MultiDecoder;
@@ -31,7 +32,7 @@ import java.util.Map;
 public class AggregateDecoder implements MultiDecoder<AggregateResult> {
 
     @Override
-    public Decoder<Object> getDecoder(int paramNum, State state) {
+    public Decoder<Object> getDecoder(Codec codec, int paramNum, State state) {
         return null;
     }
 
