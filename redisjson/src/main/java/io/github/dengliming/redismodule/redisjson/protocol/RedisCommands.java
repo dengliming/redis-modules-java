@@ -18,6 +18,7 @@ package io.github.dengliming.redismodule.redisjson.protocol;
 
 import org.redisson.client.protocol.RedisCommand;
 import org.redisson.client.protocol.convertor.LongReplayConvertor;
+import org.redisson.client.protocol.decoder.ObjectDecoder;
 import org.redisson.client.protocol.decoder.ObjectListReplayDecoder;
 import org.redisson.client.protocol.decoder.StringDataDecoder;
 import org.redisson.client.protocol.decoder.StringReplayDecoder;
@@ -28,12 +29,12 @@ import org.redisson.client.protocol.decoder.StringReplayDecoder;
 public interface RedisCommands {
 
     RedisCommand JSON_DEL = new RedisCommand<>("JSON.DEL", new LongReplayConvertor());
-    RedisCommand JSON_SET = new RedisCommand<>("JSON.SET", new StringReplayDecoder());
-    RedisCommand JSON_GET = new RedisCommand<>("JSON.GET", new StringDataDecoder());
-    RedisCommand JSON_TYPE = new RedisCommand<>("JSON.TYPE", new StringDataDecoder());
+    RedisCommand JSON_SET = new RedisCommand<>("JSON.SET", new ObjectDecoder(new StringReplayDecoder()));
+    RedisCommand JSON_GET = new RedisCommand<>("JSON.GET", new ObjectDecoder(new StringDataDecoder()));
+    RedisCommand JSON_TYPE = new RedisCommand<>("JSON.TYPE", new ObjectDecoder(new StringDataDecoder()));
     RedisCommand JSON_MGET = new RedisCommand<>("JSON.MGET", new ObjectListReplayDecoder<String>());
-    RedisCommand JSON_NUMINCRBY = new RedisCommand<>("JSON.NUMINCRBY", new StringDataDecoder());
-    RedisCommand JSON_NUMMULTBY = new RedisCommand<>("JSON.NUMMULTBY", new StringDataDecoder());
+    RedisCommand JSON_NUMINCRBY = new RedisCommand<>("JSON.NUMINCRBY", new ObjectDecoder(new StringDataDecoder()));
+    RedisCommand JSON_NUMMULTBY = new RedisCommand<>("JSON.NUMMULTBY", new ObjectDecoder(new StringDataDecoder()));
     RedisCommand JSON_STRAPPEND = new RedisCommand<>("JSON.STRAPPEND", new LongReplayConvertor());
     RedisCommand JSON_STRLEN = new RedisCommand<>("JSON.STRLEN", new LongReplayConvertor());
     RedisCommand JSON_ARRAPPEND = new RedisCommand<>("JSON.ARRAPPEND", new LongReplayConvertor());
@@ -41,5 +42,5 @@ public interface RedisCommands {
     RedisCommand JSON_ARRTRIM = new RedisCommand<>("JSON.ARRTRIM", new LongReplayConvertor());
     RedisCommand JSON_ARRINSERT = new RedisCommand<>("JSON.ARRINSERT", new LongReplayConvertor());
     RedisCommand JSON_ARRINDEX = new RedisCommand<>("JSON.ARRINDEX", new LongReplayConvertor());
-    RedisCommand JSON_ARRPOP = new RedisCommand<>("JSON.ARRPOP", new StringDataDecoder());
+    RedisCommand JSON_ARRPOP = new RedisCommand<>("JSON.ARRPOP", new ObjectDecoder(new StringDataDecoder()));
 }
