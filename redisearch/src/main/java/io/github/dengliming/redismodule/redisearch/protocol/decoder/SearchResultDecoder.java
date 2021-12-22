@@ -18,9 +18,7 @@ package io.github.dengliming.redismodule.redisearch.protocol.decoder;
 
 import io.github.dengliming.redismodule.redisearch.index.Document;
 import io.github.dengliming.redismodule.redisearch.search.SearchResult;
-import org.redisson.client.codec.Codec;
 import org.redisson.client.handler.State;
-import org.redisson.client.protocol.Decoder;
 import org.redisson.client.protocol.decoder.MultiDecoder;
 
 import java.util.ArrayList;
@@ -39,11 +37,6 @@ public class SearchResultDecoder implements MultiDecoder<SearchResult> {
 
     public SearchResultDecoder(boolean withScores) {
         this.withScores = withScores;
-    }
-
-    @Override
-    public Decoder<Object> getDecoder(Codec codec, int paramNum, State state) {
-        return null;
     }
 
     @Override

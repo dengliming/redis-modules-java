@@ -17,9 +17,7 @@
 package io.github.dengliming.redismodule.redistimeseries.protocol.decoder;
 
 import io.github.dengliming.redismodule.redistimeseries.Label;
-import org.redisson.client.codec.Codec;
 import org.redisson.client.handler.State;
-import org.redisson.client.protocol.Decoder;
 import org.redisson.client.protocol.decoder.MultiDecoder;
 
 import java.util.ArrayList;
@@ -29,11 +27,6 @@ import java.util.List;
  * @author dengliming
  */
 public class LabelDecoder implements MultiDecoder<List<Label>> {
-
-    @Override
-    public Decoder<Object> getDecoder(Codec codec, int paramNum, State state) {
-        return null;
-    }
 
     /**
      * [[label1, test], [label2, test1]]

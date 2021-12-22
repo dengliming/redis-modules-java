@@ -17,9 +17,7 @@
 package io.github.dengliming.redismodule.redisbloom.protocol.decoder;
 
 import io.github.dengliming.redismodule.redisbloom.model.CuckooFilterInfo;
-import org.redisson.client.codec.Codec;
 import org.redisson.client.handler.State;
-import org.redisson.client.protocol.Decoder;
 import org.redisson.client.protocol.decoder.MultiDecoder;
 
 import java.util.List;
@@ -28,11 +26,6 @@ import java.util.List;
  * @author dengliming
  */
 public class CuckooFilterDecoder implements MultiDecoder<CuckooFilterInfo> {
-
-    @Override
-    public Decoder<Object> getDecoder(Codec codec, int paramNum, State state) {
-        return null;
-    }
 
     @Override
     public CuckooFilterInfo decode(List<Object> parts, State state) {
