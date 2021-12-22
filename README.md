@@ -19,7 +19,7 @@ Java Client libraries for [redis-modules](https://redis.io/modules), based on [R
 ## Installing
 
 #### Build from source
-Execute ./mvnw clean install -DskipTests=true -Dgpg.skip. The build process requires JDK8+.
+Execute `./mvnw clean install -DskipTests=true -Dgpg.skip`. The build process requires `JDK8+`.
 
 #### Maven repository
 Include all
@@ -28,7 +28,7 @@ Include all
 <dependency>
     <groupId>io.github.dengliming.redismodule</groupId>
     <artifactId>all</artifactId>
-    <version>1.0.1</version>
+    <version>1.0.3</version>
 </dependency>
 ```
 Include single module like:
@@ -37,7 +37,7 @@ Include single module like:
 <dependency>
     <groupId>io.github.dengliming.redismodule</groupId>
     <artifactId>redistimeseries</artifactId>
-    <version>1.0.1</version>
+    <version>1.0.3</version>
 </dependency>
 ```
 
