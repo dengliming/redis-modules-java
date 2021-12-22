@@ -32,11 +32,11 @@ public class RediSearchClient extends Redisson {
     }
 
     public RediSearch getRediSearch(String name) {
-        return new RediSearch(getConnectionManager().getCommandExecutor(), name);
+        return new RediSearch(getCommandExecutor(), name);
     }
 
     public Void flushall() {
-        CommandAsyncExecutor commandExecutor = getConnectionManager().getCommandExecutor();
+        CommandAsyncExecutor commandExecutor = getCommandExecutor();
         return commandExecutor.get(commandExecutor.writeAllAsync(RedisCommands.FLUSHALL));
     }
 }
