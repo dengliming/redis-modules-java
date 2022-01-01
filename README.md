@@ -48,7 +48,7 @@ Config config = new Config();
 config.useSingleServer().setAddress("redis://127.0.0.1:6379");
 RedisBloomClient redisBloomClient = new RedisBloomClient(config);
 
-BloomFilter bloomFilter = redisBloomClient.getBloomFilter("bf");
+BloomFilter bloomFilter = redisBloomClient.getRBloomFilter("bf");
 bloomFilter.create(0.1d, 100);
 bloomFilter.madd(new String[] {"a", "b", "c"});
 
