@@ -16,6 +16,7 @@
 
 package io.github.dengliming.redismodule.redisjson;
 
+import io.github.dengliming.redismodule.common.util.TestSettings;
 import io.github.dengliming.redismodule.redisjson.client.RedisJSONClient;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -26,16 +27,12 @@ import org.redisson.config.Config;
  */
 public abstract class AbstractTest {
 
-    public static final String DEFAULT_HOST = System.getProperty("REDIS_HOST", "127.0.0.1");
-    public static final int DEFAULT_PORT = Integer.valueOf(System.getProperty("REDIS_PORT", "6379"));
-    public static final String DEFAULT_PASSWORD = System.getProperty("REDIS_PASSWORD", "");
-
     private RedisJSONClient redisJSONClient;
 
     @BeforeEach
     public void init() {
         Config config = new Config();
-        config.useSingleServer().setAddress("redis://" + DEFAULT_HOST + ":" + DEFAULT_PORT);
+        config.useSingleServer().setAddress("redis://" + TestSettings.host() + ":" + TestSettings.port());
         redisJSONClient = new RedisJSONClient(config);
         redisJSONClient.flushall();
     }

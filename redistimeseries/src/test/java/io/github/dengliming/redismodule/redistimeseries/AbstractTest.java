@@ -16,6 +16,7 @@
 
 package io.github.dengliming.redismodule.redistimeseries;
 
+import io.github.dengliming.redismodule.common.util.TestSettings;
 import io.github.dengliming.redismodule.redistimeseries.client.RedisTimeSeriesClient;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -26,16 +27,12 @@ import org.redisson.config.Config;
  */
 public abstract class AbstractTest {
 
-    public static final String DEFAULT_HOST = System.getProperty("REDIS_HOST", "192.168.50.16");
-    public static final int DEFAULT_PORT = Integer.valueOf(System.getProperty("REDIS_PORT", "6381"));
-    public static final String DEFAULT_PASSWORD = System.getProperty("REDIS_PASSWORD", "");
-
     private RedisTimeSeriesClient redisTimeSeriesClient;
 
     @BeforeEach
     public void init() {
         Config config = new Config();
-        config.useSingleServer().setAddress("redis://" + DEFAULT_HOST + ":" + DEFAULT_PORT);
+        config.useSingleServer().setAddress("redis://" + TestSettings.host() + ":" + TestSettings.port());
         redisTimeSeriesClient = new RedisTimeSeriesClient(config);
         redisTimeSeriesClient.flushall();
     }

@@ -16,6 +16,7 @@
 
 package io.github.dengliming.redismodule.redisai;
 
+import io.github.dengliming.redismodule.common.util.TestSettings;
 import io.github.dengliming.redismodule.redisai.client.RedisAIClient;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -26,10 +27,6 @@ import org.redisson.config.Config;
  */
 public abstract class AbstractTest {
 
-    public static final String DEFAULT_HOST = System.getProperty("REDIS_HOST", "127.0.0.1");
-    public static final int DEFAULT_PORT = Integer.valueOf(System.getProperty("REDIS_PORT", "6379"));
-    public static final String DEFAULT_PASSWORD = System.getProperty("REDIS_PASSWORD", "");
-
     private RedisAIClient redisAIClient;
 
     @BeforeEach
@@ -38,7 +35,7 @@ public abstract class AbstractTest {
         config.useSingleServer()
                 .setConnectTimeout(10000)
                 .setTimeout(10000)
-                .setAddress("redis://" + DEFAULT_HOST + ":" + DEFAULT_PORT);
+                .setAddress("redis://" + TestSettings.host() + ":" + TestSettings.port());
         redisAIClient = new RedisAIClient(config);
         redisAIClient.flushall();
     }
