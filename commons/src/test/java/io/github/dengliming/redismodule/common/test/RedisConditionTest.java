@@ -31,7 +31,7 @@ public class RedisConditionTest {
     }
 
     @Test
-    @EnabledOnRedisCondition()
+    @EnabledOnRedisCondition
     public void testEmpty() {
     }
 }
