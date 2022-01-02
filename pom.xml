@@ -65,6 +65,7 @@
         <hamcrest-library.version>2.2</hamcrest-library.version>
         <maven-checkstyle-plugin.version>3.1.0</maven-checkstyle-plugin.version>
         <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
+        <maven-jar-plugin.version>2.4</maven-jar-plugin.version>
     </properties>
 
     <dependencyManagement>
