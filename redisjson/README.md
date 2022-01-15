@@ -20,7 +20,7 @@ JSON.ARRLEN | RedisJSON.<br/>arrLen()<br/>arrLenAsync() |
 JSON.ARRPOP | RedisJSON.<br/>arrPop()<br/>arrPopAsync() |
 JSON.ARRTRIM | RedisJSON.<br/>arrTrim()<br/>arrTrimAsync() |
 JSON.OBJKEYS | N/A |
-JSON.OBJLEN | N/A |
+JSON.OBJLEN | RedisJSON.<br/>objLen()<br/>objLenAsync() |
 JSON.DEBUG | N/A |
 JSON.FORGET | N/A |
 JSON.RESP | N/A |

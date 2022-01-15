@@ -22,6 +22,7 @@ import io.github.dengliming.redismodule.redisjson.utils.GsonUtils;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -143,5 +144,36 @@ public class RedisJSONTest extends AbstractTest {
         assertThat(redisJSON.arrLen(key, ".names")).isEqualTo(2);
         assertThat(redisJSON.arrPop(key, ".names", String.class, 0)).isEqualTo("wangwu");
         assertThat(redisJSON.arrLen(key, ".names")).isEqualTo(1);
+    }
+
+    @Test
+    public void testObjLen() {
+        RedisJSON redisJSON = getRedisJSON();
+        String key = "foo";
+        Map<String, Object> m = new HashMap<>();
+        m.put("id", 1);
+        m.put("names", new ArrayList<>());
+        assertThat(redisJSON.set(key, SetArgs.Builder.create(".", GsonUtils.toJson(m)))).isEqualTo("OK");
+
+        assertThat(redisJSON.objLen(key, ".")).isEqualTo(2);
+        assertThat(redisJSON.objLen("not exist", ".")).isEqualTo(0);
+    }
+
+    @Test
+    public void testObjKeys() {
+        RedisJSON redisJSON = getRedisJSON();
+        String key = "foo";
+        Map<String, Object> m = new HashMap<>();
+        m.put("a", Arrays.asList(3));
+        Map<String, Object> nestedMap = new HashMap<>();
+        Map<String, Object> a = new HashMap<>();
+        a.put("b", 2);
+        a.put("c", 1);
+        nestedMap.put("a", a);
+        m.put("nested", nestedMap);
+        assertThat(redisJSON.set(key, SetArgs.Builder.create(".", GsonUtils.toJson(m)))).isEqualTo("OK");
+
+        assertThat(redisJSON.objKeys(key, ".")).containsExactly("a", "nested");
+        assertThat(redisJSON.objKeys(key, "$..a")).containsExactly(null, Arrays.asList("b", "c"));
     }
 }

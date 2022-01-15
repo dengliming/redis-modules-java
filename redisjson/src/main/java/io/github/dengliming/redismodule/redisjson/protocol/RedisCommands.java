@@ -17,11 +17,18 @@
 package io.github.dengliming.redismodule.redisjson.protocol;
 
 import org.redisson.client.protocol.RedisCommand;
+import org.redisson.client.protocol.convertor.BooleanReplayConvertor;
 import org.redisson.client.protocol.convertor.LongReplayConvertor;
+import org.redisson.client.protocol.convertor.StringToListConvertor;
+import org.redisson.client.protocol.decoder.ListMultiDecoder2;
+import org.redisson.client.protocol.decoder.MultiDecoder;
 import org.redisson.client.protocol.decoder.ObjectDecoder;
 import org.redisson.client.protocol.decoder.ObjectListReplayDecoder;
 import org.redisson.client.protocol.decoder.StringDataDecoder;
+import org.redisson.client.protocol.decoder.StringListReplayDecoder;
 import org.redisson.client.protocol.decoder.StringReplayDecoder;
+
+import java.util.List;
 
 /**
  * @author dengliming
@@ -43,4 +50,6 @@ public interface RedisCommands {
     RedisCommand JSON_ARRINSERT = new RedisCommand<>("JSON.ARRINSERT", new LongReplayConvertor());
     RedisCommand JSON_ARRINDEX = new RedisCommand<>("JSON.ARRINDEX", new LongReplayConvertor());
     RedisCommand JSON_ARRPOP = new RedisCommand<>("JSON.ARRPOP", new ObjectDecoder(new StringDataDecoder()));
+    RedisCommand JSON_OBJLEN = new RedisCommand<>("JSON.OBJLEN", new LongReplayConvertor());
+    RedisCommand<List<Object>> JSON_OBJKEYS = new RedisCommand("JSON.OBJKEYS", new ObjectListReplayDecoder<>());
 }

@@ -45,6 +45,8 @@ import static io.github.dengliming.redismodule.redisjson.protocol.RedisCommands.
 import static io.github.dengliming.redismodule.redisjson.protocol.RedisCommands.JSON_MGET;
 import static io.github.dengliming.redismodule.redisjson.protocol.RedisCommands.JSON_NUMINCRBY;
 import static io.github.dengliming.redismodule.redisjson.protocol.RedisCommands.JSON_NUMMULTBY;
+import static io.github.dengliming.redismodule.redisjson.protocol.RedisCommands.JSON_OBJKEYS;
+import static io.github.dengliming.redismodule.redisjson.protocol.RedisCommands.JSON_OBJLEN;
 import static io.github.dengliming.redismodule.redisjson.protocol.RedisCommands.JSON_SET;
 import static io.github.dengliming.redismodule.redisjson.protocol.RedisCommands.JSON_STRAPPEND;
 import static io.github.dengliming.redismodule.redisjson.protocol.RedisCommands.JSON_STRLEN;
@@ -458,6 +460,46 @@ public class RedisJSON {
             }
         });
         return result;
+    }
+
+    /**
+     * Report the number of keys in the JSON Object at path in key.
+     *
+     * JSON.OBJLEN <key> [path]
+     *
+     * @param key
+     * @param path
+     * @return
+     */
+    public Long objLen(String key, String path) {
+        return commandExecutor.get(objLenAsync(key, path));
+    }
+
+    public RFuture<Long> objLenAsync(String key, String path) {
+        RAssert.notEmpty(key, "key must not be empty");
+        RAssert.notNull(path, "path must not be null");
+
+        return commandExecutor.readAsync(getName(), StringCodec.INSTANCE, JSON_OBJLEN, key, path);
+    }
+
+    /**
+     * Return the keys in the object that's referenced by path.
+     *
+     * JSON.OBJKEYS <key> [path]
+     *
+     * @param key
+     * @param path
+     * @return
+     */
+    public List<Object> objKeys(String key, String path) {
+        return commandExecutor.get(objKeysAsync(key, path));
+    }
+
+    public RFuture<List<Object>> objKeysAsync(String key, String path) {
+        RAssert.notEmpty(key, "key must not be empty");
+        RAssert.notNull(path, "path must not be null");
+
+        return commandExecutor.readAsync(getName(), StringCodec.INSTANCE, JSON_OBJKEYS, key, path);
     }
 
     public String getName() {
