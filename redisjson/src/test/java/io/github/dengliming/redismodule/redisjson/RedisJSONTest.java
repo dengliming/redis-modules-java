@@ -161,8 +161,6 @@ public class RedisJSONTest extends AbstractTest {
 
     @Test
     public void testObjKeys() {
-        RedisJSON redisJSON = getRedisJSON();
-        String key = "foo";
         Map<String, Object> m = new HashMap<>();
         m.put("a", Arrays.asList(3));
         Map<String, Object> nestedMap = new HashMap<>();
@@ -171,6 +169,9 @@ public class RedisJSONTest extends AbstractTest {
         a.put("c", 1);
         nestedMap.put("a", a);
         m.put("nested", nestedMap);
+
+        RedisJSON redisJSON = getRedisJSON();
+        String key = "foo";
         assertThat(redisJSON.set(key, SetArgs.Builder.create(".", GsonUtils.toJson(m)))).isEqualTo("OK");
 
         assertThat(redisJSON.objKeys(key, ".")).containsExactly("a", "nested");
