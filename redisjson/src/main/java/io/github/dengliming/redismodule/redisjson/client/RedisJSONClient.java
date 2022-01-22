@@ -17,7 +17,9 @@
 package io.github.dengliming.redismodule.redisjson.client;
 
 import io.github.dengliming.redismodule.redisjson.RedisJSON;
+import io.github.dengliming.redismodule.redisjson.RedisJSONBatch;
 import org.redisson.Redisson;
+import org.redisson.api.BatchOptions;
 import org.redisson.client.protocol.RedisCommands;
 import org.redisson.command.CommandAsyncExecutor;
 import org.redisson.config.Config;
@@ -30,6 +32,14 @@ public class RedisJSONClient extends Redisson {
 
     public RedisJSON getRedisJSON() {
         return new RedisJSON(getCommandExecutor());
+    }
+
+    public RedisJSONBatch createRedisJSONBatch() {
+        return this.createRedisJSONBatch(BatchOptions.defaults());
+    }
+
+    public RedisJSONBatch createRedisJSONBatch(BatchOptions options) {
+        return new RedisJSONBatch(getCommandExecutor(), options);
     }
 
     public Void flushall() {
