@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 dengliming.
+ * Copyright 2021-2022 dengliming.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -70,8 +70,12 @@ public class RedisJSON {
     }
 
     public RedisJSON(CommandAsyncExecutor commandExecutor) {
+        this(commandExecutor, commandExecutor.getConnectionManager().getCodec());
+    }
+
+    public RedisJSON(CommandAsyncExecutor commandExecutor, Codec codec) {
         this.commandExecutor = commandExecutor;
-        this.codec = commandExecutor.getConnectionManager().getCodec();
+        this.codec = codec;
     }
 
     /**

@@ -47,4 +47,8 @@ public abstract class AbstractTest {
     public RedisJSON getRedisJSON() {
         return redisJSONClient == null ? null : redisJSONClient.getRedisJSON();
     }
+
+    public RedisJSONBatch getRedisJSONBatch() {
+        return redisJSONClient == null ? null : redisJSONClient.createRedisJSONBatch();
+    }
 }

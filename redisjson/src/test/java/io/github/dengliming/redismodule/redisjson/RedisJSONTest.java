@@ -20,6 +20,7 @@ import io.github.dengliming.redismodule.redisjson.args.GetArgs;
 import io.github.dengliming.redismodule.redisjson.args.SetArgs;
 import io.github.dengliming.redismodule.redisjson.utils.GsonUtils;
 import org.junit.jupiter.api.Test;
+import org.redisson.api.BatchResult;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -176,5 +177,24 @@ public class RedisJSONTest extends AbstractTest {
 
         assertThat(redisJSON.objKeys(key, ".")).containsExactly("a", "nested");
         assertThat(redisJSON.objKeys(key, "$..a")).containsExactly(null, Arrays.asList("b", "c"));
+    }
+
+    @Test
+    public void testPipelining() {
+        String key = "foo";
+        Map<String, Object> m = new HashMap<>();
+        m.put("id", 1);
+        m.put("names", new ArrayList<>());
+
+        RedisJSONBatch batch = getRedisJSONBatch();
+        RedisJSON redisJSON = batch.getRedisJSON();
+        redisJSON.setAsync(key, SetArgs.Builder.create(".", GsonUtils.toJson(m)));
+        redisJSON.objLenAsync(key, ".");
+        redisJSON.objLenAsync("not exist", ".");
+        BatchResult res = batch.execute();
+        assertThat(res.getResponses().size()).isEqualTo(3);
+        assertThat(res.getResponses().get(0)).isEqualTo("OK");
+        assertThat(res.getResponses().get(1)).isEqualTo(2L);
+        assertThat(res.getResponses().get(2)).isEqualTo(0L);
     }
 }
