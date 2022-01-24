@@ -104,6 +104,6 @@ public class RedisGearsTest extends AbstractTest {
         RedisGears redisGears = getRedisGears();
         // Throw Exception when is not in cluster.
         assertThatThrownBy(() -> redisGears.clusterInfo())
-                .isInstanceOf(ArrayIndexOutOfBoundsException.class);
+                .isInstanceOf(RedisException.class);
     }
 }
