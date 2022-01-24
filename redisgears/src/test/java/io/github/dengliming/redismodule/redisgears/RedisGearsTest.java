@@ -74,7 +74,7 @@ public class RedisGearsTest extends AbstractTest {
         RedisGears redisGears = getRedisGears();
         assertThatThrownBy(() -> redisGears.unRegister("not_exist"))
                 .isInstanceOf(RedisException.class)
-                .hasMessageContaining("execution does not registered.");
+                .hasMessageContaining("execution is not registered.");
     }
 
     @Test
