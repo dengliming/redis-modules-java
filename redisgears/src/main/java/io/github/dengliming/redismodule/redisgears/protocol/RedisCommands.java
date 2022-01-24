@@ -16,8 +16,13 @@
 
 package io.github.dengliming.redismodule.redisgears.protocol;
 
+import io.github.dengliming.redismodule.redisgears.protocol.decoder.ClusterInfoDecoder;
 import org.redisson.client.protocol.RedisCommand;
+import org.redisson.client.protocol.convertor.BooleanReplayConvertor;
+import org.redisson.client.protocol.decoder.ListMultiDecoder2;
 import org.redisson.client.protocol.decoder.ObjectListReplayDecoder;
+import org.redisson.client.protocol.decoder.ObjectMapReplayDecoder;
+import org.redisson.client.protocol.decoder.StringListReplayDecoder;
 
 /**
  * @author dengliming
@@ -25,4 +30,12 @@ import org.redisson.client.protocol.decoder.ObjectListReplayDecoder;
 public interface RedisCommands {
 
     RedisCommand RG_PYEXECUTE = new RedisCommand<>("RG.PYEXECUTE", new ObjectListReplayDecoder<>());
+    RedisCommand RG_CONFIGGET = new RedisCommand<>("RG.CONFIGGET", new StringListReplayDecoder());
+    RedisCommand RG_CONFIGSET = new RedisCommand<>("RG.CONFIGSET", new StringListReplayDecoder());
+    RedisCommand RG_PYSTATS = new RedisCommand<>("RG.PYSTATS", new ObjectMapReplayDecoder<String, Object>());
+    RedisCommand RG_UNREGISTER = new RedisCommand("RG.UNREGISTER", new BooleanReplayConvertor());
+    RedisCommand RG_REFRESHCLUSTER = new RedisCommand("RG.REFRESHCLUSTER", new BooleanReplayConvertor());
+    RedisCommand RG_DROPEXECUTION = new RedisCommand("RG.DROPEXECUTION", new BooleanReplayConvertor());
+    RedisCommand RG_ABORTEXECUTION = new RedisCommand("RG.ABORTEXECUTION", new BooleanReplayConvertor());
+    RedisCommand RG_INFOCLUSTER = new RedisCommand("RG.INFOCLUSTER", new ListMultiDecoder2(new ClusterInfoDecoder(), new ObjectListReplayDecoder<>(), new ObjectListReplayDecoder<>()));
 }
