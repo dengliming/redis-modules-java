@@ -55,7 +55,7 @@ bloomFilter.madd(new String[] {"a", "b", "c"});
 TopKFilter topKFilter = redisBloomClient.getTopKFilter("topk_add");
 topKFilter.reserve(1, 2000, 7, 0.925d);
 topKFilter.add("test");
-List<Boolean> itemExits = topKFilter.searchOptions("test");
+List<Boolean> itemExits = topKFilter.query("test");
 Map<String, Integer> itemIncrement = new HashMap<>();
 itemIncrement.put("test", 3);
 topKFilter.incrby(itemIncrement);

@@ -27,13 +27,13 @@ CF.INFO | CuckooFilter.<br/>getInfo()<br/>getInfoAsync() |
 CMS.INITBYDIM | CountMinSketch.<br/>create()<br/>createAsync() |
 CMS.INITBYPROB | CountMinSketch.<br/>create()<br/>createAsync() |
 CMS.INCRBY | CountMinSketch.<br/>incrby()<br/>incrbyAsync() |
-CMS.QUERY | CountMinSketch.<br/>searchOptions()<br/>queryAsync() |
+CMS.QUERY | CountMinSketch.<br/>query()<br/>queryAsync() |
 CMS.MERGE | CountMinSketch.<br/>merge()<br/>mergeAsync() |
 CMS.INFO | CountMinSketch.<br/>getInfo()<br/>getInfoAsync() |
 TOPK.RESERVE | TopKFilter.<br/>reserve()<br/>reserveAsync() |
 TOPK.ADD | TopKFilter.<br/>add()<br/>addAsync() |
 TOPK.INCRBY | TopKFilter.<br/>incrby()<br/>incrbyAsync() |
-TOPK.QUERY | TopKFilter.<br/>searchOptions()<br/>queryAsync() |
+TOPK.QUERY | TopKFilter.<br/>query()<br/>queryAsync() |
 TOPK.COUNT | TopKFilter.<br/>count()<br/>countAsync() |
 TOPK.LIST | TopKFilter.<br/>list()<br/>listAsync() |
 TOPK.INFO | TopKFilter.<br/>getInfo()<br/>getInfoAsync() |
