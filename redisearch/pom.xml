@@ -15,6 +15,12 @@
             <groupId>io.github.dengliming.redismodule</groupId>
             <artifactId>commons</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>io.github.dengliming.redismodule</groupId>
+            <artifactId>redisjson</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
 </project>
