@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 dengliming.
+ * Copyright 2020-2022 dengliming.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -138,6 +138,10 @@ public class RediSearch extends RedissonObject {
 
     private void appendFieldArgs(List<Object> args, Field field) {
         args.add(field.getName());
+        if (field.getAttribute() != null) {
+            args.add(Keywords.AS);
+            args.add(field.getAttribute());
+        }
         args.add(field.getFieldType().name());
         switch (field.getFieldType()) {
             case TAG:

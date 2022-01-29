@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 dengliming.
+ * Copyright 2020-2022 dengliming.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package io.github.dengliming.redismodule.redisearch;
 
 import io.github.dengliming.redismodule.common.util.TestSettings;
 import io.github.dengliming.redismodule.redisearch.client.RediSearchClient;
+import io.github.dengliming.redismodule.redisjson.client.RedisJSONClient;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.redisson.config.Config;
@@ -28,13 +29,16 @@ import org.redisson.config.Config;
 public abstract class AbstractTest {
 
     private RediSearchClient rediSearchClient;
+    private RedisJSONClient redisJSONClient;
 
     @BeforeEach
     public void init() {
         Config config = new Config();
         config.useSingleServer().setAddress("redis://" + TestSettings.host() + ":" + TestSettings.port());
         rediSearchClient = new RediSearchClient(config);
+        redisJSONClient = new RedisJSONClient(config);
         rediSearchClient.flushall();
+        redisJSONClient.flushall();
     }
 
     @AfterEach
@@ -47,4 +51,9 @@ public abstract class AbstractTest {
     protected RediSearchClient getRediSearchClient() {
         return rediSearchClient;
     }
+
+    protected RedisJSONClient getRedisJSONClient() {
+        return redisJSONClient;
+    }
 }
+

@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 dengliming.
+ * Copyright 2020-2022 dengliming.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ package io.github.dengliming.redismodule.redisearch.index.schema;
  */
 public class Field {
     private String name;
+    private String attribute;
     private boolean sortable;
     private boolean noIndex;
     private FieldType fieldType;
@@ -54,5 +55,14 @@ public class Field {
 
     public FieldType getFieldType() {
         return fieldType;
+    }
+
+    public String getAttribute() {
+        return attribute;
+    }
+
+    public Field attribute(String attribute) {
+        this.attribute = attribute;
+        return this;
     }
 }

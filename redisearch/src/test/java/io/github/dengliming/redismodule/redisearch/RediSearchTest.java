@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 dengliming.
+ * Copyright 2020-2022 dengliming.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,11 +19,13 @@ package io.github.dengliming.redismodule.redisearch;
 import io.github.dengliming.redismodule.redisearch.index.ConfigOption;
 import io.github.dengliming.redismodule.redisearch.index.Document;
 import io.github.dengliming.redismodule.redisearch.index.DocumentOptions;
+import io.github.dengliming.redismodule.redisearch.index.IndexDefinition;
 import io.github.dengliming.redismodule.redisearch.index.IndexOptions;
 import io.github.dengliming.redismodule.redisearch.index.RSLanguage;
 import io.github.dengliming.redismodule.redisearch.index.schema.Field;
 import io.github.dengliming.redismodule.redisearch.index.schema.FieldType;
 import io.github.dengliming.redismodule.redisearch.index.schema.Schema;
+import io.github.dengliming.redismodule.redisearch.index.schema.TagField;
 import io.github.dengliming.redismodule.redisearch.index.schema.TextField;
 import io.github.dengliming.redismodule.redisearch.search.GeoFilter;
 import io.github.dengliming.redismodule.redisearch.search.MisspelledTerm;
@@ -31,6 +33,8 @@ import io.github.dengliming.redismodule.redisearch.search.NumericFilter;
 import io.github.dengliming.redismodule.redisearch.search.SearchOptions;
 import io.github.dengliming.redismodule.redisearch.search.SearchResult;
 import io.github.dengliming.redismodule.redisearch.search.SpellCheckOptions;
+import io.github.dengliming.redismodule.redisjson.RedisJSON;
+import io.github.dengliming.redismodule.redisjson.args.SetArgs;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.redisson.api.RMap;
@@ -54,6 +58,7 @@ public class RediSearchTest extends AbstractTest {
                 new Schema()
                         .addField(new TextField("title")),
                 new IndexOptions()
+                        .definition(new IndexDefinition().setPrefixes(Arrays.asList("doc:")))
                         .maxTextFields()
                         .prefixes(Arrays.asList("doc:"))
                         .stopwords(Arrays.asList("kk")))).isTrue();
@@ -61,7 +66,7 @@ public class RediSearchTest extends AbstractTest {
         assertThat(indexInfo).isNotNull();
         assertThat(indexInfo.get("index_name")).isEqualTo("index1");
         assertThat(((List) (indexInfo.get("index_options"))).get(0)).isEqualTo("MAXTEXTFIELDS");
-        assertThat(((List<List<Object>>) (indexInfo.get("fields"))).get(0).get(0)).isEqualTo("title");
+        assertThat(((List<List<Object>>) (indexInfo.get("attributes"))).get(0).get(1)).isEqualTo("title");
 
         List<String> indexes = rediSearch.listIndexes();
         assertThat(indexes).hasSize(1);
@@ -70,6 +75,25 @@ public class RediSearchTest extends AbstractTest {
         rediSearch.dropIndex();
         indexes = rediSearch.listIndexes();
         assertThat(indexes).isEmpty();
+    }
+
+    @Test
+    public void testIndexOnJSON() {
+        RediSearch rediSearch = getRediSearchClient().getRediSearch("userIdx");
+        assertThat(rediSearch.createIndex(
+                new Schema()
+                        .addField(new TextField("$.user.name").attribute("name"))
+                        .addField(new TagField("$.user.tag").attribute("country")),
+                new IndexOptions()
+                        .definition(new IndexDefinition(IndexDefinition.DataType.JSON)))).isTrue();
+
+        RedisJSON redisJSON = getRedisJSONClient().getRedisJSON();
+        redisJSON.set("myDoc", SetArgs.Builder.create("$", "{\"user\":{\"name\":\"John Smith\","
+                + "\"tag\":\"foo,bar\",\"hp\":1000, \"dmg\":150}}"));
+
+        SearchResult result = rediSearch.search("@name:(John)", new SearchOptions());
+        assertThat(result.getTotal()).isEqualTo(1);
+        assertThat(result.getDocuments().get(0).getId()).isEqualTo("myDoc");
     }
 
     @Test
