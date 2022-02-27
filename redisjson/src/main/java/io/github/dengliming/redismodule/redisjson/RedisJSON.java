@@ -250,7 +250,7 @@ public class RedisJSON {
      * @return Bulk String, specifically the stringified new value.
      */
     public String multBy(String key, String path, long num) {
-        return commandExecutor.get(incrByAsync(key, path, num));
+        return commandExecutor.get(multByAsync(key, path, num));
     }
 
     public RFuture<String> multByAsync(String key, String path, long num) {
