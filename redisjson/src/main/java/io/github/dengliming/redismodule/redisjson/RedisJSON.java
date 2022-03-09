@@ -95,9 +95,9 @@ public class RedisJSON {
         RAssert.notEmpty(key, "key must not be empty");
 
         if (path == null) {
-            return commandExecutor.readAsync(getName(), StringCodec.INSTANCE, JSON_DEL, key);
+            return commandExecutor.readAsync(key, StringCodec.INSTANCE, JSON_DEL, key);
         }
-        return commandExecutor.readAsync(getName(), StringCodec.INSTANCE, JSON_DEL, key, path);
+        return commandExecutor.readAsync(key, StringCodec.INSTANCE, JSON_DEL, key, path);
     }
 
     /**
@@ -118,7 +118,7 @@ public class RedisJSON {
         RAssert.notEmpty(key, "key must not be empty");
         RAssert.notNull(setArgs, "setArgs must not be null");
 
-        return commandExecutor.writeAsync(getName(), StringCodec.INSTANCE, JSON_SET, setArgs.build(key).toArray());
+        return commandExecutor.writeAsync(key, StringCodec.INSTANCE, JSON_SET, setArgs.build(key).toArray());
     }
 
     /**
@@ -146,7 +146,7 @@ public class RedisJSON {
         RAssert.notNull(clazz, "clazz must not be null");
         RAssert.notNull(getArgs, "getArgs must not be null");
 
-        RFuture<String> getFuture = commandExecutor.readAsync(getName(), StringCodec.INSTANCE, JSON_GET, getArgs.build(key).toArray());
+        RFuture<String> getFuture = commandExecutor.readAsync(key, StringCodec.INSTANCE, JSON_GET, getArgs.build(key).toArray());
         return transformRPromiseResult(getFuture, clazz);
     }
 
@@ -168,7 +168,7 @@ public class RedisJSON {
             args.add(key);
         }
         args.add(path);
-        RFuture<List<String>> getFuture = commandExecutor.readAsync(getName(), StringCodec.INSTANCE, JSON_MGET, args.toArray());
+        RFuture<List<String>> getFuture = commandExecutor.readAsync(keys[0], StringCodec.INSTANCE, JSON_MGET, args.toArray());
         getFuture.onComplete((res, e) -> {
             if (e != null) {
                 result.tryFailure(e);
@@ -202,7 +202,7 @@ public class RedisJSON {
         RAssert.notNull(path, "path must not be null");
 
         RPromise result = new RedissonPromise<Class>();
-        RFuture<String> getFuture = commandExecutor.readAsync(getName(), StringCodec.INSTANCE, JSON_TYPE, key, path);
+        RFuture<String> getFuture = commandExecutor.readAsync(key, StringCodec.INSTANCE, JSON_TYPE, key, path);
         getFuture.onComplete((res, e) -> {
             if (e != null) {
                 result.tryFailure(e);
@@ -236,7 +236,7 @@ public class RedisJSON {
         RAssert.notEmpty(key, "key must not be empty");
         RAssert.notNull(path, "path must not be null");
 
-        return commandExecutor.writeAsync(getName(), StringCodec.INSTANCE, JSON_NUMINCRBY, key, path, num);
+        return commandExecutor.writeAsync(key, StringCodec.INSTANCE, JSON_NUMINCRBY, key, path, num);
     }
 
     /**
@@ -257,7 +257,7 @@ public class RedisJSON {
         RAssert.notEmpty(key, "key must not be empty");
         RAssert.notNull(path, "path must not be null");
 
-        return commandExecutor.writeAsync(getName(), StringCodec.INSTANCE, JSON_NUMMULTBY, key, path, num);
+        return commandExecutor.writeAsync(key, StringCodec.INSTANCE, JSON_NUMMULTBY, key, path, num);
     }
 
     /**
@@ -279,7 +279,7 @@ public class RedisJSON {
         RAssert.notNull(path, "path must not be null");
         RAssert.notNull(object, "object must not be null");
 
-        return commandExecutor.writeAsync(getName(), StringCodec.INSTANCE, JSON_STRAPPEND, key, path, GsonUtils.toJson(object));
+        return commandExecutor.writeAsync(key, StringCodec.INSTANCE, JSON_STRAPPEND, key, path, GsonUtils.toJson(object));
     }
 
     /**
@@ -299,7 +299,7 @@ public class RedisJSON {
         RAssert.notEmpty(key, "key must not be empty");
         RAssert.notNull(path, "path must not be null");
 
-        return commandExecutor.readAsync(getName(), StringCodec.INSTANCE, JSON_STRLEN, key, path);
+        return commandExecutor.readAsync(key, StringCodec.INSTANCE, JSON_STRLEN, key, path);
     }
 
     /**
@@ -326,7 +326,7 @@ public class RedisJSON {
         for (Object object : objects) {
             args.add(GsonUtils.toJson(object));
         }
-        return commandExecutor.writeAsync(getName(), StringCodec.INSTANCE, JSON_ARRAPPEND, args.toArray());
+        return commandExecutor.writeAsync(key, StringCodec.INSTANCE, JSON_ARRAPPEND, args.toArray());
     }
 
     /**
@@ -354,7 +354,7 @@ public class RedisJSON {
         for (Object object : objects) {
             args.add(GsonUtils.toJson(object));
         }
-        return commandExecutor.writeAsync(getName(), StringCodec.INSTANCE, JSON_ARRINSERT, args.toArray());
+        return commandExecutor.writeAsync(key, StringCodec.INSTANCE, JSON_ARRINSERT, args.toArray());
     }
 
     /**
@@ -374,7 +374,7 @@ public class RedisJSON {
         RAssert.notEmpty(key, "key must not be empty");
         RAssert.notNull(path, "path must not be null");
 
-        return commandExecutor.readAsync(getName(), StringCodec.INSTANCE, JSON_ARRLEN, key, path);
+        return commandExecutor.readAsync(key, StringCodec.INSTANCE, JSON_ARRLEN, key, path);
     }
 
     /**
@@ -396,7 +396,7 @@ public class RedisJSON {
         RAssert.notEmpty(key, "key must not be empty");
         RAssert.notNull(path, "path must not be null");
 
-        return commandExecutor.readAsync(getName(), StringCodec.INSTANCE, JSON_ARRTRIM, key, path, start, stop);
+        return commandExecutor.readAsync(key, StringCodec.INSTANCE, JSON_ARRTRIM, key, path, start, stop);
     }
 
     /**
@@ -420,7 +420,7 @@ public class RedisJSON {
         RAssert.notNull(path, "path must not be null");
         RAssert.notNull(scalar, "scalar must not be null");
 
-        return commandExecutor.readAsync(getName(), StringCodec.INSTANCE, JSON_ARRINDEX, key, path,
+        return commandExecutor.readAsync(key, StringCodec.INSTANCE, JSON_ARRINDEX, key, path,
                 GsonUtils.toJson(scalar), start, stop);
     }
 
@@ -445,7 +445,7 @@ public class RedisJSON {
         RAssert.notNull(path, "path must not be null");
         RAssert.notNull(clazz, "clazz must not be null");
 
-        RFuture<String> getFuture = commandExecutor.readAsync(getName(), StringCodec.INSTANCE, JSON_ARRPOP, key, path, index);
+        RFuture<String> getFuture = commandExecutor.readAsync(key, StringCodec.INSTANCE, JSON_ARRPOP, key, path, index);
         return transformRPromiseResult(getFuture, clazz);
     }
 
@@ -483,7 +483,7 @@ public class RedisJSON {
         RAssert.notEmpty(key, "key must not be empty");
         RAssert.notNull(path, "path must not be null");
 
-        return commandExecutor.readAsync(getName(), StringCodec.INSTANCE, JSON_OBJLEN, key, path);
+        return commandExecutor.readAsync(key, StringCodec.INSTANCE, JSON_OBJLEN, key, path);
     }
 
     /**
@@ -503,7 +503,7 @@ public class RedisJSON {
         RAssert.notEmpty(key, "key must not be empty");
         RAssert.notNull(path, "path must not be null");
 
-        return commandExecutor.readAsync(getName(), StringCodec.INSTANCE, JSON_OBJKEYS, key, path);
+        return commandExecutor.readAsync(key, StringCodec.INSTANCE, JSON_OBJKEYS, key, path);
     }
 
     public String getName() {
