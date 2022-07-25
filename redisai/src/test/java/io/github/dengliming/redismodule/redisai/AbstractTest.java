@@ -35,7 +35,7 @@ public abstract class AbstractTest {
         config.useSingleServer()
                 .setConnectTimeout(10000)
                 .setTimeout(10000)
-                .setAddress("redis://" + TestSettings.host() + ":" + TestSettings.port());
+                .setAddress("redis://" + TestSettings.host() + ":" + System.getProperty("REDISAI_PORT", TestSettings.port() + ""));
         redisAIClient = new RedisAIClient(config);
         redisAIClient.flushall();
     }

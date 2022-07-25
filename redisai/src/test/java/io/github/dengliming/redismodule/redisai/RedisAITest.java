@@ -20,8 +20,10 @@ import io.github.dengliming.redismodule.redisai.args.SetModelArgs;
 import io.github.dengliming.redismodule.redisai.model.Model;
 import io.github.dengliming.redismodule.redisai.model.Script;
 import io.github.dengliming.redismodule.redisai.model.Tensor;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.redisson.client.RedisException;
+
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Arrays;
@@ -68,10 +70,11 @@ public class RedisAITest extends AbstractTest {
     }
 
     @Test
+    @Disabled("AI.SCRIPTSET This command is deprecated and will not be available in future versions.")
     public void testScript() {
         RedisAI redisAI = getRedisAI();
         String key = "script1";
-        String script = "def bar(a, b):\n" + "    return a + b\n";
+        String script = "def bar(a, b):\n    return a + b\n";
         // Set Script
         assertThat(redisAI.setScript(key, Device.CPU, script)).isTrue();
 
@@ -103,14 +106,13 @@ public class RedisAITest extends AbstractTest {
         String script = "def bar(a, b):\n" + "    return a + b\n";
         assertThat(redisAI.setScript(key, Device.CPU, script)).isTrue();
         // not exist
-        Map<String, Object> infoMap;
         assertThrows(RedisException.class, () -> {
             // ERR cannot find run info for key
             redisAI.getInfo("not:exist");
         });
 
         // first inited info
-        infoMap = redisAI.getInfo(key);
+        Map<String, Object> infoMap = redisAI.getInfo(key);
         assertThat(infoMap).isNotNull();
         assertThat(infoMap.get("key")).isEqualTo(key);
         assertThat(infoMap.get("device")).isEqualTo(Device.CPU.name());

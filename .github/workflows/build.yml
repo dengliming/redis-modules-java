@@ -11,16 +11,38 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    services:
+      redismod:
+        image: redislabs/redismod:edge
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 52567:6379
+      redisai:
+        image: redislabs/redisai:edge-cpu-bionic
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 52568:6379
     steps:
       - uses: actions/checkout@v2
       - name: Set up JDK 1.8
         uses: actions/setup-java@v1
         with:
           java-version: 1.8
-      - name: Run redismod docker
-        run: docker run --name redismod -p 52567:6379 -d redislabs/redismod:edge
-
+      - name: Cache Maven Repos
+        uses: actions/cache@v2
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
       - name: Build with Maven
-        run: mvn clean install -DREDIS_HOST=redismod -DREDIS_PORT=52567 -Dgpg.skip --file pom.xml
-
+        run: mvn clean install -DREDIS_HOST=localhost -DREDIS_PORT=52567 -DREDISAI_PORT=52568 -Dgpg.skip --file pom.xml
       - uses: codecov/codecov-action@v1
