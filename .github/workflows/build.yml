@@ -11,35 +11,16 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-
     services:
-      rebloom:
-        image: redislabs/rebloom:edge
+      redismod:
+        image: redislabs/redismod:edge
         options: >-
           --health-cmd "redis-cli ping"
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
         ports:
-          - 6379:6379
-      redisearch:
-        image: redislabs/redismod
-        options: >-
-          --health-cmd "redis-cli ping"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-        ports:
-          - 6380:6379
-      redistimeseries:
-        image: redislabs/redistimeseries:1.6.0
-        options: >-
-          --health-cmd "redis-cli ping"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-        ports:
-          - 6381:6379
+          - 52567:6379
       redisai:
         image: redislabs/redisai:edge-cpu-bionic
         options: >-
@@ -48,52 +29,20 @@ jobs:
           --health-timeout 5s
           --health-retries 5
         ports:
-          - 6382:6379
-      redisgears:
-        image: redislabs/redisgears:edge
-        options: >-
-          --health-cmd "redis-cli ping"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-        ports:
-          - 6383:6379
-      redisjson:
-        image: redislabs/rejson:latest
-        options: >-
-          --health-cmd "redis-cli ping"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-        ports:
-          - 6384:6379
-
+          - 52568:6379
     steps:
       - uses: actions/checkout@v2
       - name: Set up JDK 1.8
         uses: actions/setup-java@v1
         with:
           java-version: 1.8
-
+      - name: Cache Maven Repos
+        uses: actions/cache@v2
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
       - name: Build with Maven
-        run: mvn clean install -DskipTests=true -Dgpg.skip --file pom.xml
-
-      - name: Test RedisBloom
-        run: mvn test -pl redisbloom -DREDIS_HOST=localhost --file pom.xml
-
-      - name: Test RediSearch
-        run: mvn test -pl redisearch -DREDIS_HOST=localhost -DREDIS_PORT=6380 --file pom.xml
-
-      - name: Test RedisTimeSeries
-        run: mvn test -pl redistimeseries -DREDIS_HOST=localhost -DREDIS_PORT=6381 --file pom.xml
-
-      - name: Test RedisAI
-        run: mvn test -pl redisai -DREDIS_HOST=localhost -DREDIS_PORT=6382 --file pom.xml
-
-      - name: Test RedisGears
-        run: mvn test -pl redisgears -DREDIS_HOST=localhost -DREDIS_PORT=6383 --file pom.xml
-
-      - name: Test RedisJSON
-        run: mvn test -pl redisjson -DREDIS_HOST=localhost -DREDIS_PORT=6384 --file pom.xml
-
+        run: mvn clean install -DREDIS_HOST=localhost -DREDIS_PORT=52567 -DREDISAI_PORT=52568 -Dgpg.skip --file pom.xml
       - uses: codecov/codecov-action@v1
