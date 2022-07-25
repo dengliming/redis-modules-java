@@ -18,6 +18,7 @@ package io.github.dengliming.redismodule.redisai;
 
 import io.github.dengliming.redismodule.common.util.RAssert;
 import io.github.dengliming.redismodule.redisai.args.SetModelArgs;
+import io.github.dengliming.redismodule.redisai.args.StoreScriptArgs;
 import io.github.dengliming.redismodule.redisai.model.Model;
 import io.github.dengliming.redismodule.redisai.model.Script;
 import io.github.dengliming.redismodule.redisai.model.Tensor;
@@ -42,6 +43,7 @@ import static io.github.dengliming.redismodule.redisai.protocol.RedisCommands.AI
 import static io.github.dengliming.redismodule.redisai.protocol.RedisCommands.AI_SCRIPTGET;
 import static io.github.dengliming.redismodule.redisai.protocol.RedisCommands.AI_SCRIPTRUN;
 import static io.github.dengliming.redismodule.redisai.protocol.RedisCommands.AI_SCRIPTSET;
+import static io.github.dengliming.redismodule.redisai.protocol.RedisCommands.AI_SCRIPTSTORE;
 import static io.github.dengliming.redismodule.redisai.protocol.RedisCommands.AI_TENSORGET;
 import static io.github.dengliming.redismodule.redisai.protocol.RedisCommands.AI_TENSORSET;
 
@@ -124,8 +126,10 @@ public class RedisAI {
      * @param key
      * @param device
      * @param source
+     * @deprecated This command is deprecated and will not be available in future versions.
      * @return
      */
+    @Deprecated
     public boolean setScript(String key, Device device, String source) {
         return this.setScript(key, device, source, null);
     }
@@ -307,6 +311,28 @@ public class RedisAI {
         RAssert.notNull(key, "key must not be null");
 
         return commandExecutor.readAsync(getName(), StringCodec.INSTANCE, AI_SCRIPTGET, key, Keywords.META, Keywords.SOURCE);
+    }
+
+    /**
+     * Stores a TorchScript as the value of a key
+     *
+     * @param key
+     * @param args
+     * @return
+     */
+    public boolean storeScript(String key, StoreScriptArgs args) {
+        return commandExecutor.get(storeScriptAsync(key, args));
+    }
+
+    public RFuture<Boolean> storeScriptAsync(String key, StoreScriptArgs storeScriptArgs) {
+        RAssert.notNull(key, "key must not be null");
+        RAssert.notNull(storeScriptArgs, "storeScriptArgs must not be null");
+        RAssert.notNull(storeScriptArgs.getDevice(), "device must not be null");
+
+        List<Object> args = new ArrayList<>();
+        args.add(key);
+        storeScriptArgs.build(args);
+        return commandExecutor.writeAsync(getName(), StringCodec.INSTANCE, AI_SCRIPTSTORE, args.toArray());
     }
 
     public String getName() {

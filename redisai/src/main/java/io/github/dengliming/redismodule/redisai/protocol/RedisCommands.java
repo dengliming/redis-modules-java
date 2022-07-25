@@ -48,4 +48,5 @@ public interface RedisCommands {
     RedisCommand AI_INFO = new RedisCommand<>("AI.INFO", new ObjectMapReplayDecoder());
     RedisCommand AI_INFO_RESETSTAT = new RedisCommand<>("AI.INFO", new BooleanReplayConvertor());
     RedisCommand AI_CONFIG = new RedisCommand<>("AI.CONFIG", new BooleanReplayConvertor());
+    RedisCommand AI_SCRIPTSTORE = new RedisCommand<>("AI.SCRIPTSTORE", new BooleanReplayConvertor());
 }
