@@ -10,9 +10,9 @@ Java Client libraries for [redis-modules](https://redis.io/modules), based on [R
 * [RedisAI](redisai)
 * [RedisGears](redisgears)
 * [RedisJSON](redisjson)
+* [RedisGraph](redisgraph)
 
 ## TODO
-* [RedisGraph](https://oss.redislabs.com/redisgraph/)
 * [RediSQL](https://redisql.com/)
 * [...](https://redis.io/modules)
  
