@@ -16,6 +16,7 @@
         <module>redistimeseries</module>
         <module>redisgears</module>
         <module>redisjson</module>
+        <module>redisgraph</module>
         <module>commons</module>
     </modules>
 
@@ -109,6 +110,12 @@
             <dependency>
                 <groupId>io.github.dengliming.redismodule</groupId>
                 <artifactId>redisjson</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>io.github.dengliming.redismodule</groupId>
+                <artifactId>redisgraph</artifactId>
                 <version>${project.version}</version>
             </dependency>
         </dependencies>
