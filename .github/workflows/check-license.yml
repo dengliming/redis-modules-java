@@ -1,0 +1,21 @@
+name: Check License Header
+
+on:
+  pull_request:
+  push:
+    branches:
+      - master
+
+jobs:
+  check-license-header:
+    name: Check License Header
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: true
+      - name: Check License Header
+        uses: apache/skywalking-eyes@9bd5feb86b5817aa6072b008f9866a2c3bbc8587
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
