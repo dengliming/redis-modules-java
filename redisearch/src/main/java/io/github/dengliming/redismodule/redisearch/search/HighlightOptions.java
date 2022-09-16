@@ -42,6 +42,7 @@ public class HighlightOptions {
         args.add(Keywords.HIGHLIGHT);
         if (fields != null) {
             args.add(Keywords.FIELDS);
+            args.add(fields.length);
             for (String field : fields) {
                 args.add(field);
             }
