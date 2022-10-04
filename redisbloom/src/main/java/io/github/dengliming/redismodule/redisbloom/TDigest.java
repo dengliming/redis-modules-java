@@ -28,6 +28,7 @@ import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.List;
 
+import static io.github.dengliming.redismodule.redisbloom.protocol.Keywords.COMPRESSION;
 import static io.github.dengliming.redismodule.redisbloom.protocol.RedisCommands.TDIGEST_ADD;
 import static io.github.dengliming.redismodule.redisbloom.protocol.RedisCommands.TDIGEST_CDF;
 import static io.github.dengliming.redismodule.redisbloom.protocol.RedisCommands.TDIGEST_CREATE;
@@ -61,7 +62,7 @@ public class TDigest extends RedissonObject {
     }
 
     public RFuture<Boolean> createAsync(long compression) {
-        return commandExecutor.writeAsync(getName(), codec, TDIGEST_CREATE, getName(), compression);
+        return commandExecutor.writeAsync(getName(), codec, TDIGEST_CREATE, getName(), COMPRESSION, compression);
     }
 
     /**

@@ -21,5 +21,5 @@ package io.github.dengliming.redismodule.redisbloom.protocol;
  */
 public enum Keywords {
     CAPACITY, ERROR, EXPANSION, NOCREATE, NONSCALING, ITEMS, WEIGHTS,
-    BUCKETSIZE, MAXITERATIONS;
+    BUCKETSIZE, MAXITERATIONS, COMPRESSION
 }
