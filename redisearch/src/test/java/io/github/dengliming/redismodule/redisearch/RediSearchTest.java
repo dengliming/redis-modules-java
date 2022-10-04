@@ -160,7 +160,7 @@ public class RediSearchTest extends AbstractTest {
         fields2.put("content", "hello world");
         assertThat(rediSearch.addDocument(new Document(String.format("doc2"), 0.2d, fields2), new DocumentOptions())).isTrue();
 
-        SearchResult searchResult = rediSearch.search("Hi", new SearchOptions());
+        SearchResult searchResult = rediSearch.search("Hi", new SearchOptions().noContent());
         assertThat(searchResult.getTotal()).isEqualTo(2);
 
         searchResult = rediSearch.search("OOOO", new SearchOptions().noStopwords().language(RSLanguage.ENGLISH));
