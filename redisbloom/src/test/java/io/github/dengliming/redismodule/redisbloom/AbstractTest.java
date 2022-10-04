@@ -32,8 +32,8 @@ public abstract class AbstractTest {
     @BeforeEach
     public void init() {
         Config config = new Config();
-        config.useSingleServer().setAddress("redis://" + TestSettings.host() + ":" + System.getProperty("REDISBLOOM_PORT"
-                , TestSettings.port() + ""));
+        config.useSingleServer().setAddress("redis://" + TestSettings.host() + ":" + System.getProperty("REDISBLOOM_PORT",
+                TestSettings.port() + ""));
         redisBloomClient = new RedisBloomClient(config);
         redisBloomClient.flushall();
     }
