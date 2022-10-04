@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 dengliming.
+ * Copyright 2020-2022 dengliming.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -84,7 +84,7 @@ public interface RedisCommands {
     RedisCommand TDIGEST_INFO = new RedisCommand("TDIGEST.INFO", new ListMultiDecoder2(new TDigestDecoder()));
     RedisCommand TDIGEST_MIN = new RedisCommand("TDIGEST.MIN", new DoubleReplayConvertor());
     RedisCommand TDIGEST_MAX = new RedisCommand("TDIGEST.MAX", new DoubleReplayConvertor());
-    RedisCommand TDIGEST_QUANTILE = new RedisCommand("TDIGEST.QUANTILE", new DoubleReplayConvertor());
-    RedisCommand TDIGEST_CDF = new RedisCommand("TDIGEST.CDF", new DoubleReplayConvertor());
+    RedisCommand<List<Double>> TDIGEST_QUANTILE = new RedisCommand("TDIGEST.QUANTILE", new ObjectListReplayDecoder(), new DoubleReplayConvertor());
+    RedisCommand<List<Double>> TDIGEST_CDF = new RedisCommand("TDIGEST.CDF", new ObjectListReplayDecoder(), new DoubleReplayConvertor());
     RedisCommand TDIGEST_MERGE = new RedisCommand("TDIGEST.MERGE", new BooleanReplayConvertor());
 }

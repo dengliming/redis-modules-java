@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 dengliming.
+ * Copyright 2021-2022 dengliming.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -141,32 +141,45 @@ public class TDigest extends RedissonObject {
     /**
      * Returns an estimate of the cutoff such that a specified fraction of the data added to this TDigest would be less than or equal to the cutoff.
      * <p>
-     * TDIGEST.QUANTILE {key} {quantile}
+     * TDIGEST.QUANTILE {key} quantile [quantile ...]
      *
      * @return
      */
-    public Double getQuantile(double quantile) {
-        return get(getQuantileAsync(quantile));
+    public List<Double> getQuantile(double... quantiles) {
+        return get(getQuantileAsync(quantiles));
     }
 
-    public RFuture<Double> getQuantileAsync(double quantile) {
-        return commandExecutor.readAsync(getName(), StringCodec.INSTANCE, TDIGEST_QUANTILE, getName(), quantile);
+    public RFuture<List<Double>> getQuantileAsync(double... quantiles) {
+        RAssert.notEmpty(quantiles, "quantiles must not be empty");
+
+        List<Object> params = new ArrayList<>(quantiles.length + 1);
+        params.add(getName());
+        for (double quantile : quantiles) {
+            params.add(quantile);
+        }
+        return commandExecutor.readAsync(getName(), StringCodec.INSTANCE, TDIGEST_QUANTILE, params.toArray());
     }
 
     /**
      * Returns the fraction of all points added which are <= value.
      * <p>
-     * TDIGEST.CDF {key} {value}
+     * TDIGEST.CDF {key} value [value ...]
      *
-     * @param value
+     * @param values
      * @return
      */
-    public Double getCdf(double value) {
-        return get(getCdfAsync(value));
+    public List<Double> getCdf(double... values) {
+        return get(getCdfAsync(values));
     }
 
-    public RFuture<Double> getCdfAsync(double value) {
-        return commandExecutor.readAsync(getName(), StringCodec.INSTANCE, TDIGEST_CDF, getName(), value);
+    public RFuture<List<Double>> getCdfAsync(double... values) {
+        RAssert.notEmpty(values, "values must not be empty");
+        List<Object> params = new ArrayList<>(values.length + 1);
+        params.add(getName());
+        for (double value : values) {
+            params.add(value);
+        }
+        return commandExecutor.readAsync(getName(), StringCodec.INSTANCE, TDIGEST_CDF, params.toArray());
     }
 
     /**
@@ -180,7 +193,7 @@ public class TDigest extends RedissonObject {
     }
 
     public RFuture<Boolean> mergeToAsync(String toKey) {
-        return commandExecutor.readAsync(getName(), StringCodec.INSTANCE, TDIGEST_MERGE, toKey, getName());
+        return commandExecutor.readAsync(getName(), StringCodec.INSTANCE, TDIGEST_MERGE, toKey, 1, getName());
     }
 
     /**

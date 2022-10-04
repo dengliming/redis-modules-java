@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 dengliming.
+ * Copyright 2020-2022 dengliming.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -62,6 +62,12 @@ public final class RAssert {
     }
 
     public static void notEmpty(int[] array, String message) {
+        if (array == null || array.length == 0) {
+            throw new IllegalArgumentException(message);
+        }
+    }
+
+    public static void notEmpty(double[] array, String message) {
         if (array == null || array.length == 0) {
             throw new IllegalArgumentException(message);
         }
