@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 dengliming.
+ * Copyright 2021-2022 dengliming.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,6 +28,6 @@ public class TDigestDecoder implements MultiDecoder<TDigestInfo> {
     public TDigestInfo decode(List<Object> parts, State state) {
         return new TDigestInfo((Long) parts.get(1), (Long) parts.get(3), (Long) parts.get(5), (Long) parts.get(7),
                 Double.parseDouble(String.valueOf(parts.get(9))), Double.parseDouble(String.valueOf(parts.get(11))),
-                (Long) parts.get(13));
+                Long.valueOf(String.valueOf(parts.get(13))));
     }
 }
