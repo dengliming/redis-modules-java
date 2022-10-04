@@ -30,6 +30,15 @@ jobs:
           --health-retries 5
         ports:
           - 52568:6379
+      rebloom:
+        image: redislabs/rebloom:edge
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 6379:6379
     steps:
       - uses: actions/checkout@v2
       - name: Set up JDK 1.8
@@ -44,5 +53,5 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-maven-
       - name: Build with Maven
-        run: mvn clean install -DREDIS_HOST=localhost -DREDIS_PORT=52567 -DREDISAI_PORT=52568 -Dgpg.skip --file pom.xml
+        run: mvn clean install -DREDIS_HOST=localhost -DREDIS_PORT=52567 -DREDISAI_PORT=52568 -DREDISBLOOM_PORT=6379 -Dgpg.skip --file pom.xml
       - uses: codecov/codecov-action@v1
