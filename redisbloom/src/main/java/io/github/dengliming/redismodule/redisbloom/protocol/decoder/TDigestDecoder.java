@@ -28,6 +28,6 @@ public class TDigestDecoder implements MultiDecoder<TDigestInfo> {
     public TDigestInfo decode(List<Object> parts, State state) {
         return new TDigestInfo((Long) parts.get(1), (Long) parts.get(3), (Long) parts.get(5), (Long) parts.get(7),
                 Double.parseDouble(String.valueOf(parts.get(9))), Double.parseDouble(String.valueOf(parts.get(11))),
-                Long.valueOf(String.valueOf(parts.get(13))));
+                Long.parseLong(String.valueOf(parts.get(13))));
     }
 }

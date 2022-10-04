@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 dengliming.
+ * Copyright 2020-2022 dengliming.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,7 +43,7 @@ public class SearchResultDecoder implements MultiDecoder<SearchResult> {
     public SearchResult decode(List<Object> parts, State state) {
         Long total = (Long) parts.get(0);
         int documentSize = withScores ? 3 : 2;
-        boolean noContent = total == parts.size() + 1;
+        boolean noContent = total.longValue() == parts.size() - 1;
 
         List<Document> documents = new ArrayList<>(total.intValue());
         // Checks the document size. DocumentSize equals to 2 means only key and parts. DocumentSize equals to 3 means
