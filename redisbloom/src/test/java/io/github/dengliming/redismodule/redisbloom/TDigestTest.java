@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 dengliming.
+ * Copyright 2021-2022 dengliming.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,10 +17,11 @@
 package io.github.dengliming.redismodule.redisbloom;
 
 import io.github.dengliming.redismodule.redisbloom.model.TDigestInfo;
-import org.assertj.core.data.Offset;
 import org.junit.jupiter.api.Test;
+
 import java.util.AbstractMap;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -72,16 +73,16 @@ public class TDigestTest extends AbstractTest {
     public void testQuantile() {
         TDigest tDigest = getRedisBloomClient().getTDigest("t-digest");
         assertThat(tDigest.create(500)).isTrue();
-
-        List<AbstractMap.SimpleEntry<Double, Double>> vals = new ArrayList<>();
-        for (int i = 1; i <= 10000; i++) {
-            vals.add(new AbstractMap.SimpleEntry(i * 0.01, 1.0));
-        }
+        List<AbstractMap.SimpleEntry<Double, Double>> vals = Arrays.asList(
+                new AbstractMap.SimpleEntry(1.0, 1.0),
+                new AbstractMap.SimpleEntry(2.0, 1.0),
+                new AbstractMap.SimpleEntry(3.0, 1.0)
+        );
 
         assertThat(tDigest.add(vals)).isTrue();
 
-        assertThat(tDigest.getQuantile(0.01)).isCloseTo(1.0, Offset.offset(0.01));
-        assertThat(tDigest.getQuantile(0.99)).isCloseTo(99.0, Offset.offset(0.01));
+        assertThat(tDigest.getQuantile(1.0).get(0)).isEqualTo(3.0);
+        assertThat(tDigest.getQuantile(0).get(0)).isEqualTo(1.0);
     }
 
     @Test
@@ -89,15 +90,16 @@ public class TDigestTest extends AbstractTest {
         TDigest tDigest = getRedisBloomClient().getTDigest("t-digest");
         assertThat(tDigest.create(500)).isTrue();
 
-        List<AbstractMap.SimpleEntry<Double, Double>> vals = new ArrayList<>();
-        for (int i = 1; i <= 100; i++) {
-            vals.add(new AbstractMap.SimpleEntry(i, 1.0));
-        }
+        List<AbstractMap.SimpleEntry<Double, Double>> vals = Arrays.asList(
+                new AbstractMap.SimpleEntry(1.0, 1.0),
+                new AbstractMap.SimpleEntry(2.0, 1.0),
+                new AbstractMap.SimpleEntry(3.0, 1.0)
+        );
 
         assertThat(tDigest.add(vals)).isTrue();
 
-        assertThat(tDigest.getCdf(1.0)).isCloseTo(0.01, Offset.offset(0.01));
-        assertThat(tDigest.getCdf(99.0)).isCloseTo(0.99, Offset.offset(0.01));
+        assertThat(tDigest.getCdf(10.0).get(0)).isEqualTo(1.0);
+        assertThat(tDigest.getCdf(0.0).get(0)).isEqualTo(0.0);
     }
 
     @Test
@@ -114,7 +116,7 @@ public class TDigestTest extends AbstractTest {
 
         TDigestInfo tDigestInfo = tDigest.getInfo();
         assertThat(tDigestInfo).isNotNull();
-        assertThat(tDigestInfo.getUnmergedNodes()).isEqualTo(100);
+        assertThat(tDigestInfo.getUnmergedNodes()).isEqualTo(200);
 
         assertThat(tDigest.reset()).isTrue();
         tDigestInfo = tDigest.getInfo();
@@ -145,6 +147,6 @@ public class TDigestTest extends AbstractTest {
 
         TDigestInfo toDigestInfo = toDigest.getInfo();
         assertThat(toDigestInfo).isNotNull();
-        assertThat(toDigestInfo.getMergedWeight() + toDigestInfo.getUnmergedWeight()).isEqualTo(1100);
+        assertThat(toDigestInfo.getMergedWeight() + toDigestInfo.getUnmergedWeight()).isEqualTo(400);
     }
 }
