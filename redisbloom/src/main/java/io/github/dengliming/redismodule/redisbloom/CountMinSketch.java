@@ -26,6 +26,7 @@ import org.redisson.client.codec.Codec;
 import org.redisson.command.CommandAsyncExecutor;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static io.github.dengliming.redismodule.redisbloom.protocol.RedisCommands.CMS_INCRBY;
@@ -83,7 +84,7 @@ public class CountMinSketch extends RedissonObject {
      *
      * @param items
      * @param increments
-     * @return
+     * @return List reply of Integer reply with an updated min-count of each of the items in the sketch
      */
     public List<Integer> incrby(String[] items, int[] increments) {
         return get(incrbyAsync(items, increments));
@@ -125,7 +126,7 @@ public class CountMinSketch extends RedissonObject {
      * @param keyNum Number of sketches to be merged
      * @param srcs Names of source sketches to be merged
      * @param weights Multiple of each sketch. Default =1
-     * @return
+     * @return True if executed correctly, or False reply otherwise
      */
     public boolean merge(int keyNum, String[] srcs, Integer[] weights) {
         RAssert.notEmpty(srcs, "Srcs must not be empty");
@@ -137,19 +138,16 @@ public class CountMinSketch extends RedissonObject {
         List<Object> params = new ArrayList<>();
         params.add(getName());
         params.add(keyNum);
-        for (String src : srcs) {
-            params.add(src);
-        }
+        Collections.addAll(params, srcs);
         if (weights.length > 0) {
             params.add(Keywords.WEIGHTS);
-            for (Integer weight : weights) {
-                params.add(weight);
-            }
+            Collections.addAll(params, weights);
         }
         return commandExecutor.writeAsync(getName(), codec, CMS_MERGE, params.toArray());
     }
 
     /**
+     *  Get the information of the filter.
      *
      * @return width, depth and total count of the sketch
      */

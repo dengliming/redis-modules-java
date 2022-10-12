@@ -60,7 +60,7 @@ public class BloomFilter extends RedissonObject {
      *
      * @param errorRate The desired probability for false positives. This should be a decimal value between 0 and 1.
      * @param capacity The number of entries you intend to add to the filter
-     * @return
+     * @return True if executed correctly, or false reply otherwise
      */
     public boolean create(double errorRate, long capacity) {
         return get(createAsync(errorRate, capacity));
@@ -90,7 +90,7 @@ public class BloomFilter extends RedissonObject {
      * Determines whether an item may exist in the Bloom Filter or not
      *
      * @param item
-     * @return
+     * @return True if the item exist in the filter
      */
     public boolean exists(String item) {
         return get(existsAsync(item));
@@ -123,7 +123,7 @@ public class BloomFilter extends RedissonObject {
      *
      * @param insertArgs {@link InsertArgs}
      * @param items
-     * @return
+     * @return The list of insert results
      */
     public List<Boolean> insert(InsertArgs insertArgs, String... items) {
         return get(insertAsync(insertArgs, items));
@@ -147,7 +147,7 @@ public class BloomFilter extends RedissonObject {
      * Adds one or more items to the Bloom Filter
      *
      * @param items One or more items to add
-     * @return
+     * @return The list of add results
      */
     public List<Boolean> madd(String... items) {
         return get(maddAsync(items));
@@ -162,7 +162,7 @@ public class BloomFilter extends RedissonObject {
     /**
      * Return information about key
      *
-     * @return
+     * @return The information of the filter
      */
     public BloomFilterInfo getInfo() {
         return get(getInfoAsync());
@@ -176,7 +176,7 @@ public class BloomFilter extends RedissonObject {
      * Begins an incremental save of the bloom filter.
      *
      * @param iter Iterator value. This is either 0, or the iterator from a previous invocation of this command
-     * @return
+     * @return The iterator-data pair
      */
     public ChunksData scanDump(int iter) {
         return get(scanDumpAsync(iter));
@@ -189,8 +189,8 @@ public class BloomFilter extends RedissonObject {
     /**
      * Restores a filter previously saved using SCANDUMP
      *
-     * @param chunk
-     * @return
+     * @param chunk Data chunk
+     * @return True if executed correctly, or false reply otherwise
      */
     public boolean loadChunk(ChunksData chunk) {
         return get(loadChunkAsync(chunk));

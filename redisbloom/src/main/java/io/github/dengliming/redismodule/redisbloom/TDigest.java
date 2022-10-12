@@ -30,6 +30,8 @@ import java.util.List;
 
 import static io.github.dengliming.redismodule.redisbloom.protocol.Keywords.COMPRESSION;
 import static io.github.dengliming.redismodule.redisbloom.protocol.RedisCommands.TDIGEST_ADD;
+import static io.github.dengliming.redismodule.redisbloom.protocol.RedisCommands.TDIGEST_BYRANK;
+import static io.github.dengliming.redismodule.redisbloom.protocol.RedisCommands.TDIGEST_BYREVRANK;
 import static io.github.dengliming.redismodule.redisbloom.protocol.RedisCommands.TDIGEST_CDF;
 import static io.github.dengliming.redismodule.redisbloom.protocol.RedisCommands.TDIGEST_CREATE;
 import static io.github.dengliming.redismodule.redisbloom.protocol.RedisCommands.TDIGEST_INFO;
@@ -37,7 +39,10 @@ import static io.github.dengliming.redismodule.redisbloom.protocol.RedisCommands
 import static io.github.dengliming.redismodule.redisbloom.protocol.RedisCommands.TDIGEST_MERGE;
 import static io.github.dengliming.redismodule.redisbloom.protocol.RedisCommands.TDIGEST_MIN;
 import static io.github.dengliming.redismodule.redisbloom.protocol.RedisCommands.TDIGEST_QUANTILE;
+import static io.github.dengliming.redismodule.redisbloom.protocol.RedisCommands.TDIGEST_RANK;
 import static io.github.dengliming.redismodule.redisbloom.protocol.RedisCommands.TDIGEST_RESET;
+import static io.github.dengliming.redismodule.redisbloom.protocol.RedisCommands.TDIGEST_REVRANK;
+import static io.github.dengliming.redismodule.redisbloom.protocol.RedisCommands.TDIGEST_TRIMMED_MEAN;
 
 public class TDigest extends RedissonObject {
 
@@ -151,13 +156,7 @@ public class TDigest extends RedissonObject {
 
     public RFuture<List<Double>> getQuantileAsync(double... quantiles) {
         RAssert.notEmpty(quantiles, "quantiles must not be empty");
-
-        List<Object> params = new ArrayList<>(quantiles.length + 1);
-        params.add(getName());
-        for (double quantile : quantiles) {
-            params.add(quantile);
-        }
-        return commandExecutor.readAsync(getName(), StringCodec.INSTANCE, TDIGEST_QUANTILE, params.toArray());
+        return commandExecutor.readAsync(getName(), StringCodec.INSTANCE, TDIGEST_QUANTILE, buildParamsWithDoubleValues(quantiles));
     }
 
     /**
@@ -174,12 +173,7 @@ public class TDigest extends RedissonObject {
 
     public RFuture<List<Double>> getCdfAsync(double... values) {
         RAssert.notEmpty(values, "values must not be empty");
-        List<Object> params = new ArrayList<>(values.length + 1);
-        params.add(getName());
-        for (double value : values) {
-            params.add(value);
-        }
-        return commandExecutor.readAsync(getName(), StringCodec.INSTANCE, TDIGEST_CDF, params.toArray());
+        return commandExecutor.readAsync(getName(), StringCodec.INSTANCE, TDIGEST_CDF, buildParamsWithDoubleValues(values));
     }
 
     /**
@@ -208,5 +202,100 @@ public class TDigest extends RedissonObject {
 
     public RFuture<TDigestInfo> getInfoAsync() {
         return commandExecutor.readAsync(getName(), StringCodec.INSTANCE, TDIGEST_INFO, getName());
+    }
+
+    /**
+     * TDIGEST.RANK key value [value ...]
+     *
+     * @since Bloom 2.4.0
+     * @return An array of results populated with rank_1, rank_2, ..., rank_N.
+     */
+    public List<Integer> rank(double... values) {
+        return get(rankAsync(values));
+    }
+
+    public RFuture<List<Integer>> rankAsync(double... values) {
+        RAssert.notEmpty(values, "values must not be empty");
+        return commandExecutor.readAsync(getName(), StringCodec.INSTANCE, TDIGEST_RANK, buildParamsWithDoubleValues(values));
+    }
+
+    /**
+     * TDIGEST.REVRANK key value [value ...]
+     *
+     * @since Bloom 2.4.0
+     * @return An array of results populated with rank_1, rank_2, ..., rank_N.
+     */
+    public List<Integer> revRank(double... values) {
+        return get(revRankAsync(values));
+    }
+
+    public RFuture<List<Integer>> revRankAsync(double... values) {
+        RAssert.notEmpty(values, "values must not be empty");
+        return commandExecutor.readAsync(getName(), StringCodec.INSTANCE, TDIGEST_REVRANK, buildParamsWithDoubleValues(values));
+    }
+
+    /**
+     * TDIGEST.BYRANK key rank [rank ...]
+     *
+     * @since Bloom 2.4.0
+     * @return An array of results populated with rank_1, rank_2, ..., rank_N.
+     */
+    public List<Double> byRank(int... ranks) {
+        return get(byRankAsync(ranks));
+    }
+
+    public RFuture<List<Double>> byRankAsync(int... ranks) {
+        RAssert.notEmpty(ranks, "ranks must not be empty");
+        return commandExecutor.readAsync(getName(), StringCodec.INSTANCE, TDIGEST_BYRANK, buildParamsWithIntValues(ranks));
+    }
+
+    /**
+     * TDIGEST.BYREVRANK key reverse_rank [reverse_rank ...]
+     *
+     * @since Bloom 2.4.0
+     * @return An array of results populated with rank_1, rank_2, ..., rank_N.
+     */
+    public List<Double> byRevRank(int... reverseRanks) {
+        return get(byRevRankAsync(reverseRanks));
+    }
+
+    public RFuture<List<Double>> byRevRankAsync(int... reverseRanks) {
+        RAssert.notEmpty(reverseRanks, "reverseRanks must not be empty");
+        return commandExecutor.readAsync(getName(), StringCodec.INSTANCE, TDIGEST_BYREVRANK, buildParamsWithIntValues(reverseRanks));
+    }
+
+    /**
+     * TDIGEST.TRIMMED_MEAN key low_cut_quantile high_cut_quantile
+     *
+     * @param lowCutQuantile Exclude observation values lower than this quantile
+     * @param highCutQuantile Exclude observation values higher than this quantile
+     * @since Bloom 2.4.0
+     * @return The estimation of the mean value.
+     */
+    public String trimmedMean(double lowCutQuantile, double highCutQuantile) {
+        return get(trimmedMeanAsync(lowCutQuantile, highCutQuantile));
+    }
+
+    public RFuture<String> trimmedMeanAsync(double lowCutQuantile, double highCutQuantile) {
+        return commandExecutor.readAsync(getName(), StringCodec.INSTANCE, TDIGEST_TRIMMED_MEAN, getName(),
+                lowCutQuantile, highCutQuantile);
+    }
+
+    private Object[] buildParamsWithDoubleValues(double... values) {
+        List<Object> params = new ArrayList<>(values.length + 1);
+        params.add(getName());
+        for (double value : values) {
+            params.add(value);
+        }
+        return params.toArray();
+    }
+
+    private Object[] buildParamsWithIntValues(int... values) {
+        List<Object> params = new ArrayList<>(values.length + 1);
+        params.add(getName());
+        for (int value : values) {
+            params.add(value);
+        }
+        return params.toArray();
     }
 }

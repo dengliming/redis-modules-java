@@ -87,4 +87,9 @@ public interface RedisCommands {
     RedisCommand<List<Double>> TDIGEST_QUANTILE = new RedisCommand("TDIGEST.QUANTILE", new ObjectListReplayDecoder(), new DoubleReplayConvertor());
     RedisCommand<List<Double>> TDIGEST_CDF = new RedisCommand("TDIGEST.CDF", new ObjectListReplayDecoder(), new DoubleReplayConvertor());
     RedisCommand TDIGEST_MERGE = new RedisCommand("TDIGEST.MERGE", new BooleanReplayConvertor());
+    RedisCommand<List<Integer>> TDIGEST_RANK = new RedisCommand("TDIGEST.RANK", new ObjectListReplayDecoder(), new IntegerReplayConvertor());
+    RedisCommand<List<Integer>> TDIGEST_REVRANK = new RedisCommand("TDIGEST.REVRANK", new ObjectListReplayDecoder(), new IntegerReplayConvertor());
+    RedisCommand<List<Double>> TDIGEST_BYRANK = new RedisCommand("TDIGEST.BYRANK", new ObjectListReplayDecoder(), new DoubleReplayConvertor());
+    RedisCommand<List<Double>> TDIGEST_BYREVRANK = new RedisCommand("TDIGEST.BYREVRANK", new ObjectListReplayDecoder(), new DoubleReplayConvertor());
+    RedisCommand TDIGEST_TRIMMED_MEAN = new RedisCommand("TDIGEST.TRIMMED_MEAN");
 }
