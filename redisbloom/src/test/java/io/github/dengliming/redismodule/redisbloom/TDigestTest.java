@@ -159,7 +159,7 @@ public class TDigestTest extends AbstractTest {
                 new AbstractMap.SimpleEntry<>(3.0, 1.0)
         ))).isTrue();
 
-        assertThat(tDigest.trimmedMean(0.1, 0.9)).isEqualTo("2");
+        assertThat(tDigest.trimmedMean(0.1, 0.9)).isEqualTo("1.5");
     }
 
     @Test
