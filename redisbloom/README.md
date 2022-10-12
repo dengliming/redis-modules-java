@@ -46,4 +46,9 @@ TDIGEST.QUANTILE | TDigest.<br/>getQuantile()<br/>getQuantileAsync() |
 TDIGEST.CDF | TDigest.<br/>getCdf()<br/>getCdfAsync() |
 TDIGEST.MERGE | TDigest.<br/>mergeTo()<br/>mergeToAsync() |
 TDIGEST.INFO | TDigest.<br/>getInfo()<br/>getInfoAsync() |
+TDIGEST.BYRANK | TDigest.<br/>byRank()<br/>byRankAsync() |
+TDIGEST.BYREVRANK | TDigest.<br/>byRevRank()<br/>byRevRankAsync() |
+TDIGEST.RANK | TDigest.<br/>rank()<br/>rankAsync() |
+TDIGEST.REVRANK | TDigest.<br/>revRank()<br/>revRankAsync() |
+TDIGEST.TRIMMED_MEAN | TDigest.<br/>trimmedMean()<br/>trimmedMeanAsync() |
 

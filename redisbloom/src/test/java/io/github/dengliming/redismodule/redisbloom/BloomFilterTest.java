@@ -41,7 +41,7 @@ public class BloomFilterTest extends AbstractTest {
     public void testAdd() {
         BloomFilter bloomFilter = getRedisBloomClient().getRBloomFilter("bf_add");
         assertThat(bloomFilter.create(0.1d, 100)).isTrue();
-        List<Boolean> results = bloomFilter.madd(new String[]{"a", "b", "c"});
+        List<Boolean> results = bloomFilter.madd("a", "b", "c");
         assertThat(results).isNotNull().hasSize(3);
         assertThat(bloomFilter.exists("a")).isTrue();
     }

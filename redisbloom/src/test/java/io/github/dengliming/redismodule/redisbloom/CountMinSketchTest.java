@@ -19,9 +19,7 @@ package io.github.dengliming.redismodule.redisbloom;
 import io.github.dengliming.redismodule.redisbloom.model.CountMinSketchInfo;
 import org.junit.jupiter.api.Test;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -43,7 +41,6 @@ public class CountMinSketchTest extends AbstractTest {
     public void testAdd() {
         CountMinSketch countMinSketch = getRedisBloomClient().getCountMinSketch("cms_add");
         assertThat(countMinSketch.create(10, 10)).isTrue();
-        Map<String, Integer> itemIncrement = new HashMap<>();
         List<Integer> results = countMinSketch.incrby(new String[]{"a"}, new int[]{3});
         assertThat(results).isNotNull().hasSize(1);
         assertThat(results.get(0)).isEqualTo(3);

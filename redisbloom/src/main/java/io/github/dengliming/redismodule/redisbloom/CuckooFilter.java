@@ -216,7 +216,7 @@ public class CuckooFilter extends RedissonObject {
     /**
      * Get information about key
      *
-     * @return
+     * @return The information of the filter
      */
     public CuckooFilterInfo getInfo() {
         return get(getInfoAsync());

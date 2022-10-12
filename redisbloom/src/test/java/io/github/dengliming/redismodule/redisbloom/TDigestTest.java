@@ -22,6 +22,7 @@ import org.junit.jupiter.api.Test;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -50,9 +51,7 @@ public class TDigestTest extends AbstractTest {
     public void testAdd() {
         TDigest tDigest = getRedisBloomClient().getTDigest("t-digest");
         assertThat(tDigest.create(100)).isTrue();
-        List<AbstractMap.SimpleEntry<Double, Double>> vals = new ArrayList<>();
-        vals.add(new AbstractMap.SimpleEntry(1500.0, 1.0));
-        assertThat(tDigest.add(vals)).isTrue();
+        assertThat(tDigest.add(Collections.singletonList(new AbstractMap.SimpleEntry<>(1500.0, 1.0)))).isTrue();
     }
 
     @Test
@@ -61,7 +60,7 @@ public class TDigestTest extends AbstractTest {
         assertThat(tDigest.create(100)).isTrue();
         List<AbstractMap.SimpleEntry<Double, Double>> vals = new ArrayList<>();
         for (int i = 1; i <= 100; i++) {
-            vals.add(new AbstractMap.SimpleEntry(i, 1.0));
+            vals.add(new AbstractMap.SimpleEntry<>(i * 1.0, 1.0));
         }
         assertThat(tDigest.add(vals)).isTrue();
 
@@ -73,13 +72,12 @@ public class TDigestTest extends AbstractTest {
     public void testQuantile() {
         TDigest tDigest = getRedisBloomClient().getTDigest("t-digest");
         assertThat(tDigest.create(500)).isTrue();
-        List<AbstractMap.SimpleEntry<Double, Double>> vals = Arrays.asList(
-                new AbstractMap.SimpleEntry(1.0, 1.0),
-                new AbstractMap.SimpleEntry(2.0, 1.0),
-                new AbstractMap.SimpleEntry(3.0, 1.0)
-        );
 
-        assertThat(tDigest.add(vals)).isTrue();
+        assertThat(tDigest.add(Arrays.asList(
+                new AbstractMap.SimpleEntry<>(1.0, 1.0),
+                new AbstractMap.SimpleEntry<>(2.0, 1.0),
+                new AbstractMap.SimpleEntry<>(3.0, 1.0)
+        ))).isTrue();
 
         assertThat(tDigest.getQuantile(1.0).get(0)).isEqualTo(3.0);
         assertThat(tDigest.getQuantile(0).get(0)).isEqualTo(1.0);
@@ -90,13 +88,11 @@ public class TDigestTest extends AbstractTest {
         TDigest tDigest = getRedisBloomClient().getTDigest("t-digest");
         assertThat(tDigest.create(500)).isTrue();
 
-        List<AbstractMap.SimpleEntry<Double, Double>> vals = Arrays.asList(
-                new AbstractMap.SimpleEntry(1.0, 1.0),
-                new AbstractMap.SimpleEntry(2.0, 1.0),
-                new AbstractMap.SimpleEntry(3.0, 1.0)
-        );
-
-        assertThat(tDigest.add(vals)).isTrue();
+        assertThat(tDigest.add(Arrays.asList(
+                new AbstractMap.SimpleEntry<>(1.0, 1.0),
+                new AbstractMap.SimpleEntry<>(2.0, 1.0),
+                new AbstractMap.SimpleEntry<>(3.0, 1.0)
+        ))).isTrue();
 
         assertThat(tDigest.getCdf(10.0).get(0)).isEqualTo(1.0);
         assertThat(tDigest.getCdf(0.0).get(0)).isEqualTo(0.0);
@@ -109,7 +105,7 @@ public class TDigestTest extends AbstractTest {
 
         List<AbstractMap.SimpleEntry<Double, Double>> vals = new ArrayList<>();
         for (int i = 1; i <= 100; i++) {
-            vals.add(new AbstractMap.SimpleEntry(i, 1.0));
+            vals.add(new AbstractMap.SimpleEntry<>(i * 1.0, 1.0));
         }
 
         assertThat(tDigest.add(vals)).isTrue();
@@ -132,14 +128,14 @@ public class TDigestTest extends AbstractTest {
 
         List<AbstractMap.SimpleEntry<Double, Double>> vals = new ArrayList<>();
         for (int i = 1; i <= 100; i++) {
-            vals.add(new AbstractMap.SimpleEntry(1.0, 1.0));
+            vals.add(new AbstractMap.SimpleEntry<>(1.0, 1.0));
         }
 
         assertThat(fromDigest.add(vals)).isTrue();
 
         vals.clear();
         for (int i = 1; i <= 100; i++) {
-            vals.add(new AbstractMap.SimpleEntry(1.0, 10.0));
+            vals.add(new AbstractMap.SimpleEntry<>(1.0, 10.0));
         }
         assertThat(toDigest.add(vals)).isTrue();
 
@@ -148,5 +144,38 @@ public class TDigestTest extends AbstractTest {
         TDigestInfo toDigestInfo = toDigest.getInfo();
         assertThat(toDigestInfo).isNotNull();
         assertThat(toDigestInfo.getMergedWeight() + toDigestInfo.getUnmergedWeight()).isEqualTo(400);
+    }
+
+    @Test
+    public void testTrimmedMean() {
+        TDigest tDigest = getRedisBloomClient().getTDigest("t-digest");
+        assertThat(tDigest.create(500)).isTrue();
+
+        assertThat(tDigest.trimmedMean(0.1, 0.9)).isEqualTo("nan");
+
+        assertThat(tDigest.add(Arrays.asList(
+                new AbstractMap.SimpleEntry<>(1.0, 1.0),
+                new AbstractMap.SimpleEntry<>(2.0, 1.0),
+                new AbstractMap.SimpleEntry<>(3.0, 1.0)
+        ))).isTrue();
+
+        assertThat(tDigest.trimmedMean(0.1, 0.9)).isEqualTo("2");
+    }
+
+    @Test
+    public void testRank() {
+        TDigest tDigest = getRedisBloomClient().getTDigest("t-digest");
+        assertThat(tDigest.create(500)).isTrue();
+
+        assertThat(tDigest.add(Arrays.asList(
+                new AbstractMap.SimpleEntry<>(1.0, 1.0),
+                new AbstractMap.SimpleEntry<>(2.0, 1.0),
+                new AbstractMap.SimpleEntry<>(3.0, 1.0)
+        ))).isTrue();
+
+        assertThat(tDigest.rank(1, 3)).containsExactly(2, 6);
+        assertThat(tDigest.revRank(1, 3)).containsExactly(4, 0);
+        assertThat(tDigest.byRank(0, 1)).containsExactly(1.0d, 1.0d);
+        assertThat(tDigest.byRevRank(2, 3)).containsExactly(2.0d, 1.0d);
     }
 }
