@@ -46,12 +46,11 @@ public class InsertArgs {
     private boolean nonScaling;
 
     public InsertArgs() {
+        this(-1, 0, 0, false, false);
     }
 
     public InsertArgs(int capacity, double errorRatio, int expansion) {
-        this.capacity = capacity;
-        this.errorRatio = errorRatio;
-        this.expansion = expansion;
+        this(capacity, errorRatio, expansion, false, false);
     }
 
     public InsertArgs(int capacity, double errorRatio, int expansion, boolean noCreate, boolean nonScaling) {

@@ -40,6 +40,10 @@ public class TDigestTest extends AbstractTest {
         TDigestInfo tDigestInfo = tDigest.getInfo();
         assertThat(tDigestInfo).isNotNull();
         assertThat(tDigestInfo.getCompression()).isEqualTo(100);
+        assertThat(tDigestInfo.getCapacity()).isEqualTo(610);
+        assertThat(tDigestInfo.getTotalCompressions()).isEqualTo(0);
+        assertThat(tDigestInfo.getMergedNodes()).isEqualTo(0);
+
         tDigest.delete();
 
         // compression negative/zero value
@@ -176,6 +180,6 @@ public class TDigestTest extends AbstractTest {
         assertThat(tDigest.rank(1, 3)).containsExactly(2, 6);
         assertThat(tDigest.revRank(1, 3)).containsExactly(4, 0);
         assertThat(tDigest.byRank(0, 1)).containsExactly(1.0d, 1.0d);
-        assertThat(tDigest.byRevRank(2, 3)).containsExactly(2.0d, 1.0d);
+        assertThat(tDigest.byRevRank(2, 3)).containsExactly(1.0d, 1.0d);
     }
 }

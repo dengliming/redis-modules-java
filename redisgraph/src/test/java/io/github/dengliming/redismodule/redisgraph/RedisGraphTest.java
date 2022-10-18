@@ -23,6 +23,7 @@ import io.github.dengliming.redismodule.redisgraph.model.ResultSet;
 import io.github.dengliming.redismodule.redisgraph.model.SlowLogItem;
 import io.github.dengliming.redismodule.redisgraph.model.Statistics;
 import org.junit.jupiter.api.Test;
+import org.redisson.api.BatchResult;
 
 import java.util.List;
 import java.util.Map;
@@ -75,7 +76,7 @@ public class RedisGraphTest extends AbstractTest {
     public void testQuery() {
         RedisGraph redisGraph = getRedisGraph();
         assertThat(redisGraph.query("social", "CREATE (:person{name:'filipe',age:30})", 0L)).isNotNull();
-        assertThat(redisGraph.query("social", "MATCH (a:person) WHERE (a.name = 'filipe') RETURN a.age", 0L)).isNotNull();
+        assertThat(redisGraph.query("social", "MATCH (a:person) WHERE (a.name = 'filipe') RETURN a.age", 1000L)).isNotNull();
     }
 
     @Test
@@ -134,7 +135,26 @@ public class RedisGraphTest extends AbstractTest {
         assertThat(record.getString("a.age")).isEqualTo("32");
 
         resultSet = redisGraph.readOnlyQuery("social", "MATCH (a:person)-[r:knows]->(b:person) RETURN a,r, "
-                + "a.name, a.age, a.doubleValue, a.boolValue, " + "r.place, r.since, r.doubleValue, r.boolValue", -1);
+                + "a.name, a.age, a.doubleValue, a.boolValue, " + "r.place, r.since, r.doubleValue, r.boolValue", 500);
         assertThat(resultSet).isNotNull();
+    }
+
+    @Test
+    public void testExplain() {
+        RedisGraph redisGraph = getRedisGraph();
+        assertThat(redisGraph.query("social", "CREATE (:person{name:'filipe',age:30})", 0L)).isNotNull();
+        assertThat(redisGraph.explain("social", "MATCH (a:person) WHERE (a.name = 'filipe') RETURN a.age")).isNotEmpty();
+    }
+
+    @Test
+    public void testPipelining() {
+        RedisGraphBatch batch = getRedisGraphBatch();
+        RedisGraph redisGraph = batch.getRedisGraph();
+        redisGraph.profileAsync("social", "CREATE (:person{name:'roi',age:32})", 0L);
+        redisGraph.listAsync();
+        BatchResult<?> res = batch.execute();
+        assertThat(res.getResponses().size()).isEqualTo(2);
+        assertThat((List<String>) res.getResponses().get(0)).isNotEmpty();
+        assertThat((List<String>) res.getResponses().get(1)).contains("social");
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 dengliming.
+ * Copyright 2020-2022 dengliming.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,14 +20,14 @@ package io.github.dengliming.redismodule.redisbloom.model;
  * @author dengliming
  */
 public class CuckooFilterInfo {
-    private Integer size;
-    private Integer bucketNum;
-    private Integer filterNum;
-    private Integer insertedNum;
-    private Integer deletedNum;
-    private Integer bucketSize;
-    private Integer expansionRate;
-    private Integer maxIteration;
+    private final Integer size;
+    private final Integer bucketNum;
+    private final Integer filterNum;
+    private final Integer insertedNum;
+    private final Integer deletedNum;
+    private final Integer bucketSize;
+    private final Integer expansionRate;
+    private final Integer maxIteration;
 
     public CuckooFilterInfo(Integer size, Integer bucketNum, Integer filterNum, Integer insertedNum, Integer deletedNum,
                             Integer bucketSize, Integer expansionRate, Integer maxIteration) {
@@ -45,63 +45,31 @@ public class CuckooFilterInfo {
         return size;
     }
 
-    public void setSize(Integer size) {
-        this.size = size;
-    }
-
     public Integer getBucketNum() {
         return bucketNum;
-    }
-
-    public void setBucketNum(Integer bucketNum) {
-        this.bucketNum = bucketNum;
     }
 
     public Integer getFilterNum() {
         return filterNum;
     }
 
-    public void setFilterNum(Integer filterNum) {
-        this.filterNum = filterNum;
-    }
-
     public Integer getInsertedNum() {
         return insertedNum;
-    }
-
-    public void setInsertedNum(Integer insertedNum) {
-        this.insertedNum = insertedNum;
     }
 
     public Integer getDeletedNum() {
         return deletedNum;
     }
 
-    public void setDeletedNum(Integer deletedNum) {
-        this.deletedNum = deletedNum;
-    }
-
     public Integer getBucketSize() {
         return bucketSize;
-    }
-
-    public void setBucketSize(Integer bucketSize) {
-        this.bucketSize = bucketSize;
     }
 
     public Integer getExpansionRate() {
         return expansionRate;
     }
 
-    public void setExpansionRate(Integer expansionRate) {
-        this.expansionRate = expansionRate;
-    }
-
     public Integer getMaxIteration() {
         return maxIteration;
-    }
-
-    public void setMaxIteration(Integer maxIteration) {
-        this.maxIteration = maxIteration;
     }
 }

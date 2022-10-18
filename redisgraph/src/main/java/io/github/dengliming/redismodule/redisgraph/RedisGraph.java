@@ -155,7 +155,7 @@ public class RedisGraph {
     }
 
     public RFuture<List<String>> explainAsync(String graphName, String query) {
-        return commandExecutor.readAsync(graphName, codec, GRAPH_EXPLAIN, graphName, query);
+        return commandExecutor.readAsync(graphName, StringCodec.INSTANCE, GRAPH_EXPLAIN, graphName, query);
     }
 
     /**

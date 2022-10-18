@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 dengliming.
+ * Copyright 2020-2022 dengliming.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,7 +33,32 @@ public class CuckooFilterTest extends AbstractTest {
     @Test
     public void testReserve() {
         CuckooFilter cuckooFilter = getRedisBloomClient().getCuckooFilter("cf_reserve");
-        assertThat(cuckooFilter.reserve(100)).isTrue();
+        assertThat(cuckooFilter.reserve(10)).isTrue();
+
+        CuckooFilterInfo cuckooFilterInfo = cuckooFilter.getInfo();
+        assertThat(cuckooFilterInfo.getBucketSize()).isEqualTo(2);
+        assertThat(cuckooFilterInfo.getInsertedNum()).isEqualTo(0);
+        assertThat(cuckooFilterInfo.getSize()).isEqualTo(72);
+        assertThat(cuckooFilterInfo.getExpansionRate()).isEqualTo(1);
+        assertThat(cuckooFilterInfo.getFilterNum()).isEqualTo(1);
+        assertThat(cuckooFilterInfo.getBucketNum()).isEqualTo(8);
+        assertThat(cuckooFilterInfo.getMaxIteration()).isEqualTo(20);
+        assertThat(cuckooFilterInfo.getDeletedNum()).isEqualTo(0);
+
+        // with BucketSize
+        cuckooFilter = getRedisBloomClient().getCuckooFilter("cf_reserve1");
+        assertThat(cuckooFilter.reserve(200, 10)).isTrue();
+        cuckooFilterInfo = cuckooFilter.getInfo();
+        assertThat(cuckooFilterInfo.getSize()).isEqualTo(376);
+        assertThat(cuckooFilterInfo.getBucketSize()).isEqualTo(10);
+
+        cuckooFilter = getRedisBloomClient().getCuckooFilter("cf_reserve2");
+        assertThat(cuckooFilter.reserve(200, 10, 20, 4)).isTrue();
+        cuckooFilterInfo = cuckooFilter.getInfo();
+        assertThat(cuckooFilterInfo.getSize()).isEqualTo(376);
+        assertThat(cuckooFilterInfo.getBucketSize()).isEqualTo(10);
+        assertThat(cuckooFilterInfo.getMaxIteration()).isEqualTo(20);
+        assertThat(cuckooFilterInfo.getExpansionRate()).isEqualTo(4);
     }
 
     @Test
@@ -53,14 +78,6 @@ public class CuckooFilterTest extends AbstractTest {
         List<Boolean> result = cuckooFilter.insert(-1L, false, "a");
         assertThat(result).isNotNull();
         assertThat(result.get(0)).isTrue();
-    }
-
-    @Test
-    public void testInfo() {
-        CuckooFilter cuckooFilter = getRedisBloomClient().getCuckooFilter("cf_info");
-        assertThat(cuckooFilter.reserve(100, 50)).isTrue();
-        CuckooFilterInfo cuckooFilterInfo = cuckooFilter.getInfo();
-        assertThat(cuckooFilterInfo.getBucketSize()).isEqualTo(50);
     }
 
     @Test

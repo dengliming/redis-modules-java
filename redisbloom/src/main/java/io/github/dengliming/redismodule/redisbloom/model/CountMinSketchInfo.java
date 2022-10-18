@@ -20,9 +20,9 @@ package io.github.dengliming.redismodule.redisbloom.model;
  * @author dengliming
  */
 public class CountMinSketchInfo {
-    private Integer width;
-    private Integer depth;
-    private Integer count;
+    private final Integer width;
+    private final Integer depth;
+    private final Integer count;
 
     public CountMinSketchInfo(Integer width, Integer depth, Integer count) {
         this.width = width;
@@ -34,23 +34,11 @@ public class CountMinSketchInfo {
         return width;
     }
 
-    public void setWidth(Integer width) {
-        this.width = width;
-    }
-
     public Integer getDepth() {
         return depth;
     }
 
-    public void setDepth(Integer depth) {
-        this.depth = depth;
-    }
-
     public Integer getCount() {
         return count;
-    }
-
-    public void setCount(Integer count) {
-        this.count = count;
     }
 }
