@@ -59,5 +59,16 @@ public class TopKFilterTest extends AbstractTest {
         assertThat(topKFilter.reserve(10, 2000, 7, 0.925d)).isTrue();
         TopKFilterInfo topKFilterInfo = topKFilter.getInfo();
         assertThat(topKFilterInfo.getDepth()).isEqualTo(7);
+        assertThat(topKFilterInfo.getTopK()).isEqualTo(10);
+        assertThat(topKFilterInfo.getWidth()).isEqualTo(2000);
+        assertThat(topKFilterInfo.getDecay()).isEqualTo(0.925d);
+    }
+
+    @Test
+    public void testCount() {
+        TopKFilter topKFilter = getRedisBloomClient().getTopKFilter("topk_c");
+        assertThat(topKFilter.reserve(10, 2000, 7, 0.925d)).isTrue();
+        topKFilter.add("test");
+        assertThat(topKFilter.count("not_exist", "test")).containsExactly(0, 1);
     }
 }

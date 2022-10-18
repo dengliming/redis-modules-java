@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 dengliming.
+ * Copyright 2020-2022 dengliming.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,6 +54,26 @@ public class CountMinSketchTest extends AbstractTest {
         assertThat(countMinSketch.create(5, 10)).isTrue();
         CountMinSketchInfo countMinSketchInfo = countMinSketch.getInfo();
         assertThat(countMinSketchInfo.getWidth()).isEqualTo(5);
+        assertThat(countMinSketchInfo.getDepth()).isEqualTo(10);
+        assertThat(countMinSketchInfo.getCount()).isEqualTo(0);
     }
 
+    @Test
+    public void testMerge() {
+        CountMinSketch a = getRedisBloomClient().getCountMinSketch("cms_a");
+        CountMinSketch b = getRedisBloomClient().getCountMinSketch("cms_b");
+        CountMinSketch c = getRedisBloomClient().getCountMinSketch("cms_c");
+        c.create(1000, 5);
+        a.create(1000, 5);
+        b.create(1000, 5);
+        a.incrby(new String[]{"foo", "bar"}, new int[]{5, 3});
+        b.incrby(new String[]{"foo", "bar"}, new int[]{2, 4});
+        c.incrby(new String[]{"foo", "bar"}, new int[]{3, 6});
+        assertThat(a.query("foo", "bar")).containsExactly(5, 3);
+        assertThat(b.query("foo", "bar")).containsExactly(2, 4);
+        assertThat(c.query("foo", "bar")).containsExactly(3, 6);
+
+        assertThat(a.merge(new String[]{"cms_b", "cms_c"}, new int[]{})).isTrue();
+        assertThat(a.query("foo", "bar")).containsExactly(5, 10);
+    }
 }

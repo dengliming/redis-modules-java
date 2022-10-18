@@ -17,6 +17,7 @@
 package io.github.dengliming.redismodule.redisai;
 
 import io.github.dengliming.redismodule.redisai.args.SetModelArgs;
+import io.github.dengliming.redismodule.redisai.args.StoreScriptArgs;
 import io.github.dengliming.redismodule.redisai.model.Model;
 import io.github.dengliming.redismodule.redisai.model.Script;
 import io.github.dengliming.redismodule.redisai.model.Tensor;
@@ -27,11 +28,12 @@ import org.redisson.client.RedisException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Map;
+import java.util.Objects;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-
 
 /**
  * @author dengliming
@@ -56,9 +58,17 @@ public class RedisAITest extends AbstractTest {
     public void testModel() throws Exception {
         RedisAI redisAI = getRedisAI();
         // Set Model
-        byte[] blob = Files.readAllBytes(Paths.get(getClass().getClassLoader().getResource("test_data/graph.pb").toURI()));
-        assertThat(redisAI.setModel("model1", new SetModelArgs().backEnd(Backend.TF).device(Device.CPU)
-                .inputs(Arrays.asList("a", "b")).outputs(Arrays.asList("mul")).blob(blob))).isTrue();
+        byte[] blob = Files.readAllBytes(Paths.get(Objects.requireNonNull(getClass().getClassLoader().getResource(
+                "test_data/graph.pb")).toURI()));
+        assertThat(redisAI.setModel("model1", new SetModelArgs()
+                .backEnd(Backend.TF)
+                .device(Device.CPU)
+                .inputs(Arrays.asList("a", "b"))
+                .tag("model1:1.0")
+                .batchSize(1024)
+                .minBatchSize(256)
+                .outputs(Collections.singletonList("mul"))
+                .blob(blob))).isTrue();
 
         // Get Model
         Model model = redisAI.getModel("model1");
@@ -67,6 +77,12 @@ public class RedisAITest extends AbstractTest {
         assertThat(model.getInputs()).containsExactly("a", "b");
         assertThat(model.getOutputs()).containsExactly("mul");
         assertThat(model.getBlob()).isEqualTo(blob);
+        assertThat(model.getBatchSize()).isEqualTo(1024);
+        assertThat(model.getMinBatchSize()).isEqualTo(256);
+        assertThat(model.getTag()).isEqualTo("model1:1.0");
+
+        // Delete Model
+        assertThat(redisAI.deleteModel("model1")).isTrue();
     }
 
     @Test
@@ -83,6 +99,8 @@ public class RedisAITest extends AbstractTest {
         assertThat(scriptInfo).isNotNull();
         assertThat(scriptInfo.getDevice()).isEqualTo(Device.CPU);
         assertThat(scriptInfo.getSource()).isEqualTo(script);
+
+        assertThat(redisAI.deleteScript(key)).isTrue();
     }
 
     @Test
@@ -135,5 +153,23 @@ public class RedisAITest extends AbstractTest {
             // ERR cannot find run info for key
             redisAI.resetStat("not:exist");
         });
+    }
+
+    @Test
+    public void testStoreScript() {
+        RedisAI redisAI = getRedisAI();
+
+        String key = "myscript";
+        String script = "def addtwo(tensors: List[Tensor], keys: List[str], args: List[str]):\n"
+                + "    a = tensors[0]\n"
+                + "    b = tensors[1]\n"
+                + "    return a + b\n";
+        assertThat(redisAI.storeScript(key, new StoreScriptArgs()
+                .script(script)
+                .device(Device.CPU)
+                .tag("myscript:v0.1")
+                .entryPoints(Collections.singletonList("addtwo")))).isTrue();
+
+        assertThat(redisAI.deleteScript(key)).isTrue();
     }
 }

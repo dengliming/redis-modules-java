@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 dengliming.
+ * Copyright 2020-2022 dengliming.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,11 +20,11 @@ package io.github.dengliming.redismodule.redisbloom.model;
  * @author dengliming
  */
 public class BloomFilterInfo {
-    private Integer capacity;
-    private Integer size;
-    private Integer filterNum;
-    private Integer insertedNum;
-    private Integer expansionRate;
+    private final Integer capacity;
+    private final Integer size;
+    private final Integer filterNum;
+    private final Integer insertedNum;
+    private final Integer expansionRate;
 
     public BloomFilterInfo(Integer capacity, Integer size, Integer filterNum, Integer insertedNum, Integer expansionRate) {
         this.capacity = capacity;
@@ -38,39 +38,19 @@ public class BloomFilterInfo {
         return capacity;
     }
 
-    public void setCapacity(Integer capacity) {
-        this.capacity = capacity;
-    }
-
     public Integer getSize() {
         return size;
-    }
-
-    public void setSize(Integer size) {
-        this.size = size;
     }
 
     public Integer getFilterNum() {
         return filterNum;
     }
 
-    public void setFilterNum(Integer filterNum) {
-        this.filterNum = filterNum;
-    }
-
     public Integer getInsertedNum() {
         return insertedNum;
     }
 
-    public void setInsertedNum(Integer insertedNum) {
-        this.insertedNum = insertedNum;
-    }
-
     public Integer getExpansionRate() {
         return expansionRate;
-    }
-
-    public void setExpansionRate(Integer expansionRate) {
-        this.expansionRate = expansionRate;
     }
 }

@@ -123,21 +123,20 @@ public class CountMinSketch extends RedissonObject {
     /**
      * Merges several sketches into one sketch.
      *
-     * @param keyNum Number of sketches to be merged
      * @param srcs Names of source sketches to be merged
      * @param weights Multiple of each sketch. Default =1
      * @return True if executed correctly, or False reply otherwise
      */
-    public boolean merge(int keyNum, String[] srcs, Integer[] weights) {
+    public boolean merge(String[] srcs, int[] weights) {
         RAssert.notEmpty(srcs, "Srcs must not be empty");
 
-        return get(mergeAsync(keyNum, srcs, weights));
+        return get(mergeAsync(srcs, weights));
     }
 
-    public RFuture<Boolean> mergeAsync(int keyNum, String[] srcs, Integer[] weights) {
+    public RFuture<Boolean> mergeAsync(String[] srcs, int[] weights) {
         List<Object> params = new ArrayList<>();
         params.add(getName());
-        params.add(keyNum);
+        params.add(srcs.length);
         Collections.addAll(params, srcs);
         if (weights.length > 0) {
             params.add(Keywords.WEIGHTS);

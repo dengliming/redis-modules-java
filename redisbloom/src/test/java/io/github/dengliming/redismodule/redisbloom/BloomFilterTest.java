@@ -61,6 +61,10 @@ public class BloomFilterTest extends AbstractTest {
         assertThat(bloomFilter.create(0.1d, 100)).isTrue();
         BloomFilterInfo bloomFilterInfo = bloomFilter.getInfo();
         assertThat(bloomFilterInfo.getCapacity().intValue()).isEqualTo(100);
+        assertThat(bloomFilterInfo.getFilterNum().intValue()).isEqualTo(1);
+        assertThat(bloomFilterInfo.getExpansionRate().intValue()).isEqualTo(2);
+        assertThat(bloomFilterInfo.getInsertedNum().intValue()).isEqualTo(0);
+        assertThat(bloomFilterInfo.getSize().intValue()).isGreaterThan(0);
     }
 
     @Test

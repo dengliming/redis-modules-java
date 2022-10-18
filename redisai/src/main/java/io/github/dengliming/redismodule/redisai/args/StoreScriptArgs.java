@@ -79,9 +79,7 @@ public class StoreScriptArgs {
         if (entryPoints != null && !entryPoints.isEmpty()) {
             args.add(Keywords.ENTRY_POINTS);
             args.add(entryPoints.size());
-            for (String entryPoint : entryPoints) {
-                args.add(entryPoint);
-            }
+            args.addAll(entryPoints);
         }
 
         if (script != null) {

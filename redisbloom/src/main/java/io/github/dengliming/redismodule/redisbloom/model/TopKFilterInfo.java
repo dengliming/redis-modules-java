@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 dengliming.
+ * Copyright 2020-2022 dengliming.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,10 +20,10 @@ package io.github.dengliming.redismodule.redisbloom.model;
  * @author dengliming
  */
 public class TopKFilterInfo {
-    private Integer topK;
-    private Integer width;
-    private Integer depth;
-    private Double decay;
+    private final Integer topK;
+    private final Integer width;
+    private final Integer depth;
+    private final Double decay;
 
     public TopKFilterInfo(Integer topK, Integer width, Integer depth, Double decay) {
         this.topK = topK;
@@ -36,31 +36,15 @@ public class TopKFilterInfo {
         return topK;
     }
 
-    public void setTopK(Integer topK) {
-        this.topK = topK;
-    }
-
     public Integer getWidth() {
         return width;
-    }
-
-    public void setWidth(Integer width) {
-        this.width = width;
     }
 
     public Integer getDepth() {
         return depth;
     }
 
-    public void setDepth(Integer depth) {
-        this.depth = depth;
-    }
-
     public Double getDecay() {
         return decay;
-    }
-
-    public void setDecay(Double decay) {
-        this.decay = decay;
     }
 }
