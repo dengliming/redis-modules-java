@@ -177,7 +177,7 @@ public class TDigestTest extends AbstractTest {
                 new AbstractMap.SimpleEntry<>(3.0, 1.0)
         ))).isTrue();
 
-        assertThat(tDigest.rank(1, 3)).containsExactly(2, 6);
+        assertThat(tDigest.rank(1, 3)).containsExactly(2, 5);
         assertThat(tDigest.revRank(1, 3)).containsExactly(4, 0);
         assertThat(tDigest.byRank(0, 1)).containsExactly(1.0d, 1.0d);
         assertThat(tDigest.byRevRank(2, 3)).containsExactly(1.0d, 1.0d);
