@@ -32,6 +32,8 @@ import io.github.dengliming.redismodule.redisearch.index.schema.Schema;
 import io.github.dengliming.redismodule.redisearch.index.schema.TagField;
 import io.github.dengliming.redismodule.redisearch.index.schema.TextField;
 import io.github.dengliming.redismodule.redisearch.protocol.Keywords;
+import io.github.dengliming.redismodule.redisearch.protocol.decoder.SearchResultDecoder;
+import io.github.dengliming.redismodule.redisearch.protocol.decoder.StringMapInfoDecoder;
 import io.github.dengliming.redismodule.redisearch.search.MisspelledTerm;
 import io.github.dengliming.redismodule.redisearch.search.SearchOptions;
 import io.github.dengliming.redismodule.redisearch.search.SearchResult;
@@ -40,6 +42,8 @@ import org.redisson.RedissonObject;
 import org.redisson.api.RFuture;
 import org.redisson.client.codec.Codec;
 import org.redisson.client.codec.StringCodec;
+import org.redisson.client.protocol.RedisCommand;
+import org.redisson.client.protocol.decoder.ListMultiDecoder2;
 import org.redisson.command.CommandAsyncExecutor;
 
 import java.util.ArrayList;
@@ -68,8 +72,6 @@ import static io.github.dengliming.redismodule.redisearch.protocol.RedisCommands
 import static io.github.dengliming.redismodule.redisearch.protocol.RedisCommands.FT_INFO;
 import static io.github.dengliming.redismodule.redisearch.protocol.RedisCommands.FT_LIST;
 import static io.github.dengliming.redismodule.redisearch.protocol.RedisCommands.FT_MGET;
-import static io.github.dengliming.redismodule.redisearch.protocol.RedisCommands.FT_SEARCH;
-import static io.github.dengliming.redismodule.redisearch.protocol.RedisCommands.FT_SEARCH_WITH_SCORES;
 import static io.github.dengliming.redismodule.redisearch.protocol.RedisCommands.FT_SPELLCHECK;
 import static io.github.dengliming.redismodule.redisearch.protocol.RedisCommands.FT_SUGADD;
 import static io.github.dengliming.redismodule.redisearch.protocol.RedisCommands.FT_SUGDEL;
@@ -616,10 +618,13 @@ public class RediSearch extends RedissonObject {
         args.add(getName());
         args.add(query);
         searchOptions.build(args);
+        RedisCommand command = new RedisCommand<>("FT.SEARCH", new ListMultiDecoder2(new SearchResultDecoder(
+                searchOptions.isWithScores(), searchOptions.isNoContent()
+        ), new StringMapInfoDecoder()));
         return commandExecutor.readAsync(
                 getName(),
                 StringCodec.INSTANCE,
-                searchOptions.isWithScores() ? FT_SEARCH_WITH_SCORES : FT_SEARCH,
+                command,
                 args.toArray()
         );
     }
