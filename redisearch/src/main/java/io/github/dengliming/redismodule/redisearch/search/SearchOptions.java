@@ -52,6 +52,10 @@ public class SearchOptions {
         this.filters = new LinkedList<>();
     }
 
+    public boolean isNoContent() {
+        return noContent;
+    }
+
     public SearchOptions noContent() {
         this.noContent = true;
         return this;
@@ -134,6 +138,11 @@ public class SearchOptions {
 
     public SearchOptions page(Page page) {
         this.page = page;
+        return this;
+    }
+
+    public SearchOptions page(int offset, int num) {
+        this.page = new Page(offset, num);
         return this;
     }
 

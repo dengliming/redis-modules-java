@@ -160,8 +160,9 @@ public class RediSearchTest extends AbstractTest {
         fields2.put("content", "hello world");
         assertThat(rediSearch.addDocument(new Document(String.format("doc2"), 0.2d, fields2), new DocumentOptions())).isTrue();
 
-        SearchResult searchResult = rediSearch.search("Hi", new SearchOptions().noContent());
+        SearchResult searchResult = rediSearch.search("*", new SearchOptions().noContent().page(0, 1));
         assertThat(searchResult.getTotal()).isEqualTo(2);
+        assertThat(searchResult.getDocuments().size()).isEqualTo(1);
 
         searchResult = rediSearch.search("OOOO", new SearchOptions().noStopwords().language(RSLanguage.ENGLISH));
         assertThat(searchResult.getTotal()).isEqualTo(1);
@@ -219,8 +220,6 @@ public class RediSearchTest extends AbstractTest {
     public void testSynonym() {
         RediSearch rediSearch = getRediSearchClient().getRediSearch("testSynonym");
         assertThat(rediSearch.createIndex(new Schema().addField(new TextField("title")))).isTrue();
-        Map<String, Object> fields = new HashMap<>();
-        fields.put("title", "Hi~");
         long gid = rediSearch.addSynonym("a", "b", "c");
         assertThat(gid).isGreaterThanOrEqualTo(0);
 

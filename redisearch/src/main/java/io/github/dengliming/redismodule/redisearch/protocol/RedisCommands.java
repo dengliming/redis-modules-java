@@ -18,7 +18,6 @@ package io.github.dengliming.redismodule.redisearch.protocol;
 
 import io.github.dengliming.redismodule.redisearch.protocol.decoder.AggregateDecoder;
 import io.github.dengliming.redismodule.redisearch.protocol.decoder.MisspelledTermDecoder;
-import io.github.dengliming.redismodule.redisearch.protocol.decoder.SearchResultDecoder;
 import io.github.dengliming.redismodule.redisearch.protocol.decoder.StringMapInfoDecoder;
 import org.redisson.client.protocol.RedisCommand;
 import org.redisson.client.protocol.convertor.BooleanReplayConvertor;
@@ -47,8 +46,6 @@ public interface RedisCommands {
     RedisCommand FT_ALIASDEL = new RedisCommand<>("FT.ALIASDEL", new BooleanReplayConvertor());
 
     RedisCommand FT_INFO = new RedisCommand<>("FT.INFO", new ListMultiDecoder2(new StringMapInfoDecoder(), new CodecDecoder(), new CodecDecoder()));
-    RedisCommand FT_SEARCH = new RedisCommand<>("FT.SEARCH", new ListMultiDecoder2(new SearchResultDecoder(), new StringMapInfoDecoder()));
-    RedisCommand FT_SEARCH_WITH_SCORES = new RedisCommand<>("FT.SEARCH", new ListMultiDecoder2(new SearchResultDecoder(true), new StringMapInfoDecoder()));
     RedisCommand FT_AGGREGATE = new RedisCommand<>("FT.AGGREGATE", new ListMultiDecoder2(new AggregateDecoder(), new ObjectMapReplayDecoder()));
 
     RedisCommand FT_EXPLAIN = new RedisCommand<>("FT.EXPLAIN");
