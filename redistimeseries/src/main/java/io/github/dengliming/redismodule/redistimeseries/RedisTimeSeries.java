@@ -42,6 +42,7 @@ import static io.github.dengliming.redismodule.redistimeseries.protocol.RedisCom
 import static io.github.dengliming.redismodule.redistimeseries.protocol.RedisCommands.TS_MRANGE;
 import static io.github.dengliming.redismodule.redistimeseries.protocol.RedisCommands.TS_QUERYINDEX;
 import static io.github.dengliming.redismodule.redistimeseries.protocol.RedisCommands.TS_RANGE;
+import static io.github.dengliming.redismodule.redistimeseries.protocol.RedisCommands.TS_REVRANGE;
 
 /**
  * @author dengliming
@@ -261,6 +262,33 @@ public class RedisTimeSeries {
             rangeOptions.build(args);
         }
         return commandExecutor.readAsync(getName(), StringCodec.INSTANCE, TS_RANGE, args.toArray());
+    }
+
+    /**
+     * Query a range in reverse direction.
+     *
+     * @param key
+     * @param from
+     * @param to
+     * @return
+     */
+    public List<Value> revRange(String key, long from, long to) {
+        return this.revRange(key, from, to, null);
+    }
+
+    public List<Value> revRange(String key, long from, long to, RangeOptions rangeOptions) {
+        return commandExecutor.get(revRangeAsync(key, from, to, rangeOptions));
+    }
+
+    public RFuture<List<Value>> revRangeAsync(String key, long from, long to, RangeOptions rangeOptions) {
+        List<Object> args = new ArrayList<>();
+        args.add(key);
+        args.add(from);
+        args.add(to);
+        if (rangeOptions != null) {
+            rangeOptions.build(args);
+        }
+        return commandExecutor.readAsync(getName(), StringCodec.INSTANCE, TS_REVRANGE, args.toArray());
     }
 
     /**

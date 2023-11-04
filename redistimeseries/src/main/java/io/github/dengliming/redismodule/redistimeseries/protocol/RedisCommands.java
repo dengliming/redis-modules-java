@@ -46,5 +46,5 @@ public interface RedisCommands {
     RedisCommand TS_MGET = new RedisCommand<>("TS.MGET", new ListMultiDecoder2(new TimeSeriesDecoder(), new CodecDecoder(), new CodecDecoder(), new CodecDecoder()));
     RedisCommand TS_INFO = new RedisCommand<>("TS.INFO", new ListMultiDecoder2(new ObjectMapReplayDecoder(), new ObjectListReplayDecoder<>(), new ObjectListReplayDecoder<>()));
     RedisCommand TS_QUERYINDEX = new RedisCommand<>("TS.QUERYINDEX", new StringListReplayDecoder());
-
+    RedisCommand TS_REVRANGE = new RedisCommand<>("TS.REVRANGE", new ListMultiDecoder2(new ObjectListReplayDecoder<>(), new ValueDecoder()));
 }
