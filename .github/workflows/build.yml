@@ -12,8 +12,8 @@ jobs:
   build:
     runs-on: ubuntu-latest
     services:
-      redismod:
-        image: redislabs/redismod:edge
+      redis-stack-server:
+        image: redis/redis-stack-server:edge
         options: >-
           --health-cmd "redis-cli ping"
           --health-interval 10s
@@ -30,6 +30,24 @@ jobs:
           --health-retries 5
         ports:
           - 52568:6379
+      redisgears:
+        image: redislabs/redisgears:latest
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 6383:6379
+      redisgraph:
+        image: redislabs/redisgraph:edge
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 6384:6379
     steps:
       - uses: actions/checkout@v2
       - name: Set up JDK 1.8
@@ -44,5 +62,5 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-maven-
       - name: Build with Maven
-        run: mvn clean install -DREDIS_HOST=localhost -DREDIS_PORT=52567 -DREDISAI_PORT=52568 -Dgpg.skip --file pom.xml
+        run: mvn clean install -DREDIS_HOST=localhost -DREDIS_PORT=52567 -DREDISAI_PORT=52568 -DREDIS_GEARS_PORT=6383 -DREDIS_GRAPH_PORT=6384 -Dgpg.skip --file pom.xml
       - uses: codecov/codecov-action@v1

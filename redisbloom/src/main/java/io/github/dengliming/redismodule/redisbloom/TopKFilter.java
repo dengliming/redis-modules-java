@@ -140,7 +140,7 @@ public class TopKFilter extends RedissonObject {
     }
 
     public RFuture<List<String>> listAsync() {
-        return commandExecutor.readAsync(getName(), codec, TOPK_LIST, getName());
+        return commandExecutor.readAsync(getName(), StringCodec.INSTANCE, TOPK_LIST, getName());
     }
 
     /**

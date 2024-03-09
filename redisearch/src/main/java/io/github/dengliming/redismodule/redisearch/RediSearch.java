@@ -386,7 +386,7 @@ public class RediSearch extends RedissonObject {
     public RFuture<Map<String, String>> getConfigAsync(ConfigOption option) {
         RAssert.notNull(option, "ConfigOption must be not null");
 
-        return commandExecutor.readAsync(getName(), codec, FT_CONFIG_GET, option.getKeyword());
+        return commandExecutor.readAsync(getName(), StringCodec.INSTANCE, FT_CONFIG_GET, option.getKeyword());
     }
 
     public Map<String, String> getHelp(ConfigOption option) {

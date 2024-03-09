@@ -32,7 +32,8 @@ public abstract class AbstractTest {
     @BeforeEach
     public void init() {
         Config config = new Config();
-        config.useSingleServer().setAddress("redis://" + TestSettings.host() + ":" + TestSettings.port());
+        config.useSingleServer().setAddress("redis://" + TestSettings.host() + ":" + System.getProperty("REDIS_GRAPH_PORT",
+                TestSettings.port() + ""));
         redisGraphClient = new RedisGraphClient(config);
         redisGraphClient.flushall();
     }

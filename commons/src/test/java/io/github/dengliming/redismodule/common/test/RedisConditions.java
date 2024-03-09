@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 dengliming.
+ * Copyright 2022-2024 dengliming.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,9 @@ package io.github.dengliming.redismodule.common.test;
 import org.redisson.client.codec.StringCodec;
 import org.redisson.client.protocol.RedisCommand;
 import org.redisson.client.protocol.decoder.ListMultiDecoder2;
+import org.redisson.client.protocol.decoder.MapKeyDecoder;
 import org.redisson.client.protocol.decoder.ObjectListReplayDecoder;
+import org.redisson.client.protocol.decoder.ObjectSetReplayDecoder;
 import org.redisson.client.protocol.decoder.StringListReplayDecoder;
 import org.redisson.command.CommandAsyncExecutor;
 
@@ -28,12 +30,11 @@ import java.util.Set;
 
 public class RedisConditions {
 
-    private static final RedisCommand COMMAND = new RedisCommand<>("COMMAND",
-            new ListMultiDecoder2<>(new RedisConditionsDecoder(), new ObjectListReplayDecoder<>(),
-                    new StringListReplayDecoder()));
+    private static final RedisCommand COMMAND = new RedisCommand<>("COMMAND", "LIST",
+            new MapKeyDecoder(new ObjectSetReplayDecoder()));
 
     private static final RedisCommand MODULE_LIST = new RedisCommand<>("MODULE", "LIST",
-            new ListMultiDecoder2<>(new ModuleListDecoder(), new ObjectListReplayDecoder<>()));
+            new ListMultiDecoder2<>(new ModuleListDecoder(), new ObjectListReplayDecoder<>(), new StringListReplayDecoder()));
 
     private final Set<String> commands;
 
