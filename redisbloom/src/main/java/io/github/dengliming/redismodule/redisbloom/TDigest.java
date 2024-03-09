@@ -1,5 +1,5 @@
 /*
- * Copyright 2021-2022 dengliming.
+ * Copyright 2021-2024 dengliming.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,7 +51,7 @@ public class TDigest extends RedissonObject {
     }
 
     public TDigest(CommandAsyncExecutor commandExecutor, String name) {
-        this(commandExecutor.getConnectionManager().getCodec(), commandExecutor, name);
+        this(commandExecutor.getServiceManager().getCfg().getCodec(), commandExecutor, name);
     }
 
     /**

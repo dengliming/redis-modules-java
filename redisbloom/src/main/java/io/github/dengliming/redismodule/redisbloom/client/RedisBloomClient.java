@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 dengliming.
+ * Copyright 2020-2024 dengliming.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,20 +16,18 @@
 
 package io.github.dengliming.redismodule.redisbloom.client;
 
+import io.github.dengliming.redismodule.common.BaseRedissonClient;
 import io.github.dengliming.redismodule.redisbloom.BloomFilter;
 import io.github.dengliming.redismodule.redisbloom.CountMinSketch;
 import io.github.dengliming.redismodule.redisbloom.CuckooFilter;
 import io.github.dengliming.redismodule.redisbloom.TDigest;
 import io.github.dengliming.redismodule.redisbloom.TopKFilter;
-import org.redisson.Redisson;
-import org.redisson.client.protocol.RedisCommands;
-import org.redisson.command.CommandAsyncExecutor;
 import org.redisson.config.Config;
 
 /**
  * @author dengliming
  */
-public class RedisBloomClient extends Redisson {
+public class RedisBloomClient extends BaseRedissonClient {
 
     public RedisBloomClient(Config config) {
         super(config);
@@ -53,10 +51,5 @@ public class RedisBloomClient extends Redisson {
 
     public TDigest getTDigest(String name) {
         return new TDigest(getCommandExecutor(), name);
-    }
-
-    public Void flushall() {
-        CommandAsyncExecutor commandExecutor = getCommandExecutor();
-        return commandExecutor.get(commandExecutor.writeAllAsync(RedisCommands.FLUSHALL));
     }
 }

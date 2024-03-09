@@ -1,5 +1,5 @@
 /*
- * Copyright 2020-2023 dengliming.
+ * Copyright 2020-2024 dengliming.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,7 +54,7 @@ public class RedisTimeSeries {
 
     public RedisTimeSeries(CommandAsyncExecutor commandExecutor) {
         this.commandExecutor = commandExecutor;
-        this.codec = commandExecutor.getConnectionManager().getCodec();
+        this.codec = commandExecutor.getServiceManager().getCfg().getCodec();
     }
 
     /**

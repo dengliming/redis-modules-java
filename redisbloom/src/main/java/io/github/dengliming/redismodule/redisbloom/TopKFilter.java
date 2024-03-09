@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 dengliming.
+ * Copyright 2020-2024 dengliming.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,7 +42,7 @@ import static io.github.dengliming.redismodule.redisbloom.protocol.RedisCommands
 public class TopKFilter extends RedissonObject {
 
     public TopKFilter(CommandAsyncExecutor commandExecutor, String name) {
-        this(commandExecutor.getConnectionManager().getCodec(), commandExecutor, name);
+        this(commandExecutor.getServiceManager().getCfg().getCodec(), commandExecutor, name);
     }
 
     public TopKFilter(Codec codec, CommandAsyncExecutor commandExecutor, String name) {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 dengliming.
+ * Copyright 2022-2024 dengliming.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,15 +16,13 @@
 
 package io.github.dengliming.redismodule.redisgraph.client;
 
+import io.github.dengliming.redismodule.common.BaseRedissonClient;
 import io.github.dengliming.redismodule.redisgraph.RedisGraph;
 import io.github.dengliming.redismodule.redisgraph.RedisGraphBatch;
-import org.redisson.Redisson;
 import org.redisson.api.BatchOptions;
-import org.redisson.client.protocol.RedisCommands;
-import org.redisson.command.CommandAsyncExecutor;
 import org.redisson.config.Config;
 
-public class RedisGraphClient extends Redisson {
+public class RedisGraphClient extends BaseRedissonClient {
 
     public RedisGraphClient(Config config) {
         super(config);
@@ -40,10 +38,5 @@ public class RedisGraphClient extends Redisson {
 
     public RedisGraphBatch createRedisGraphBatch(BatchOptions options) {
         return new RedisGraphBatch(getCommandExecutor(), options);
-    }
-
-    public Void flushall() {
-        CommandAsyncExecutor commandExecutor = getCommandExecutor();
-        return commandExecutor.get(commandExecutor.writeAllAsync(RedisCommands.FLUSHALL));
     }
 }

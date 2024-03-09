@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 dengliming.
+ * Copyright 2020-2024 dengliming.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,16 +16,14 @@
 
 package io.github.dengliming.redismodule.redistimeseries.client;
 
+import io.github.dengliming.redismodule.common.BaseRedissonClient;
 import io.github.dengliming.redismodule.redistimeseries.RedisTimeSeries;
-import org.redisson.Redisson;
-import org.redisson.client.protocol.RedisCommands;
-import org.redisson.command.CommandAsyncExecutor;
 import org.redisson.config.Config;
 
 /**
  * @author dengliming
  */
-public class RedisTimeSeriesClient extends Redisson {
+public class RedisTimeSeriesClient extends BaseRedissonClient {
 
     public RedisTimeSeriesClient(Config config) {
         super(config);
@@ -33,10 +31,5 @@ public class RedisTimeSeriesClient extends Redisson {
 
     public RedisTimeSeries getRedisTimeSeries() {
         return new RedisTimeSeries(getCommandExecutor());
-    }
-
-    public Void flushall() {
-        CommandAsyncExecutor commandExecutor = getCommandExecutor();
-        return commandExecutor.get(commandExecutor.writeAllAsync(RedisCommands.FLUSHALL));
     }
 }

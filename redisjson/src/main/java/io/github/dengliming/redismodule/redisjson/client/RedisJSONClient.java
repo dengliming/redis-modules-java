@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 dengliming.
+ * Copyright 2021-2024 dengliming.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,15 +16,13 @@
 
 package io.github.dengliming.redismodule.redisjson.client;
 
+import io.github.dengliming.redismodule.common.BaseRedissonClient;
 import io.github.dengliming.redismodule.redisjson.RedisJSON;
 import io.github.dengliming.redismodule.redisjson.RedisJSONBatch;
-import org.redisson.Redisson;
 import org.redisson.api.BatchOptions;
-import org.redisson.client.protocol.RedisCommands;
-import org.redisson.command.CommandAsyncExecutor;
 import org.redisson.config.Config;
 
-public class RedisJSONClient extends Redisson {
+public class RedisJSONClient extends BaseRedissonClient {
 
     public RedisJSONClient(Config config) {
         super(config);
@@ -40,10 +38,5 @@ public class RedisJSONClient extends Redisson {
 
     public RedisJSONBatch createRedisJSONBatch(BatchOptions options) {
         return new RedisJSONBatch(getCommandExecutor(), options);
-    }
-
-    public Void flushall() {
-        CommandAsyncExecutor commandExecutor = getCommandExecutor();
-        return commandExecutor.get(commandExecutor.writeAllAsync(RedisCommands.FLUSHALL));
     }
 }

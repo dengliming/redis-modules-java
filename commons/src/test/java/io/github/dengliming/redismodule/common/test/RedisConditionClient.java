@@ -16,11 +16,11 @@
 
 package io.github.dengliming.redismodule.common.test;
 
-import org.redisson.Redisson;
+import io.github.dengliming.redismodule.common.BaseRedissonClient;
 import org.redisson.command.CommandAsyncExecutor;
 import org.redisson.config.Config;
 
-public class RedisConditionClient extends Redisson {
+public class RedisConditionClient extends BaseRedissonClient {
 
     public RedisConditionClient(Config config) {
         super(config);
