@@ -154,6 +154,11 @@ redisJSON.set(key, SetArgs.Builder.create(".", GsonUtils.toJson(m)));
 Map<String, Object> actual = redisJSON.get(key, Map.class, new GetArgs().path(".").indent("\t").newLine("\n").space(" "));
 redisJSONClient.shutdown();
 ```
+
+SpringBoot Starter
+
+see [spring-boot-starter](./spring-boot-starter)
+
 ## License
 
 [Apache License 2.0](/LICENSE)
