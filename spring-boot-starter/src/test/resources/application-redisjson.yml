@@ -11,7 +11,7 @@ redis-module:
         password: null
         subscriptionsPerConnection: 5
         clientName: null
-        address: "redis://127.0.0.1:6379"
+        address: "redis://127.0.0.1:52567"
         subscriptionConnectionMinimumIdleSize: 1
         subscriptionConnectionPoolSize: 50
         connectionMinimumIdleSize: 24
