@@ -49,7 +49,7 @@ public class RedisGraphTest extends AbstractTest {
         RedisGraph redisGraph = getRedisGraph();
         assertThat(redisGraph.query("social",
                 "CREATE (:person{name:'roi',age:32, doubleValue:3.14, boolValue:true})", -1)).isNotNull();
-        assertThat(redisGraph.delete("social")).contains("Graph removed");
+        assertThat(redisGraph.delete("social")).contains("OK");
     }
 
     @Test

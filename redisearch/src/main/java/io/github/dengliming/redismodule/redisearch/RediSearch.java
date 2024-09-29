@@ -1,5 +1,5 @@
 /*
- * Copyright 2020-2022 dengliming.
+ * Copyright 2020-2024 dengliming.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -92,7 +92,7 @@ public class RediSearch extends RedissonObject {
     }
 
     public RediSearch(CommandAsyncExecutor commandExecutor, String name) {
-        this(commandExecutor.getConnectionManager().getCodec(), commandExecutor, name);
+        this(commandExecutor.getServiceManager().getCfg().getCodec(), commandExecutor, name);
     }
 
     /**
@@ -386,7 +386,7 @@ public class RediSearch extends RedissonObject {
     public RFuture<Map<String, String>> getConfigAsync(ConfigOption option) {
         RAssert.notNull(option, "ConfigOption must be not null");
 
-        return commandExecutor.readAsync(getName(), codec, FT_CONFIG_GET, option.getKeyword());
+        return commandExecutor.readAsync(getName(), StringCodec.INSTANCE, FT_CONFIG_GET, option.getKeyword());
     }
 
     public Map<String, String> getHelp(ConfigOption option) {

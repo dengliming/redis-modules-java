@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 dengliming.
+ * Copyright 2022-2024 dengliming.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,7 +44,7 @@ public class RedisGraph {
     private final Codec codec;
 
     public RedisGraph(CommandAsyncExecutor commandExecutor) {
-        this(commandExecutor, commandExecutor.getConnectionManager().getCodec());
+        this(commandExecutor, commandExecutor.getServiceManager().getCfg().getCodec());
     }
 
     public RedisGraph(CommandAsyncExecutor commandExecutor, Codec codec) {

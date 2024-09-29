@@ -1,0 +1,2 @@
+redis-module:
+  enabled: true

@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 dengliming.
+ * Copyright 2020-2023 dengliming.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -138,6 +138,17 @@ public class RedisTimeSeriesTest extends AbstractTest {
 
         List<Value> values = redisTimeSeries.range("temperature:2:33", timestamp, timestamp + 1);
         assertThat(values).hasSize(2);
+        assertThat(values.get(0).getTimestamp()).isEqualTo(timestamp);
+        assertThat(values.get(0).getValue()).isEqualTo(13);
+        assertThat(values.get(1).getTimestamp()).isEqualTo(timestamp + 1);
+        assertThat(values.get(1).getValue()).isEqualTo(26);
+
+        values = redisTimeSeries.revRange("temperature:2:33", timestamp, timestamp + 1);
+        assertThat(values).hasSize(2);
+        assertThat(values.get(0).getTimestamp()).isEqualTo(timestamp + 1);
+        assertThat(values.get(0).getValue()).isEqualTo(26);
+        assertThat(values.get(1).getTimestamp()).isEqualTo(timestamp);
+        assertThat(values.get(1).getValue()).isEqualTo(13);
 
         List<TimeSeries> timeSeries = redisTimeSeries.mrange(timestamp, timestamp + 1, new RangeOptions()
                 .max(3).withLabels(), "sensor_id=2");

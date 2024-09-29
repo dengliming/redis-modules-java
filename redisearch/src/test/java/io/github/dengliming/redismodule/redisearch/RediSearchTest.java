@@ -103,7 +103,7 @@ public class RediSearchTest extends AbstractTest {
         assertThat(rediSearch.createIndex(new Schema().addField(new TextField("title")))).isTrue();
         Map<String, Object> fields = new HashMap<>();
         fields.put("title", "hello world");
-        RMap<String, Object> map = getRediSearchClient().getMap("foo");
+        RMap<String, Object> map = getRediSearchClient().getRedisson().getMap("foo");
         map.putAll(fields);
         assertThat(rediSearch.addHash("foo", 1, RSLanguage.ENGLISH)).isTrue();
     }

@@ -28,7 +28,7 @@ Include all
 <dependency>
     <groupId>io.github.dengliming.redismodule</groupId>
     <artifactId>all</artifactId>
-    <version>2.0.2</version>
+    <version>2.0.3</version>
 </dependency>
 ```
 Include single module like:
@@ -37,7 +37,7 @@ Include single module like:
 <dependency>
     <groupId>io.github.dengliming.redismodule</groupId>
     <artifactId>redistimeseries</artifactId>
-    <version>2.0.2</version>
+    <version>2.0.3</version>
 </dependency>
 ```
 
@@ -154,6 +154,11 @@ redisJSON.set(key, SetArgs.Builder.create(".", GsonUtils.toJson(m)));
 Map<String, Object> actual = redisJSON.get(key, Map.class, new GetArgs().path(".").indent("\t").newLine("\n").space(" "));
 redisJSONClient.shutdown();
 ```
+
+SpringBoot Starter
+
+see [spring-boot-starter](./spring-boot-starter)
+
 ## License
 
 [Apache License 2.0](/LICENSE)

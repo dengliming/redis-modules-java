@@ -1,5 +1,5 @@
 /*
- * Copyright 2021-2022 dengliming.
+ * Copyright 2021-2024 dengliming.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,14 +24,14 @@ import org.redisson.api.RFuture;
 import org.redisson.client.codec.Codec;
 import org.redisson.client.codec.StringCodec;
 import org.redisson.command.CommandAsyncExecutor;
-import org.redisson.misc.RPromise;
-import org.redisson.misc.RedissonPromise;
+import org.redisson.misc.CompletableFutureWrapper;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 import static io.github.dengliming.redismodule.redisjson.protocol.RedisCommands.JSON_ARRAPPEND;
@@ -70,7 +70,7 @@ public class RedisJSON {
     }
 
     public RedisJSON(CommandAsyncExecutor commandExecutor) {
-        this(commandExecutor, commandExecutor.getConnectionManager().getCodec());
+        this(commandExecutor, commandExecutor.getServiceManager().getCfg().getCodec());
     }
 
     public RedisJSON(CommandAsyncExecutor commandExecutor, Codec codec) {
@@ -162,7 +162,7 @@ public class RedisJSON {
         RAssert.notEmpty(path, "path must not be empty");
         RAssert.notNull(clazz, "clazz must not be null");
 
-        RPromise result = new RedissonPromise<T>();
+        CompletableFuture result = new CompletableFuture();
         List<String> args = new ArrayList<>(keys.length + 1);
         for (String key : keys) {
             args.add(key);
@@ -171,17 +171,17 @@ public class RedisJSON {
         RFuture<List<String>> getFuture = commandExecutor.readAsync(keys[0], StringCodec.INSTANCE, JSON_MGET, args.toArray());
         getFuture.onComplete((res, e) -> {
             if (e != null) {
-                result.tryFailure(e);
+                result.completeExceptionally(e);
                 return;
             }
 
             try {
-                result.trySuccess(res.stream().map(it -> GsonUtils.fromJson(it, clazz)).collect(Collectors.toList()));
+                result.complete(res.stream().map(it -> GsonUtils.fromJson(it, clazz)).collect(Collectors.toList()));
             } catch (Throwable t) {
-                result.tryFailure(t);
+                result.completeExceptionally(t);
             }
         });
-        return result;
+        return new CompletableFutureWrapper<List<T>>(result);
     }
 
     /**
@@ -201,21 +201,21 @@ public class RedisJSON {
         RAssert.notEmpty(key, "key must not be empty");
         RAssert.notNull(path, "path must not be null");
 
-        RPromise result = new RedissonPromise<Class>();
+        CompletableFuture result = new CompletableFuture<Class>();
         RFuture<String> getFuture = commandExecutor.readAsync(key, StringCodec.INSTANCE, JSON_TYPE, key, path);
         getFuture.onComplete((res, e) -> {
             if (e != null) {
-                result.tryFailure(e);
+                result.completeExceptionally(e);
                 return;
             }
 
             try {
-                result.trySuccess(Optional.ofNullable(CLASS_TYPE_MAPPING.get(res)).orElseThrow(() -> new RuntimeException("Unknown type " + res)));
+                result.complete(Optional.ofNullable(CLASS_TYPE_MAPPING.get(res)).orElseThrow(() -> new RuntimeException("Unknown type " + res)));
             } catch (Throwable t) {
-                result.tryFailure(t);
+                result.completeExceptionally(t);
             }
         });
-        return result;
+        return new CompletableFutureWrapper<Class>(result);
     }
 
     /**
@@ -449,21 +449,21 @@ public class RedisJSON {
         return transformRPromiseResult(getFuture, clazz);
     }
 
-    private <T> RPromise transformRPromiseResult(RFuture<String> getFuture, Class<T> clazz) {
-        RPromise result = new RedissonPromise<Class<T>>();
+    private <T> RFuture<T> transformRPromiseResult(RFuture<String> getFuture, Class<T> clazz) {
+        CompletableFuture result = new CompletableFuture();
         getFuture.onComplete((res, e) -> {
             if (e != null) {
-                result.tryFailure(e);
+                result.completeExceptionally(e);
                 return;
             }
 
             try {
-                result.trySuccess(GsonUtils.fromJson(res, clazz));
+                result.complete(GsonUtils.fromJson(res, clazz));
             } catch (Throwable t) {
-                result.tryFailure(t);
+                result.completeExceptionally(t);
             }
         });
-        return result;
+        return new CompletableFutureWrapper<T>(result);
     }
 
     /**

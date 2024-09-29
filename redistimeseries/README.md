@@ -13,6 +13,7 @@ TS.DECRBY | RedisTimeSeries.<br/>decrBy()<br/>decrByAsync() |
 TS.CREATERULE | RedisTimeSeries.<br/>createRule()<br/>createRuleAsync() |
 TS.DELETERULE | RedisTimeSeries.<br/>deleteRule()<br/>deleteRuleAsync() |
 TS.RANGE | RedisTimeSeries.<br/>range()<br/>rangeAsync() |
+TS.REVRANGE | RedisTimeSeries.<br/>revRange()<br/>revRangeAsync() |
 TS.MRANGE | RedisTimeSeries.<br/>mrange()<br/>mrangeAsync() |
 TS.GET | RedisTimeSeries.<br/>get()<br/>getAsync() |
 TS.MGET | RedisTimeSeries.<br/>mget()<br/>mgetAsync() |
