@@ -12,7 +12,6 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Set up Java with Maven cache
-
         uses: actions/setup-java@v4
         with:
           java-version: '8'
@@ -30,18 +29,16 @@ jobs:
         if: ${{ github.event.release.tag_name  }}
 
       - name: Install GPG key
-
         run: |
-          cat <(echo -e "${{ secrets.OSSH_GPG_SECRET_KEY }}") | gpg --batch --import
+          cat <(echo -e "${{ secrets.GPG_SECRET }}") | gpg --batch --import
           gpg --list-secret-keys --keyid-format LONG
 
       - name: Publish to Maven
-
         run: |
           mvn --no-transfer-progress \
             --batch-mode \
-            -Dgpg.passphrase='${{ secrets.OSSH_GPG_SECRET_KEY_PASSWORD }}' \
-            -DskipTests deploy
+            -Dgpg.passphrase='${{ secrets.GPG_PASSWORD }}' \
+            -DskipTests deploy -P sonatype-oss-release
 
         env:
           MAVEN_USERNAME: ${{secrets.OSSRH_USER}}
