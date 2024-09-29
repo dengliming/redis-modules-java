@@ -9,7 +9,7 @@ Add dependency
     <dependency>
         <groupId>io.github.dengliming.redismodule</groupId>
         <artifactId>spring-boot-starter</artifactId>
-        <version>2.0.4-SNAPSHOT</version>
+        <version>2.0.4</version>
     </dependency>
 </dependencies>
 ```
