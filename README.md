@@ -1,4 +1,4 @@
-![build](https://github.com/dengliming/redis-modules-java/workflows/build/badge.svg) ![java-version](https://img.shields.io/badge/JDK-1.8+-brightgreen.svg) [![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.github.dengliming.redismodule/redis-modules-java/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.github.dengliming.redismodule/redis-modules-java) [![license](https://img.shields.io/github/license/dengliming/redis-modules-java)](/LICENSE) [![codecov](https://codecov.io/gh/dengliming/redis-modules-java/branch/master/graph/badge.svg?token=U8BA091JD5)](https://codecov.io/gh/dengliming/redis-modules-java)
+![build](https://github.com/dengliming/redis-modules-java/workflows/build/badge.svg) ![java-version](https://img.shields.io/badge/JDK-1.8+-brightgreen.svg) [![Maven Central](https://img.shields.io/maven-central/v/io.github.dengliming.redismodule/redis-modules-java.svg?label=maven-central)](https://central.sonatype.com/artifact/io.github.dengliming.redismodule/redis-modules-java) [![license](https://img.shields.io/github/license/dengliming/redis-modules-java)](/LICENSE) [![codecov](https://codecov.io/gh/dengliming/redis-modules-java/branch/master/graph/badge.svg?token=U8BA091JD5)](https://codecov.io/gh/dengliming/redis-modules-java)
 
 
 Java Client libraries for [redis-modules](https://redis.io/modules), based on [Redisson](https://github.com/redisson/redisson).
@@ -28,7 +28,7 @@ Include all
 <dependency>
     <groupId>io.github.dengliming.redismodule</groupId>
     <artifactId>all</artifactId>
-    <version>2.0.3</version>
+    <version>2.0.4</version>
 </dependency>
 ```
 Include single module like:
@@ -37,7 +37,7 @@ Include single module like:
 <dependency>
     <groupId>io.github.dengliming.redismodule</groupId>
     <artifactId>redistimeseries</artifactId>
-    <version>2.0.3</version>
+    <version>2.0.4</version>
 </dependency>
 ```
 
