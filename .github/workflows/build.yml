@@ -13,7 +13,8 @@ jobs:
     runs-on: ubuntu-latest
     services:
       redis-stack-server:
-        image: redis/redis-stack-server:edge
+        # Redis 8 bundles Search, JSON, TimeSeries and Bloom; the redis-stack images are no longer updated
+        image: redis:8.8
         options: >-
           --health-cmd "redis-cli ping"
           --health-interval 10s
