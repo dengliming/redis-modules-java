@@ -22,7 +22,7 @@ results use the compact protocol; property names and relationship types are reso
 | GRAPH.LIST | `RedisGraph.list()` | |
 | GRAPH.SLOWLOG | `RedisGraph.slowLog()` | |
 | GRAPH.CONFIG GET / SET | `RedisGraph.getConfig()`, `setConfig()` | |
-| GRAPH.CONSTRAINT CREATE | `RedisGraph.createConstraint()` | FalkorDB; enforced asynchronously, UNIQUE needs an index |
+| GRAPH.CONSTRAINT CREATE | `RedisGraph.createConstraint()` | FalkorDB; replies `PENDING`, enforced asynchronously, UNIQUE needs an index |
 | GRAPH.CONSTRAINT DROP | `RedisGraph.dropConstraint()` | FalkorDB |
 | GRAPH.COPY | `RedisGraph.copy()` | FalkorDB |
 | GRAPH.MEMORY USAGE | `RedisGraph.memoryUsage()` | FalkorDB |

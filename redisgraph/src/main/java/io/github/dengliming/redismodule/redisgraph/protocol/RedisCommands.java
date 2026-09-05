@@ -43,7 +43,8 @@ public interface RedisCommands {
     RedisCommand<List<String>> GRAPH_PROFILE = new RedisCommand<>("GRAPH.PROFILE", new ObjectListReplayDecoder<>());
     RedisCommand<List<String>> GRAPH_EXPLAIN = new RedisCommand<>("GRAPH.EXPLAIN", new ObjectListReplayDecoder<>());
     // FalkorDB additions
-    RedisCommand<Boolean> GRAPH_CONSTRAINT_CREATE = new RedisCommand<>("GRAPH.CONSTRAINT", "CREATE", new BooleanReplayConvertor());
+    // replies PENDING: constraints are built asynchronously
+    RedisCommand<String> GRAPH_CONSTRAINT_CREATE = new RedisCommand<>("GRAPH.CONSTRAINT", "CREATE");
     RedisCommand<Boolean> GRAPH_CONSTRAINT_DROP = new RedisCommand<>("GRAPH.CONSTRAINT", "DROP", new BooleanReplayConvertor());
     RedisCommand<Boolean> GRAPH_COPY = new RedisCommand<>("GRAPH.COPY", new BooleanReplayConvertor());
     RedisCommand<Map<String, Object>> GRAPH_MEMORY_USAGE = new RedisCommand<>("GRAPH.MEMORY", "USAGE", new ObjectMapReplayDecoder<String, Object>());

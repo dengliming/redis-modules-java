@@ -223,17 +223,20 @@ public class RedisGraph extends AbstractRedisModule {
 
 
     /**
-     * Creates a constraint (FalkorDB). Constraints are enforced asynchronously once the server has validated the
-     * existing data; a UNIQUE constraint needs an exact-match index on the same properties first.
+     * Creates a constraint (FalkorDB). The server replies {@code PENDING}: the constraint is validated against
+     * existing data asynchronously and its status moves to {@code OPERATIONAL} (or {@code FAILED}), visible through
+     * {@code CALL db.constraints()}. A UNIQUE constraint needs an exact-match index on the same properties first.
      * <p>
      * GRAPH.CONSTRAINT CREATE key MANDATORY|UNIQUE NODE label|RELATIONSHIP type PROPERTIES count prop...
+     *
+     * @return the server status, {@code PENDING} on success
      */
-    public boolean createConstraint(String graphName, ConstraintType type, EntityType entity, String labelOrType, String... properties) {
+    public String createConstraint(String graphName, ConstraintType type, EntityType entity, String labelOrType, String... properties) {
         return get(createConstraintAsync(graphName, type, entity, labelOrType, properties));
     }
 
-    public RFuture<Boolean> createConstraintAsync(String graphName, ConstraintType type, EntityType entity, String labelOrType,
-                                                  String... properties) {
+    public RFuture<String> createConstraintAsync(String graphName, ConstraintType type, EntityType entity, String labelOrType,
+                                                 String... properties) {
         return write(graphName, StringCodec.INSTANCE, GRAPH_CONSTRAINT_CREATE, constraintArgs(graphName, type, entity, labelOrType, properties));
     }
 

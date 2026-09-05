@@ -68,13 +68,13 @@ public class RedisGraphTest extends AbstractTest {
     @Test
     public void testSlowLog() {
         RedisGraph redisGraph = getRedisGraph();
-        assertThat(redisGraph.profile("social", "CREATE (:person{name:'roi',age:32})", 0L)).isNotEmpty();
-        assertThat(redisGraph.profile("social", "CREATE (:person{name:'amit',age:30})", 0L)).isNotEmpty();
+        // only queries taking 10 ms or more are logged, so run something deliberately heavy
+        assertThat(redisGraph.query("social", "UNWIND range(1, 2000000) AS x RETURN count(x)", 0L)).isNotNull();
 
         List<SlowLogItem> slowLogItems = redisGraph.slowLog("social");
-        assertThat(slowLogItems).isNotNull();
-        assertThat(slowLogItems.size()).isEqualTo(2);
-        assertThat(slowLogItems.get(0).getCommand()).isEqualToIgnoringCase("GRAPH.PROFILE");
+        assertThat(slowLogItems).isNotEmpty();
+        assertThat(slowLogItems.get(0).getCommand()).isEqualToIgnoringCase("GRAPH.QUERY");
+        assertThat(slowLogItems.get(0).getQuery()).contains("UNWIND");
     }
 
     @Test
@@ -178,7 +178,7 @@ public class RedisGraphTest extends AbstractTest {
         assertThat(redisGraph.query("social", "CREATE (:person{name:'roi',age:32})", 0L)).isNotNull();
 
         // constraints are validated asynchronously against existing data before they are enforced
-        assertThat(redisGraph.createConstraint("social", ConstraintType.MANDATORY, EntityType.NODE, "person", "name")).isTrue();
+        assertThat(redisGraph.createConstraint("social", ConstraintType.MANDATORY, EntityType.NODE, "person", "name")).isEqualTo("PENDING");
         awaitConstraintStatus(redisGraph, "OPERATIONAL");
         assertThatThrownBy(() -> redisGraph.query("social", "CREATE (:person{age:1})", 0L)).isInstanceOf(RedisException.class);
         assertThat(redisGraph.dropConstraint("social", ConstraintType.MANDATORY, EntityType.NODE, "person", "name")).isTrue();
