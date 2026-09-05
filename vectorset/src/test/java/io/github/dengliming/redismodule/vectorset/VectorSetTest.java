@@ -28,6 +28,7 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.within;
@@ -103,12 +104,15 @@ public class VectorSetTest extends AbstractTest {
         assertThat(vectorSet.getAttributes("a")).contains("\"k\"");
         assertThat(vectorSet.setAttributes("nope", "{}")).isFalse();
 
+        // one list per HNSW layer, top layer first; neighbours are spread across the layers
         List<List<String>> links = vectorSet.links("a");
         assertThat(links).isNotEmpty();
-        assertThat(links.get(0)).contains("c");
+        List<String> neighbours = links.stream().flatMap(List::stream).collect(Collectors.toList());
+        assertThat(neighbours).isNotEmpty().isSubsetOf("b", "c");
         List<List<Similarity>> scoredLinks = vectorSet.linksWithScores("a");
-        assertThat(scoredLinks.get(0)).extracting(Similarity::getElement).contains("c");
-        assertThat(scoredLinks.get(0).get(0).getScore()).isNotNull();
+        List<Similarity> scoredNeighbours = scoredLinks.stream().flatMap(List::stream).collect(Collectors.toList());
+        assertThat(scoredNeighbours).extracting(Similarity::getElement).containsExactlyInAnyOrderElementsOf(neighbours);
+        assertThat(scoredNeighbours).allSatisfy(n -> assertThat(n.getScore()).isBetween(0.0, 1.0));
         assertThat(vectorSet.links("nope")).isNull();
 
         assertThat(vectorSet.randomMember()).isIn("a", "b", "c");
