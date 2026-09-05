@@ -8,10 +8,28 @@
     </parent>
 
     <artifactId>spring-boot-starter</artifactId>
+
+    <properties>
+        <jackson.version>2.16.1</jackson.version>
+        <snakeyaml.version>2.6</snakeyaml.version>
+    </properties>
     <name>SpringBootStarter</name>
 
     <dependencyManagement>
         <dependencies>
+            <!-- Redisson 4.x needs Jackson 2.16+ and SnakeYAML 2.x; declared before the Boot BOM so they win -->
+            <dependency>
+                <groupId>com.fasterxml.jackson</groupId>
+                <artifactId>jackson-bom</artifactId>
+                <version>${jackson.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.yaml</groupId>
+                <artifactId>snakeyaml</artifactId>
+                <version>${snakeyaml.version}</version>
+            </dependency>
             <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-dependencies</artifactId>
