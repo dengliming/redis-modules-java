@@ -20,7 +20,8 @@ import io.github.dengliming.redismodule.common.AbstractRedisModule;
 import io.github.dengliming.redismodule.common.util.RAssert;
 import io.github.dengliming.redismodule.redisjson.args.GetArgs;
 import io.github.dengliming.redismodule.redisjson.args.SetArgs;
-import io.github.dengliming.redismodule.redisjson.utils.GsonUtils;
+import io.github.dengliming.redismodule.redisjson.codec.GsonJsonCodec;
+import io.github.dengliming.redismodule.redisjson.codec.JsonCodec;
 import org.redisson.api.RFuture;
 import org.redisson.client.codec.Codec;
 import org.redisson.client.codec.StringCodec;
@@ -66,12 +67,32 @@ public class RedisJSON extends AbstractRedisModule {
         CLASS_TYPE_MAPPING.put("array", List.class);
     }
 
+    private final JsonCodec jsonCodec;
+
     public RedisJSON(CommandAsyncExecutor commandExecutor) {
+        this(commandExecutor, GsonJsonCodec.INSTANCE);
+    }
+
+    public RedisJSON(CommandAsyncExecutor commandExecutor, JsonCodec jsonCodec) {
         super(commandExecutor);
+        this.jsonCodec = jsonCodec;
     }
 
     public RedisJSON(CommandAsyncExecutor commandExecutor, Codec codec) {
+        this(commandExecutor, codec, GsonJsonCodec.INSTANCE);
+    }
+
+    /**
+     * @param codec     Redisson codec for the command layer
+     * @param jsonCodec converts between Java objects and the stored JSON documents
+     */
+    public RedisJSON(CommandAsyncExecutor commandExecutor, Codec codec, JsonCodec jsonCodec) {
         super(commandExecutor, codec);
+        this.jsonCodec = jsonCodec;
+    }
+
+    public JsonCodec getJsonCodec() {
+        return jsonCodec;
     }
 
     /**
@@ -164,7 +185,7 @@ public class RedisJSON extends AbstractRedisModule {
         }
         args.add(path);
         RFuture<List<String>> getFuture = read(keys[0], StringCodec.INSTANCE, JSON_MGET, args.toArray());
-        return transform(getFuture, res -> res.stream().map(it -> GsonUtils.fromJson(it, clazz)).collect(Collectors.toList()));
+        return transform(getFuture, res -> res.stream().map(it -> jsonCodec.fromJson(it, clazz)).collect(Collectors.toList()));
     }
 
     /**
@@ -254,7 +275,7 @@ public class RedisJSON extends AbstractRedisModule {
         RAssert.notNull(path, "path must not be null");
         RAssert.notNull(object, "object must not be null");
 
-        return write(key, StringCodec.INSTANCE, JSON_STRAPPEND, key, path, GsonUtils.toJson(object));
+        return write(key, StringCodec.INSTANCE, JSON_STRAPPEND, key, path, jsonCodec.toJson(object));
     }
 
     /**
@@ -299,7 +320,7 @@ public class RedisJSON extends AbstractRedisModule {
         args.add(key);
         args.add(path);
         for (Object object : objects) {
-            args.add(GsonUtils.toJson(object));
+            args.add(jsonCodec.toJson(object));
         }
         return write(key, StringCodec.INSTANCE, JSON_ARRAPPEND, args.toArray());
     }
@@ -327,7 +348,7 @@ public class RedisJSON extends AbstractRedisModule {
         args.add(path);
         args.add(index);
         for (Object object : objects) {
-            args.add(GsonUtils.toJson(object));
+            args.add(jsonCodec.toJson(object));
         }
         return write(key, StringCodec.INSTANCE, JSON_ARRINSERT, args.toArray());
     }
@@ -396,7 +417,7 @@ public class RedisJSON extends AbstractRedisModule {
         RAssert.notNull(scalar, "scalar must not be null");
 
         return read(key, StringCodec.INSTANCE, JSON_ARRINDEX, key, path,
-                GsonUtils.toJson(scalar), start, stop);
+                jsonCodec.toJson(scalar), start, stop);
     }
 
     /**
@@ -425,7 +446,7 @@ public class RedisJSON extends AbstractRedisModule {
     }
 
     private <T> RFuture<T> transformRPromiseResult(RFuture<String> getFuture, Class<T> clazz) {
-        return transform(getFuture, res -> GsonUtils.fromJson(res, clazz));
+        return transform(getFuture, res -> jsonCodec.fromJson(res, clazz));
     }
 
     /**

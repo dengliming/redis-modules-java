@@ -23,6 +23,8 @@ import io.github.dengliming.redismodule.redisearch.client.RediSearchClient;
 import io.github.dengliming.redismodule.redisgears.client.RedisGearsClient;
 import io.github.dengliming.redismodule.redisgraph.client.RedisGraphClient;
 import io.github.dengliming.redismodule.redisjson.client.RedisJSONClient;
+import io.github.dengliming.redismodule.redisjson.codec.GsonJsonCodec;
+import io.github.dengliming.redismodule.redisjson.codec.JsonCodec;
 import io.github.dengliming.redismodule.redistimeseries.client.RedisTimeSeriesClient;
 import io.github.dengliming.redismodule.springboot.starter.env.RedisModuleProperties;
 import io.github.dengliming.redismodule.springboot.starter.env.RedisModuleProperties.RedisModuleConfig;
@@ -109,8 +111,12 @@ public class RedisModuleAutoConfiguration {
     @ConditionalOnProperty(prefix = RedisModuleProperties.PREFIX + ".redisjson", name = "enabled", havingValue = "true")
     @Bean(destroyMethod = "shutdown")
     @ConditionalOnMissingBean
-    public RedisJSONClient redisJSONClient(ObjectProvider<RedissonClient> redisson) {
-        return createClient("redisjson", redisModuleProperties.getRedisjson(), redisson, RedisJSONClient::new, RedisJSONClient::new);
+    public RedisJSONClient redisJSONClient(ObjectProvider<RedissonClient> redisson, ObjectProvider<JsonCodec> jsonCodec) {
+        // a JsonCodec bean (Jackson, ...) defined by the application replaces the Gson default
+        JsonCodec codec = jsonCodec.getIfAvailable(() -> GsonJsonCodec.INSTANCE);
+        Function<Config, RedisJSONClient> fromConfig = config -> new RedisJSONClient(config, codec);
+        Function<RedissonClient, RedisJSONClient> fromRedisson = shared -> new RedisJSONClient(shared, codec);
+        return createClient("redisjson", redisModuleProperties.getRedisjson(), redisson, fromConfig, fromRedisson);
     }
 
     @ConditionalOnProperty(prefix = RedisModuleProperties.PREFIX + ".redistimeseries", name = "enabled", havingValue = "true")

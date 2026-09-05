@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 dengliming.
+ * Copyright 2024 dengliming.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,16 +17,25 @@
 package io.github.dengliming.redismodule.redisjson;
 
 import io.github.dengliming.redismodule.common.api.RCommonBatch;
+import io.github.dengliming.redismodule.redisjson.codec.GsonJsonCodec;
+import io.github.dengliming.redismodule.redisjson.codec.JsonCodec;
 import org.redisson.api.BatchOptions;
 import org.redisson.command.CommandAsyncExecutor;
 
 public class RedisJSONBatch extends RCommonBatch {
 
+    private final JsonCodec jsonCodec;
+
     public RedisJSONBatch(CommandAsyncExecutor executor, BatchOptions options) {
+        this(executor, options, GsonJsonCodec.INSTANCE);
+    }
+
+    public RedisJSONBatch(CommandAsyncExecutor executor, BatchOptions options, JsonCodec jsonCodec) {
         super(executor, options);
+        this.jsonCodec = jsonCodec;
     }
 
     public RedisJSON getRedisJSON() {
-        return new RedisJSON(getExecutorService());
+        return new RedisJSON(getExecutorService(), jsonCodec);
     }
 }

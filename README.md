@@ -155,6 +155,16 @@ Map<String, Object> actual = redisJSON.get(key, Map.class, new GetArgs().path(".
 redisJSONClient.shutdown();
 ```
 
+RedisJSON serializes with Gson by default. Plug in your own `JsonCodec` (Jackson, Moshi, ...) per client, or as a Spring bean when using the starter:
+```java
+JsonCodec jackson = new JsonCodec() {
+    private final ObjectMapper mapper = new ObjectMapper();
+    public String toJson(Object value) { return mapper.writeValueAsString(value); }
+    public <T> T fromJson(String json, Class<T> type) { return mapper.readValue(json, type); }
+};
+RedisJSONClient redisJSONClient = new RedisJSONClient(config, jackson);
+```
+
 RedisGraph
 ```java
 Config config = new Config();

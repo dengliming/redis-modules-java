@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 dengliming.
+ * Copyright 2024 dengliming.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,18 +16,19 @@
 
 package io.github.dengliming.redismodule.redisjson.utils;
 
-import com.google.gson.Gson;
+import io.github.dengliming.redismodule.redisjson.codec.GsonJsonCodec;
 
+/**
+ * Static shortcuts to the default {@link GsonJsonCodec}. Prefer injecting a
+ * {@link io.github.dengliming.redismodule.redisjson.codec.JsonCodec} where the serialization strategy matters.
+ */
 public final class GsonUtils {
 
-    private static final Gson GSON = new Gson();
-
     private GsonUtils() {
-
     }
 
     public static String toJson(Object o) {
-        return GSON.toJson(o);
+        return GsonJsonCodec.INSTANCE.toJson(o);
     }
 
     /**
@@ -39,6 +40,6 @@ public final class GsonUtils {
      * @return the t
      */
     public static <T> T fromJson(final String json, final Class<T> clazz) {
-        return GSON.fromJson(json, clazz);
+        return GsonJsonCodec.INSTANCE.fromJson(json, clazz);
     }
 }

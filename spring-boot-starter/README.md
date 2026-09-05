@@ -62,6 +62,17 @@ redis-module:
       transportMode: "NIO"
 ```
 
+Custom JSON serialization: define a `JsonCodec` bean and the RedisJSON client uses it instead of the Gson default.
+```java
+@Bean
+public JsonCodec jsonCodec(ObjectMapper mapper) {
+    return new JsonCodec() {
+        public String toJson(Object value) { return mapper.writeValueAsString(value); }
+        public <T> T fromJson(String json, Class<T> type) { return mapper.readValue(json, type); }
+    };
+}
+```
+
 Use in Spring
 ```java
 @Autowired(required = false)

@@ -17,16 +17,30 @@
 package io.github.dengliming.redismodule.redisjson.client;
 
 import io.github.dengliming.redismodule.common.BaseRedissonClient;
+import io.github.dengliming.redismodule.common.util.RAssert;
 import io.github.dengliming.redismodule.redisjson.RedisJSON;
 import io.github.dengliming.redismodule.redisjson.RedisJSONBatch;
+import io.github.dengliming.redismodule.redisjson.codec.GsonJsonCodec;
+import io.github.dengliming.redismodule.redisjson.codec.JsonCodec;
 import org.redisson.api.BatchOptions;
 import org.redisson.api.RedissonClient;
 import org.redisson.config.Config;
 
 public class RedisJSONClient extends BaseRedissonClient {
 
+    private final JsonCodec jsonCodec;
+
     public RedisJSONClient(Config config) {
+        this(config, GsonJsonCodec.INSTANCE);
+    }
+
+    /**
+     * @param jsonCodec converts between Java objects and JSON documents for every RedisJSON obtained from this client
+     */
+    public RedisJSONClient(Config config, JsonCodec jsonCodec) {
         super(config);
+        RAssert.notNull(jsonCodec, "jsonCodec must not be null");
+        this.jsonCodec = jsonCodec;
     }
 
     /**
@@ -34,11 +48,21 @@ public class RedisJSONClient extends BaseRedissonClient {
      * The caller stays responsible for shutting it down.
      */
     public RedisJSONClient(RedissonClient redisson) {
+        this(redisson, GsonJsonCodec.INSTANCE);
+    }
+
+    public RedisJSONClient(RedissonClient redisson, JsonCodec jsonCodec) {
         super(redisson);
+        RAssert.notNull(jsonCodec, "jsonCodec must not be null");
+        this.jsonCodec = jsonCodec;
+    }
+
+    public JsonCodec getJsonCodec() {
+        return jsonCodec;
     }
 
     public RedisJSON getRedisJSON() {
-        return new RedisJSON(getCommandExecutor());
+        return new RedisJSON(getCommandExecutor(), jsonCodec);
     }
 
     public RedisJSONBatch createRedisJSONBatch() {
@@ -46,6 +70,6 @@ public class RedisJSONClient extends BaseRedissonClient {
     }
 
     public RedisJSONBatch createRedisJSONBatch(BatchOptions options) {
-        return new RedisJSONBatch(getCommandExecutor(), options);
+        return new RedisJSONBatch(getCommandExecutor(), options, jsonCodec);
     }
 }
