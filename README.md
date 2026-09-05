@@ -314,6 +314,9 @@ See the [starter guide](spring-boot-starter/README.md) for every option.
 - RediSearch 1.x document commands (`FT.ADD`, `FT.GET`, `FT.DEL`, `FT.DROP`, ...) are still exposed but no longer
   exist on RediSearch 2.x / Redis 8. Index hashes or JSON documents under a prefix instead.
 - Commands are routed by their key, so cluster deployments work with Redisson's `useClusterServers()`.
+- Redisson 4.x: JSON configuration strings are still accepted (parsed as YAML). Redisson dropped the
+  `retryInterval` setting in favour of `retryDelay`, and `singleServerConfig.password` is deprecated in favour
+  of the top-level `password`.
 
 ## Building from source
 
