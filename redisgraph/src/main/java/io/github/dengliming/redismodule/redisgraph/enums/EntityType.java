@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 dengliming.
+ * Copyright 2024 dengliming.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,19 +14,12 @@
  * limitations under the License.
  */
 
-package io.github.dengliming.redismodule.redisgraph;
+package io.github.dengliming.redismodule.redisgraph.enums;
 
-import io.github.dengliming.redismodule.common.api.RCommonBatch;
-import org.redisson.api.BatchOptions;
-import org.redisson.command.CommandAsyncExecutor;
-
-public class RedisGraphBatch extends RCommonBatch {
-
-    public RedisGraphBatch(CommandAsyncExecutor executor, BatchOptions options) {
-        super(executor, options);
-    }
-
-    public RedisGraph getRedisGraph() {
-        return new RedisGraph(getExecutorService());
-    }
+/**
+ * Graph entity a constraint applies to.
+ */
+public enum EntityType {
+    NODE,
+    RELATIONSHIP
 }

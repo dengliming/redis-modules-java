@@ -18,6 +18,8 @@ package io.github.dengliming.redismodule.redisgraph;
 
 import io.github.dengliming.redismodule.common.AbstractRedisModule;
 import io.github.dengliming.redismodule.common.util.RAssert;
+import io.github.dengliming.redismodule.redisgraph.enums.ConstraintType;
+import io.github.dengliming.redismodule.redisgraph.enums.EntityType;
 import io.github.dengliming.redismodule.redisgraph.model.Record;
 import io.github.dengliming.redismodule.redisgraph.model.ResultSet;
 import io.github.dengliming.redismodule.redisgraph.model.SlowLogItem;
@@ -33,22 +35,29 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 
+import static io.github.dengliming.redismodule.redisgraph.protocol.Keywords.PROPERTIES;
+import static io.github.dengliming.redismodule.redisgraph.protocol.Keywords.SAMPLES;
 import static io.github.dengliming.redismodule.redisgraph.protocol.Keywords.__COMPACT;
 import static io.github.dengliming.redismodule.redisgraph.protocol.RedisCommands.GRAPH_CONFIG_GET;
 import static io.github.dengliming.redismodule.redisgraph.protocol.RedisCommands.GRAPH_CONFIG_SET;
+import static io.github.dengliming.redismodule.redisgraph.protocol.RedisCommands.GRAPH_CONSTRAINT_CREATE;
+import static io.github.dengliming.redismodule.redisgraph.protocol.RedisCommands.GRAPH_CONSTRAINT_DROP;
+import static io.github.dengliming.redismodule.redisgraph.protocol.RedisCommands.GRAPH_COPY;
 import static io.github.dengliming.redismodule.redisgraph.protocol.RedisCommands.GRAPH_DELETE;
 import static io.github.dengliming.redismodule.redisgraph.protocol.RedisCommands.GRAPH_EXPLAIN;
+import static io.github.dengliming.redismodule.redisgraph.protocol.RedisCommands.GRAPH_INFO;
 import static io.github.dengliming.redismodule.redisgraph.protocol.RedisCommands.GRAPH_LIST;
+import static io.github.dengliming.redismodule.redisgraph.protocol.RedisCommands.GRAPH_MEMORY_USAGE;
 import static io.github.dengliming.redismodule.redisgraph.protocol.RedisCommands.GRAPH_PROFILE;
 import static io.github.dengliming.redismodule.redisgraph.protocol.RedisCommands.GRAPH_QUERY;
 import static io.github.dengliming.redismodule.redisgraph.protocol.RedisCommands.GRAPH_READ_ONLY_QUERY;
 import static io.github.dengliming.redismodule.redisgraph.protocol.RedisCommands.GRAPH_SLOWLOG;
 
 /**
- * @deprecated RedisGraph has reached end of life and is no longer maintained by Redis. This module is kept for
- *             existing users and will be removed in a future release.
+ * Graph commands for FalkorDB and RedisGraph 2.x (wire compatible). Results of GRAPH.QUERY / GRAPH.RO_QUERY are
+ * requested in compact form; property names and relationship types are resolved through a per-graph cache.
+ * GRAPH.CONSTRAINT, GRAPH.COPY, GRAPH.MEMORY USAGE and GRAPH.INFO are FalkorDB only.
  */
-@Deprecated
 public class RedisGraph extends AbstractRedisModule {
 
     private final Map<String, GraphCache> caches = new ConcurrentHashMap<>();
@@ -210,6 +219,107 @@ public class RedisGraph extends AbstractRedisModule {
 
     public RFuture<ResultSet> readOnlyQueryAsync(String graphName, String query, long timeout) {
         return resolveNames(graphName, rawQueryAsync(GRAPH_READ_ONLY_QUERY, graphName, query, timeout));
+    }
+
+
+    /**
+     * Creates a constraint (FalkorDB). Constraints are enforced asynchronously once the server has validated the
+     * existing data; a UNIQUE constraint needs an exact-match index on the same properties first.
+     * <p>
+     * GRAPH.CONSTRAINT CREATE key MANDATORY|UNIQUE NODE label|RELATIONSHIP type PROPERTIES count prop...
+     */
+    public boolean createConstraint(String graphName, ConstraintType type, EntityType entity, String labelOrType, String... properties) {
+        return get(createConstraintAsync(graphName, type, entity, labelOrType, properties));
+    }
+
+    public RFuture<Boolean> createConstraintAsync(String graphName, ConstraintType type, EntityType entity, String labelOrType,
+                                                  String... properties) {
+        return write(graphName, StringCodec.INSTANCE, GRAPH_CONSTRAINT_CREATE, constraintArgs(graphName, type, entity, labelOrType, properties));
+    }
+
+    /**
+     * Drops a constraint (FalkorDB).
+     * <p>
+     * GRAPH.CONSTRAINT DROP key MANDATORY|UNIQUE NODE label|RELATIONSHIP type PROPERTIES count prop...
+     */
+    public boolean dropConstraint(String graphName, ConstraintType type, EntityType entity, String labelOrType, String... properties) {
+        return get(dropConstraintAsync(graphName, type, entity, labelOrType, properties));
+    }
+
+    public RFuture<Boolean> dropConstraintAsync(String graphName, ConstraintType type, EntityType entity, String labelOrType,
+                                                String... properties) {
+        return write(graphName, StringCodec.INSTANCE, GRAPH_CONSTRAINT_DROP, constraintArgs(graphName, type, entity, labelOrType, properties));
+    }
+
+    private Object[] constraintArgs(String graphName, ConstraintType type, EntityType entity, String labelOrType, String... properties) {
+        RAssert.notEmpty(graphName, "graphName must not be empty");
+        RAssert.notNull(type, "type must not be null");
+        RAssert.notNull(entity, "entity must not be null");
+        RAssert.notEmpty(labelOrType, "labelOrType must not be empty");
+        RAssert.notEmpty(properties, "properties must not be empty");
+
+        List<Object> args = new ArrayList<>(6 + properties.length);
+        args.add(graphName);
+        args.add(type.name());
+        args.add(entity.name());
+        args.add(labelOrType);
+        args.add(PROPERTIES);
+        args.add(properties.length);
+        args.addAll(java.util.Arrays.asList(properties));
+        return args.toArray();
+    }
+
+    /**
+     * Copies a graph to a new key while the source stays available (FalkorDB).
+     * <p>
+     * GRAPH.COPY src dest
+     */
+    public boolean copy(String sourceGraph, String destinationGraph) {
+        return get(copyAsync(sourceGraph, destinationGraph));
+    }
+
+    public RFuture<Boolean> copyAsync(String sourceGraph, String destinationGraph) {
+        RAssert.notEmpty(sourceGraph, "sourceGraph must not be empty");
+        RAssert.notEmpty(destinationGraph, "destinationGraph must not be empty");
+
+        return write(sourceGraph, StringCodec.INSTANCE, GRAPH_COPY, sourceGraph, destinationGraph);
+    }
+
+    /**
+     * Memory consumption of a graph in megabytes, broken down by component (FalkorDB).
+     * <p>
+     * GRAPH.MEMORY USAGE key [SAMPLES count]
+     */
+    public Map<String, Object> memoryUsage(String graphName) {
+        return get(memoryUsageAsync(graphName, 0));
+    }
+
+    public Map<String, Object> memoryUsage(String graphName, int samples) {
+        return get(memoryUsageAsync(graphName, samples));
+    }
+
+    public RFuture<Map<String, Object>> memoryUsageAsync(String graphName, int samples) {
+        RAssert.notEmpty(graphName, "graphName must not be empty");
+
+        if (samples > 0) {
+            return read(graphName, StringCodec.INSTANCE, GRAPH_MEMORY_USAGE, graphName, SAMPLES, samples);
+        }
+        return read(graphName, StringCodec.INSTANCE, GRAPH_MEMORY_USAGE, graphName);
+    }
+
+    /**
+     * Running and waiting queries plus object pool statistics (FalkorDB), keyed by section name.
+     * <p>
+     * GRAPH.INFO [RunningQueries] [WaitingQueries] [ObjectPool]
+     *
+     * @param sections sections to return; none means all
+     */
+    public Map<String, Object> info(String... sections) {
+        return get(infoAsync(sections));
+    }
+
+    public RFuture<Map<String, Object>> infoAsync(String... sections) {
+        return read(NO_KEY, StringCodec.INSTANCE, GRAPH_INFO, (Object[]) sections);
     }
 
     private RFuture<ResultSet> rawQueryAsync(RedisCommand<ResultSet> command, String graphName, String query, long timeout) {

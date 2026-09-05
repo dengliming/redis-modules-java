@@ -18,6 +18,7 @@ package io.github.dengliming.redismodule.redisgraph.protocol;
 
 import io.github.dengliming.redismodule.redisgraph.model.ResultSet;
 import io.github.dengliming.redismodule.redisgraph.model.SlowLogItem;
+import io.github.dengliming.redismodule.redisgraph.protocol.decoder.GraphInfoDecoder;
 import io.github.dengliming.redismodule.redisgraph.protocol.decoder.ResultSetDecoder;
 import io.github.dengliming.redismodule.redisgraph.protocol.decoder.SlowLogItemDecoder;
 import org.redisson.client.protocol.RedisCommand;
@@ -41,6 +42,13 @@ public interface RedisCommands {
     RedisCommand<List<String>> GRAPH_LIST = new RedisCommand<>("GRAPH.LIST", new ObjectListReplayDecoder<>());
     RedisCommand<List<String>> GRAPH_PROFILE = new RedisCommand<>("GRAPH.PROFILE", new ObjectListReplayDecoder<>());
     RedisCommand<List<String>> GRAPH_EXPLAIN = new RedisCommand<>("GRAPH.EXPLAIN", new ObjectListReplayDecoder<>());
+    // FalkorDB additions
+    RedisCommand<Boolean> GRAPH_CONSTRAINT_CREATE = new RedisCommand<>("GRAPH.CONSTRAINT", "CREATE", new BooleanReplayConvertor());
+    RedisCommand<Boolean> GRAPH_CONSTRAINT_DROP = new RedisCommand<>("GRAPH.CONSTRAINT", "DROP", new BooleanReplayConvertor());
+    RedisCommand<Boolean> GRAPH_COPY = new RedisCommand<>("GRAPH.COPY", new BooleanReplayConvertor());
+    RedisCommand<Map<String, Object>> GRAPH_MEMORY_USAGE = new RedisCommand<>("GRAPH.MEMORY", "USAGE", new ObjectMapReplayDecoder<String, Object>());
+    RedisCommand<Map<String, Object>> GRAPH_INFO = new RedisCommand<>("GRAPH.INFO", new ListMultiDecoder2(new GraphInfoDecoder(),
+            new ObjectListReplayDecoder<>(), new ObjectListReplayDecoder<>(), new ObjectListReplayDecoder<>()));
     RedisCommand<List<SlowLogItem>> GRAPH_SLOWLOG = new RedisCommand<>("GRAPH.SLOWLOG", new ListMultiDecoder2(new ObjectListReplayDecoder<>(), new SlowLogItemDecoder()));
     RedisCommand<ResultSet> GRAPH_QUERY = new RedisCommand<>("GRAPH.QUERY", new ListMultiDecoder2(
             new ResultSetDecoder(),

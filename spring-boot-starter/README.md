@@ -1,8 +1,8 @@
 # Spring Boot Starter
 
 Auto-configures one client bean per enabled module: `RedisJSONClient`, `RediSearchClient`,
-`RedisBloomClient`, `RedisTimeSeriesClient`, `VectorSetClient` (and the deprecated `RedisGraphClient`, `RedisAIClient`,
-`RedisGearsClient`). Works with Spring Boot 2.7 and 3.x.
+`RedisBloomClient`, `RedisTimeSeriesClient`, `VectorSetClient`, `RedisGraphClient` (FalkorDB) and the deprecated
+`RedisAIClient`, `RedisGearsClient`. Works with Spring Boot 2.7 and 3.x.
 
 ## Dependency
 

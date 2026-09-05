@@ -20,7 +20,9 @@ package io.github.dengliming.redismodule.redisgraph.protocol;
  * @author dengliming
  */
 public enum Keywords {
-    __COMPACT("--COMPACT");
+    __COMPACT("--COMPACT"),
+    PROPERTIES,
+    SAMPLES;
 
     private String alias;
 

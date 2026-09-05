@@ -16,6 +16,8 @@
 
 package io.github.dengliming.redismodule.redisgraph;
 
+import io.github.dengliming.redismodule.redisgraph.enums.ConstraintType;
+import io.github.dengliming.redismodule.redisgraph.enums.EntityType;
 import io.github.dengliming.redismodule.redisgraph.model.Edge;
 import io.github.dengliming.redismodule.redisgraph.model.Header;
 import io.github.dengliming.redismodule.redisgraph.model.Node;
@@ -25,11 +27,13 @@ import io.github.dengliming.redismodule.redisgraph.model.SlowLogItem;
 import io.github.dengliming.redismodule.redisgraph.model.Statistics;
 import org.junit.jupiter.api.Test;
 import org.redisson.api.BatchResult;
+import org.redisson.client.RedisException;
 
 import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
  * @author dengliming
@@ -166,5 +170,39 @@ public class RedisGraphTest extends AbstractTest {
         assertThat(res.getResponses().size()).isEqualTo(2);
         assertThat((List<String>) res.getResponses().get(0)).isNotEmpty();
         assertThat((List<String>) res.getResponses().get(1)).contains("social");
+    }
+
+    @Test
+    public void testFalkorDbCommands() throws InterruptedException {
+        RedisGraph redisGraph = getRedisGraph();
+        assertThat(redisGraph.query("social", "CREATE (:person{name:'roi',age:32})", 0L)).isNotNull();
+
+        // constraints are validated asynchronously against existing data before they are enforced
+        assertThat(redisGraph.createConstraint("social", ConstraintType.MANDATORY, EntityType.NODE, "person", "name")).isTrue();
+        awaitConstraintStatus(redisGraph, "OPERATIONAL");
+        assertThatThrownBy(() -> redisGraph.query("social", "CREATE (:person{age:1})", 0L)).isInstanceOf(RedisException.class);
+        assertThat(redisGraph.dropConstraint("social", ConstraintType.MANDATORY, EntityType.NODE, "person", "name")).isTrue();
+        assertThat(redisGraph.query("social", "CREATE (:person{age:1})", 0L).getStatistics().getNodesCreated()).isEqualTo(1);
+
+        assertThat(redisGraph.copy("social", "social_copy")).isTrue();
+        assertThat(redisGraph.list()).contains("social", "social_copy");
+        ResultSet copied = redisGraph.query("social_copy", "MATCH (p:person) RETURN count(p)", 0L);
+        assertThat(((Long) copied.getResults().get(0).getValue(0)).longValue()).isEqualTo(2L);
+
+        assertThat(redisGraph.memoryUsage("social")).isNotEmpty();
+        assertThat(redisGraph.memoryUsage("social", 10)).isNotEmpty();
+        assertThat(redisGraph.info()).isNotEmpty();
+        assertThat(redisGraph.info("RunningQueries")).containsKey("# Running queries");
+    }
+
+    private void awaitConstraintStatus(RedisGraph redisGraph, String expected) throws InterruptedException {
+        for (int i = 0; i < 50; i++) {
+            ResultSet constraints = redisGraph.query("social", "CALL db.constraints() YIELD status RETURN status", 0L);
+            if (!constraints.getResults().isEmpty() && expected.equals(constraints.getResults().get(0).getString(0))) {
+                return;
+            }
+            Thread.sleep(100);
+        }
+        throw new AssertionError("constraint did not reach status " + expected);
     }
 }

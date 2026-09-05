@@ -27,7 +27,7 @@ other modules or with an existing Redisson instance.
 | RedisJSON | `redisjson` | ✅ | Active | [commands](redisjson/README.md) |
 | RedisTimeSeries | `redistimeseries` | ✅ | Active | [commands](redistimeseries/README.md) |
 | Vector sets (Redis 8 native type) | `vectorset` | ✅ | Active | [commands](vectorset/README.md) |
-| RedisGraph | `redisgraph` | ❌ | Deprecated, upstream end of life | [commands](redisgraph/README.md) |
+| FalkorDB / RedisGraph | `redisgraph` | ❌ | Active, tested against FalkorDB | [commands](redisgraph/README.md) |
 | RedisAI | `redisai` | ❌ | Deprecated, upstream end of life | [commands](redisai/README.md) |
 | RedisGears | `redisgears` | ❌ | Deprecated, upstream end of life | [commands](redisgears/README.md) |
 | Spring Boot starter | `spring-boot-starter` | | Active | [guide](spring-boot-starter/README.md) |
@@ -40,6 +40,7 @@ users; they will be removed in a future major release.
 
 - Java 8 or later
 - Redis 8.x (modules built in), or Redis 7.x with the corresponding module loaded
+- Graph commands: FalkorDB (any Redis it ships with), or RedisGraph 2.x for the shared commands
 - Vector sets need Redis 8.0+ (`VRANGE` needs 8.4+)
 - Redisson 4.7.x (pulled in transitively)
 
@@ -241,10 +242,10 @@ List<Similarity> recent = movies.similarTo("matrix", new SimilarArgs().filter(".
 List<Double> vector = movies.getVector("matrix");
 ```
 
-### RedisGraph (deprecated)
+### FalkorDB / RedisGraph
 
 ```java
-RedisGraphClient client = new RedisGraphClient(config);
+RedisGraphClient client = new RedisGraphClient(config);   // FalkorDB, or RedisGraph 2.x
 RedisGraph graph = client.getRedisGraph();
 
 graph.query("social", "CREATE (:person{name:'roi',age:32})-[:knows{since:2000}]->(:person{name:'amit',age:30})", 0L);
@@ -255,6 +256,11 @@ for (Record record : resultSet.getResults()) {
     // property names and relationship types are resolved, not just their indices
     System.out.println(a.getProperty("name") + " " + r.getRelationshipType() + " " + record.getString("b.name"));
 }
+
+// FalkorDB extensions
+graph.createConstraint("social", ConstraintType.UNIQUE, EntityType.NODE, "person", "name");
+graph.copy("social", "social_backup");
+Map<String, Object> memory = graph.memoryUsage("social");
 ```
 
 ### RedisAI and RedisGears (deprecated)

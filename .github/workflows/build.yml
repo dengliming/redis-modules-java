@@ -41,7 +41,8 @@ jobs:
         ports:
           - 6383:6379
       redisgraph:
-        image: redislabs/redisgraph:edge
+        # FalkorDB is the maintained continuation of RedisGraph (same GRAPH.* protocol)
+        image: falkordb/falkordb:latest
         options: >-
           --health-cmd "redis-cli ping"
           --health-interval 10s

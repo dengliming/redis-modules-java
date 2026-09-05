@@ -1,13 +1,14 @@
-# RedisGraph Client
+# Graph Client (FalkorDB / RedisGraph)
 
-> **Deprecated.** RedisGraph reached end of life upstream and is not part of Redis 8. This module is kept
-> for existing users of RedisGraph 2.x and will be removed in a future major release.
+Java client for the `GRAPH.*` command family. RedisGraph reached end of life upstream; its maintained
+continuation is [FalkorDB](https://www.falkordb.com/), which keeps the same wire protocol and adds constraints,
+graph copies and memory / runtime introspection. This module is tested against `falkordb/falkordb` in CI and
+still works with RedisGraph 2.x for the commands both share.
+Docs: https://docs.falkordb.com/commands/
 
-Project: https://github.com/RedisGraph/RedisGraph
-
-Obtain `RedisGraph` from `RedisGraphClient.getRedisGraph()` or from `RedisGraphBatch` for pipelining.
-Query results are returned in compact form; property names and relationship types are resolved through a
-per-graph cache (not inside a batch). Every method has an `*Async` twin.
+Obtain `RedisGraph` from `RedisGraphClient.getRedisGraph()` or from `RedisGraphBatch` for pipelining. Query
+results use the compact protocol; property names and relationship types are resolved through a per-graph cache
+(not inside a batch). Every method has an `*Async` twin.
 
 ## Command mapping
 
@@ -21,4 +22,8 @@ per-graph cache (not inside a batch). Every method has an `*Async` twin.
 | GRAPH.LIST | `RedisGraph.list()` | |
 | GRAPH.SLOWLOG | `RedisGraph.slowLog()` | |
 | GRAPH.CONFIG GET / SET | `RedisGraph.getConfig()`, `setConfig()` | |
-| GRAPH.CONSTRAINT | — | not implemented |
+| GRAPH.CONSTRAINT CREATE | `RedisGraph.createConstraint()` | FalkorDB; enforced asynchronously, UNIQUE needs an index |
+| GRAPH.CONSTRAINT DROP | `RedisGraph.dropConstraint()` | FalkorDB |
+| GRAPH.COPY | `RedisGraph.copy()` | FalkorDB |
+| GRAPH.MEMORY USAGE | `RedisGraph.memoryUsage()` | FalkorDB |
+| GRAPH.INFO | `RedisGraph.info()` | FalkorDB; running / waiting queries, object pool |
