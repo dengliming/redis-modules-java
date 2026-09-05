@@ -1,39 +1,61 @@
-![build](https://github.com/dengliming/redis-modules-java/workflows/build/badge.svg) ![java-version](https://img.shields.io/badge/JDK-1.8+-brightgreen.svg) [![Maven Central](https://img.shields.io/maven-central/v/io.github.dengliming.redismodule/redis-modules-java.svg?label=maven-central)](https://central.sonatype.com/artifact/io.github.dengliming.redismodule/redis-modules-java) [![license](https://img.shields.io/github/license/dengliming/redis-modules-java)](/LICENSE) [![codecov](https://codecov.io/gh/dengliming/redis-modules-java/branch/master/graph/badge.svg?token=U8BA091JD5)](https://codecov.io/gh/dengliming/redis-modules-java)
+<h1 align="center">redis-modules-java</h1>
 
+<p align="center">
+  Java client libraries for Redis modules, built on <a href="https://github.com/redisson/redisson">Redisson</a>.
+</p>
 
-Java Client libraries for [redis-modules](https://redis.io/modules), based on [Redisson](https://github.com/redisson/redisson).
+<p align="center">
+  <a href="https://github.com/dengliming/redis-modules-java/actions/workflows/build.yml"><img src="https://github.com/dengliming/redis-modules-java/workflows/build/badge.svg" alt="build"></a>
+  <a href="https://central.sonatype.com/artifact/io.github.dengliming.redismodule/redis-modules-java"><img src="https://img.shields.io/maven-central/v/io.github.dengliming.redismodule/redis-modules-java.svg?label=maven%20central" alt="Maven Central"></a>
+  <img src="https://img.shields.io/badge/JDK-8%2B-brightgreen.svg" alt="JDK 8+">
+  <a href="https://codecov.io/gh/dengliming/redis-modules-java"><img src="https://codecov.io/gh/dengliming/redis-modules-java/branch/master/graph/badge.svg?token=U8BA091JD5" alt="codecov"></a>
+  <a href="/LICENSE"><img src="https://img.shields.io/github/license/dengliming/redis-modules-java" alt="license"></a>
+</p>
 
-## Support
-* [RedisBloom](redisbloom) 
-* [RediSearch](redisearch)
-* [RedisTimeSeries](redistimeseries)
-* [RedisAI](redisai) (deprecated: end of life upstream)
-* [RedisGears](redisgears) (deprecated: end of life upstream)
-* [RedisJSON](redisjson)
-* [RedisGraph](redisgraph) (deprecated: end of life upstream)
+---
 
-## TODO
-* [RediSQL](https://redisql.com/)
-* [...](https://redis.io/modules)
- 
-## Installing
+Every module ships a synchronous and an asynchronous (`RFuture`) API, works on a single server, sentinel or
+cluster through Redisson's configuration, supports pipelining, and can share one connection pool with the
+other modules or with an existing Redisson instance.
 
-#### Build from source
-Execute `./mvnw clean install -DskipTests=true -Dgpg.skip`. The build process requires `JDK8+`.
+## Modules
 
-#### Maven repository
-Include all
+| Module | Artifact | Redis 8 built-in | Status | Docs |
+| --- | --- | :---: | --- | --- |
+| RedisBloom (Bloom, Cuckoo, Count-Min Sketch, Top-K, t-digest) | `redisbloom` | ✅ | Active | [commands](redisbloom/README.md) |
+| RediSearch | `redisearch` | ✅ | Active | [commands](redisearch/README.md) |
+| RedisJSON | `redisjson` | ✅ | Active | [commands](redisjson/README.md) |
+| RedisTimeSeries | `redistimeseries` | ✅ | Active | [commands](redistimeseries/README.md) |
+| RedisGraph | `redisgraph` | ❌ | Deprecated, upstream end of life | [commands](redisgraph/README.md) |
+| RedisAI | `redisai` | ❌ | Deprecated, upstream end of life | [commands](redisai/README.md) |
+| RedisGears | `redisgears` | ❌ | Deprecated, upstream end of life | [commands](redisgears/README.md) |
+| Spring Boot starter | `spring-boot-starter` | | Active | [guide](spring-boot-starter/README.md) |
+| Everything above | `all` | | | |
+
+Deprecated modules still work against the last released versions of their module and are kept for existing
+users; they will be removed in a future major release.
+
+## Requirements
+
+- Java 8 or later
+- Redis 8.x (modules built in), or Redis 7.x with the corresponding module loaded
+- Redisson 3.27.x (pulled in transitively)
+
+## Installation
+
+All modules in one dependency:
+
 ```xml
-<!-- release -->
 <dependency>
     <groupId>io.github.dengliming.redismodule</groupId>
     <artifactId>all</artifactId>
     <version>2.0.4</version>
 </dependency>
 ```
-Include single module like:
+
+Or a single module, for example RedisTimeSeries:
+
 ```xml
-<!-- release -->
 <dependency>
     <groupId>io.github.dengliming.redismodule</groupId>
     <artifactId>redistimeseries</artifactId>
@@ -41,179 +63,256 @@ Include single module like:
 </dependency>
 ```
 
-## Usage example
-RedisBloom
+Gradle:
+
+```groovy
+implementation 'io.github.dengliming.redismodule:all:2.0.4'
+```
+
+<details>
+<summary>Snapshots</summary>
+
+Every push to `master` publishes `2.0.5-SNAPSHOT` to the Central snapshot repository:
+
+```xml
+<repositories>
+    <repository>
+        <id>central-snapshots</id>
+        <url>https://central.sonatype.com/repository/maven-snapshots/</url>
+        <snapshots><enabled>true</enabled></snapshots>
+    </repository>
+</repositories>
+```
+</details>
+
+## Quick start
+
 ```java
 Config config = new Config();
 config.useSingleServer().setAddress("redis://127.0.0.1:6379");
-RedisBloomClient redisBloomClient = new RedisBloomClient(config);
 
-BloomFilter bloomFilter = redisBloomClient.getRBloomFilter("bf");
-bloomFilter.create(0.1d, 100);
-bloomFilter.madd(new String[] {"a", "b", "c"});
+RedisJSONClient client = new RedisJSONClient(config);
+RedisJSON json = client.getRedisJSON();
 
-TopKFilter topKFilter = redisBloomClient.getTopKFilter("topk_add");
-topKFilter.reserve(1, 2000, 7, 0.925d);
-topKFilter.add("test");
-List<Boolean> itemExits = topKFilter.query("test");
-Map<String, Integer> itemIncrement = new HashMap<>();
-itemIncrement.put("test", 3);
-topKFilter.incrby(itemIncrement);
-List<String> allItems = topKFilter.list();
+json.set("user:1", SetArgs.Builder.create(".", "{\"name\":\"lisi\",\"age\":30}"));
+Map<String, Object> user = json.get("user:1", Map.class, new GetArgs().path("."));
+long age = json.incrBy("user:1", ".age", 1);
 
-CountMinSketch countMinSketch = redisBloomClient.getCountMinSketch("cms_add");
-countMinSketch.create(10, 10);
-CountMinSketchInfo countMinSketchInfo = countMinSketch.getInfo();
-
-CuckooFilter cuckooFilter = redisBloomClient.getCuckooFilter("cf_insert");
-List<Boolean> result = cuckooFilter.insert(-1L, false, "a");
-
-redisBloomClient.shutdown();
+client.shutdown();
 ```
 
-RediSearch
-```java
-Config config = new Config();
-config.useSingleServer().setAddress("redis://" + DEFAULT_HOST + ":" + DEFAULT_PORT);
-RediSearchClient rediSearchClient = new RediSearchClient(config);
+Every synchronous method has an `*Async` twin returning an `RFuture`:
 
-RediSearch rediSearch = rediSearchClient.getRediSearch("testSearch");
+```java
+RFuture<Long> future = json.arrAppendAsync("user:1", ".tags", "vip");
+future.thenAccept(size -> log.info("tags: {}", size));
+```
+
+## Usage
+
+### RedisBloom
+
+```java
+RedisBloomClient client = new RedisBloomClient(config);
+
+BloomFilter bloomFilter = client.getRBloomFilter("bf");
+bloomFilter.create(0.01d, 1000);
+bloomFilter.madd("a", "b", "c");
+List<Boolean> exists = bloomFilter.existsMulti("a", "z");   // [true, false]
+
+CuckooFilter cuckooFilter = client.getCuckooFilter("cf");
+cuckooFilter.reserve(1000);
+cuckooFilter.add("a");
+
+CountMinSketch sketch = client.getCountMinSketch("cms");
+sketch.create(2000, 5);
+Map<String, Integer> increments = new HashMap<>();
+increments.put("a", 3);
+sketch.incrby(increments);
+
+TopKFilter topK = client.getTopKFilter("topk");
+topK.reserve(3, 2000, 7, 0.925d);
+topK.add("a", "b", "a");
+List<String> top = topK.list();
+
+TDigest tDigest = client.getTDigest("td");
+tDigest.create(100);
+tDigest.add(Arrays.asList(new AbstractMap.SimpleEntry<>(1.0, 1.0), new AbstractMap.SimpleEntry<>(2.0, 1.0)));  // (value, weight)
+List<Double> quantiles = tDigest.getQuantile(0.5);
+```
+
+### RediSearch
+
+```java
+RediSearchClient client = new RediSearchClient(config);
+RediSearch rediSearch = client.getRediSearch("idx:products");
+
 rediSearch.createIndex(new Schema()
-    .addField(new TextField("title"))
-    .addField(new TextField("content"))
-    .addField(new Field("age", FieldType.NUMERIC))
-    .addField(new Field("location", FieldType.GEO)));
+        .addField(new TextField("title"))
+        .addField(new Field("price", FieldType.NUMERIC))
+        .addField(new Field("location", FieldType.GEO)),
+    new IndexOptions().definition(new IndexDefinition().setPrefixes(Arrays.asList("product:"))));
 
-Map<String, Object> fields = new HashMap<>();
-fields.put("title", "Hi");
-fields.put("content", "OOOO");
-rediSearch.addDocument(new Document(String.format("doc1"), 1.0d, fields), new DocumentOptions());
+// documents are plain hashes under the configured prefix
+SearchResult result = rediSearch.search("phone", new SearchOptions()
+        .withScores()
+        .filter(new NumericFilter("price", 100, 500))
+        .filter(new GeoFilter("location", 15, 37, 200, GeoFilter.Unit.KILOMETERS))
+        .page(0, 10));
 
-// Search with NumericFilter
-SearchResult searchResult = rediSearch.search("number", new SearchOptions()
-                .noStopwords()
-                .language(RSLanguage.ENGLISH)
-                .filter(new NumericFilter("age", 1, 4)));
+AggregateResult aggregate = rediSearch.aggregate("*", new AggregateOptions()
+        .groups(new Group().fields("@brand").reducers(Reducers.count().as("count"))));
 
-// Search with GeoFilter
-searchResult = rediSearch.search("number", new SearchOptions()
-                .noStopwords()
-                .language(RSLanguage.ENGLISH)
-                .filter(new GeoFilter("location", 15, 37, 200, GeoFilter.Unit.KILOMETERS)));
+List<Suggestion> suggestions = rediSearch.getSuggestion("pho", new SuggestionOptions().withScores());
 ```
 
-RedisTimeSeries
+### RedisJSON
+
 ```java
-Config config = new Config();
-config.useSingleServer().setAddress("redis://192.168.50.16:6383");
-RedisTimeSeriesClient redisTimeSeriesClient = new RedisTimeSeriesClient(config);
+RedisJSONClient client = new RedisJSONClient(config);
+RedisJSON json = client.getRedisJSON();
 
-RedisTimeSeries redisTimeSeries = redisTimeSeriesClient.getRedisTimeSeries();
-long timestamp = System.currentTimeMillis();
-redisTimeSeries.add(new Sample("temperature:2:32", Sample.Value.of(timestamp, 26)), new TimeSeriesOptions()
-                .retentionTime(6000L)
-                .unCompressed()
-                .labels(new Label("sensor_id", "2"), new Label("area_id", "32")));
-redisTimeSeriesClient.shutdown();
+json.set("user:1", SetArgs.Builder.create(".", "{\"name\":\"lisi\",\"tags\":[]}"));
+json.arrAppend("user:1", ".tags", "vip", "beta");
+long tags = json.arrLen("user:1", ".tags");                     // 2
+Class type = json.getType("user:1", ".name");                   // String.class
+List<Map> users = json.mget(".", Map.class, "user:1", "user:2"); // missing keys yield null
 ```
 
-RedisAI
-```java
-Config config = new Config();
-config.useSingleServer().setAddress("redis://127.0.0.1:6379");
-RedisAIClient redisAIClient = new RedisAIClient(config);
+RedisJSON serializes with Gson by default. Gson is an **optional** dependency of the `redisjson` artifact (the
+`all` artifact includes it): either add `com.google.code.gson:gson` yourself, or plug in your own `JsonCodec`:
 
-RedisAI redisAI = redisAIClient.getRedisAI();
-redisAI.setTensor("tensor1", DataType.FLOAT, new int[]{2, 2}, null, new String[]{"1", "2", "3", "4"});
-redisAIClient.shutdown();
-```
-
-RedisGears
-```java
-Config config = new Config();
-config.useSingleServer().setAddress("redis://127.0.0.1:6379");
-RedisGearsClient redisGearsClient = new RedisGearsClient(config);
-
-RedisGears redisGears = redisGearsClient.getRedisGears();
-redisGears.pyExecute("GB().run()", false);
-redisGearsClient.shutdown();
-```
-
-RedisJSON
-```java
-Config config = new Config();
-config.useSingleServer().setAddress("redis://127.0.0.1:6379");
-RedisJSONClient redisJSONClient = new RedisJSONClient(config);
-
-RedisJSON redisJSON = redisJSONClient.getRedisJSON();
-String key = "foo";
-Map<String, Object> m = new HashMap<>();
-m.put("id", 1);
-m.put("name", "lisi");
-redisJSON.set(key, SetArgs.Builder.create(".", GsonUtils.toJson(m)));
-Map<String, Object> actual = redisJSON.get(key, Map.class, new GetArgs().path(".").indent("\t").newLine("\n").space(" "));
-redisJSONClient.shutdown();
-```
-
-RedisJSON serializes with Gson by default. Gson is an optional dependency of the `redisjson` artifact: add `com.google.code.gson:gson` yourself, or plug in your own `JsonCodec` (Jackson, Moshi, ...) per client or as a Spring bean when using the starter. The `all` artifact includes Gson.
 ```java
 JsonCodec jackson = new JsonCodec() {
     private final ObjectMapper mapper = new ObjectMapper();
     public String toJson(Object value) { return mapper.writeValueAsString(value); }
     public <T> T fromJson(String json, Class<T> type) { return mapper.readValue(json, type); }
 };
-RedisJSONClient redisJSONClient = new RedisJSONClient(config, jackson);
+RedisJSONClient client = new RedisJSONClient(config, jackson);
 ```
 
-RedisGraph
-```java
-Config config = new Config();
-config.useSingleServer().setAddress("redis://127.0.0.1:6379");
-RedisGraphClient redisGraphClient = new RedisGraphClient(config);
+### RedisTimeSeries
 
-RedisGraph redisGraph = redisGraphClient.getRedisGraph();
-redisGraph.query("social", "CREATE (:person{name:'roi',age:32})-[:knows{since:2000}]->(:person{name:'amit',age:30})", 0L);
-ResultSet resultSet = redisGraph.query("social", "MATCH (a:person)-[r:knows]->(b:person) RETURN a, r, b.name", 0L);
+```java
+RedisTimeSeriesClient client = new RedisTimeSeriesClient(config);
+RedisTimeSeries ts = client.getRedisTimeSeries();
+
+ts.create("temperature:2:32", new TimeSeriesOptions()
+        .retentionTime(60_000L)
+        .labels(new Label("sensor_id", "2"), new Label("area_id", "32")));
+
+ts.add(new Sample("temperature:2:32", Sample.Value.of(System.currentTimeMillis(), 26.5)), null);
+ts.incrBy("requests:total", 1);
+
+List<Sample.Value> values = ts.range("temperature:2:32", 0, Long.MAX_VALUE,
+        new RangeOptions().aggregationType(Aggregation.AVG, 60_000));
+List<TimeSeries> byArea = ts.mrange(0, Long.MAX_VALUE, new RangeOptions().withLabels(), "area_id=32");
+```
+
+### RedisGraph (deprecated)
+
+```java
+RedisGraphClient client = new RedisGraphClient(config);
+RedisGraph graph = client.getRedisGraph();
+
+graph.query("social", "CREATE (:person{name:'roi',age:32})-[:knows{since:2000}]->(:person{name:'amit',age:30})", 0L);
+ResultSet resultSet = graph.query("social", "MATCH (a:person)-[r:knows]->(b:person) RETURN a, r, b.name", 0L);
 for (Record record : resultSet.getResults()) {
     Node a = (Node) record.getValue("a");
     Edge r = (Edge) record.getValue("r");
-    // property names and relationship types are resolved, not just indices
+    // property names and relationship types are resolved, not just their indices
     System.out.println(a.getProperty("name") + " " + r.getRelationshipType() + " " + record.getString("b.name"));
 }
-redisGraphClient.shutdown();
 ```
 
-Pipelining (batch)
+### RedisAI and RedisGears (deprecated)
 
-Every client has `createXxxBatch()`. Objects obtained from the batch queue their `*Async` calls; `execute()` sends them in one round trip.
+```java
+RedisAI redisAI = new RedisAIClient(config).getRedisAI();
+redisAI.setTensor("tensor1", DataType.FLOAT, new int[]{2, 2}, null, new String[]{"1", "2", "3", "4"});
+
+RedisGears redisGears = new RedisGearsClient(config).getRedisGears();
+redisGears.pyExecute("GB().run()", false);
+```
+
+## Pipelining
+
+Every client has `createXxxBatch()`. Objects obtained from the batch queue their `*Async` calls and
+`execute()` sends them in a single round trip, returning the responses in call order:
+
 ```java
 RedisBloomBatch batch = redisBloomClient.createRedisBloomBatch();
 BloomFilter bloomFilter = batch.getRBloomFilter("bf");
 bloomFilter.createAsync(0.01d, 1000);
 bloomFilter.maddAsync("a", "b", "c");
 bloomFilter.existsAsync("a");
+
 BatchResult<?> result = batch.execute();
-// [true, [true, true, true], true]
-System.out.println(result.getResponses());
+result.getResponses();   // [true, [true, true, true], true]
 ```
-See [PipeliningExamples](examples/src/main/java/io/github/dengliming/redismodule/examples/redisbloom/PipeliningExamples.java).
 
-Sharing one Redisson instance
+## Sharing one Redisson instance
 
-Every client can wrap an existing `RedissonClient` so that several modules share a single connection pool. The wrapping client never shuts the shared instance down.
+Each client can wrap an existing `RedissonClient`, so several modules (or your own Redisson code) share a
+single connection pool. A wrapping client never shuts the shared instance down:
+
 ```java
 RedissonClient redisson = Redisson.create(config);
-RedisJSONClient redisJSONClient = new RedisJSONClient(redisson);
-RediSearchClient rediSearchClient = new RediSearchClient(redisson);
-RedisBloomClient redisBloomClient = new RedisBloomClient(redisson);
+
+RedisJSONClient jsonClient = new RedisJSONClient(redisson);
+RediSearchClient searchClient = new RediSearchClient(redisson);
+RedisBloomClient bloomClient = new RedisBloomClient(redisson);
+
 // ...
 redisson.shutdown();
 ```
-See [SharedRedissonExamples](examples/src/main/java/io/github/dengliming/redismodule/examples/SharedRedissonExamples.java).
 
-SpringBoot Starter
+## Spring Boot
 
-see [spring-boot-starter](./spring-boot-starter)
+Add the starter and enable the modules you need; they share one connection pool or use dedicated ones,
+and pick up your own `RedissonClient` and `JsonCodec` beans when present.
+
+```yaml
+redis-module:
+  config: |
+    singleServerConfig:
+      address: "redis://127.0.0.1:6379"
+  redisjson:
+    enabled: true
+  redisearch:
+    enabled: true
+```
+
+```java
+@Autowired
+private RedisJSONClient redisJSONClient;
+```
+
+See the [starter guide](spring-boot-starter/README.md) for every option.
+
+## Compatibility notes
+
+- CI runs the test suite against the official `redis:8.8` image, where Search, JSON, TimeSeries and Bloom are
+  built in. `FT.CONFIG` was removed in Redis 8; `RediSearch.setConfig()` / `getConfig()` fall back to
+  `CONFIG SET/GET search-*` automatically.
+- RediSearch 1.x document commands (`FT.ADD`, `FT.GET`, `FT.DEL`, `FT.DROP`, ...) are still exposed but no longer
+  exist on RediSearch 2.x / Redis 8. Index hashes or JSON documents under a prefix instead.
+- Commands are routed by their key, so cluster deployments work with Redisson's `useClusterServers()`.
+
+## Building from source
+
+```bash
+./mvnw clean install -DskipTests -Dgpg.skip
+```
+
+Integration tests need a running Redis with the modules loaded; pass its location with `-DREDIS_HOST` and
+`-DREDIS_PORT` (see [`build.yml`](.github/workflows/build.yml) for the full matrix). More runnable snippets
+live in [`examples`](examples/src/main/java/io/github/dengliming/redismodule/examples).
+
+## Contributing
+
+Issues and pull requests are welcome. Please run `./mvnw verify -DskipTests` before opening a PR so that
+Checkstyle passes.
 
 ## License
 
