@@ -28,6 +28,7 @@ import io.github.dengliming.redismodule.redisjson.codec.JsonCodecs;
 import io.github.dengliming.redismodule.redistimeseries.client.RedisTimeSeriesClient;
 import io.github.dengliming.redismodule.springboot.starter.env.RedisModuleProperties;
 import io.github.dengliming.redismodule.springboot.starter.env.RedisModuleProperties.RedisModuleConfig;
+import io.github.dengliming.redismodule.vectorset.client.VectorSetClient;
 import org.redisson.Redisson;
 import org.redisson.api.RedissonClient;
 import org.redisson.config.Config;
@@ -125,6 +126,13 @@ public class RedisModuleAutoConfiguration {
     public RedisTimeSeriesClient redisTimeSeriesClient(ObjectProvider<RedissonClient> redisson) {
         return createClient("redistimeseries", redisModuleProperties.getRedistimeseries(), redisson,
                 RedisTimeSeriesClient::new, RedisTimeSeriesClient::new);
+    }
+
+    @ConditionalOnProperty(prefix = RedisModuleProperties.PREFIX + ".vectorset", name = "enabled", havingValue = "true")
+    @Bean(destroyMethod = "shutdown")
+    @ConditionalOnMissingBean
+    public VectorSetClient vectorSetClient(ObjectProvider<RedissonClient> redisson) {
+        return createClient("vectorset", redisModuleProperties.getVectorset(), redisson, VectorSetClient::new, VectorSetClient::new);
     }
 
     /**

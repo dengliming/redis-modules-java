@@ -26,6 +26,7 @@ other modules or with an existing Redisson instance.
 | RediSearch | `redisearch` | ✅ | Active | [commands](redisearch/README.md) |
 | RedisJSON | `redisjson` | ✅ | Active | [commands](redisjson/README.md) |
 | RedisTimeSeries | `redistimeseries` | ✅ | Active | [commands](redistimeseries/README.md) |
+| Vector sets (Redis 8 native type) | `vectorset` | ✅ | Active | [commands](vectorset/README.md) |
 | RedisGraph | `redisgraph` | ❌ | Deprecated, upstream end of life | [commands](redisgraph/README.md) |
 | RedisAI | `redisai` | ❌ | Deprecated, upstream end of life | [commands](redisai/README.md) |
 | RedisGears | `redisgears` | ❌ | Deprecated, upstream end of life | [commands](redisgears/README.md) |
@@ -39,6 +40,7 @@ users; they will be removed in a future major release.
 
 - Java 8 or later
 - Redis 8.x (modules built in), or Redis 7.x with the corresponding module loaded
+- Vector sets need Redis 8.0+ (`VRANGE` needs 8.4+)
 - Redisson 3.27.x (pulled in transitively)
 
 ## Installation
@@ -207,6 +209,20 @@ ts.incrBy("requests:total", 1);
 List<Sample.Value> values = ts.range("temperature:2:32", 0, Long.MAX_VALUE,
         new RangeOptions().aggregationType(Aggregation.AVG, 60_000));
 List<TimeSeries> byArea = ts.mrange(0, Long.MAX_VALUE, new RangeOptions().withLabels(), "area_id=32");
+```
+
+### Vector sets
+
+```java
+VectorSetClient client = new VectorSetClient(config);
+VectorSet movies = client.getVectorSet("movies");
+
+movies.add("matrix", new double[]{0.9, 0.1, 0.0}, new AddArgs().attributes("{\"year\":1999}"));
+movies.add("amelie", new double[]{0.0, 0.2, 0.9}, new AddArgs().attributes("{\"year\":2001}"));
+
+List<Similarity> hits = movies.similar(new double[]{1.0, 0.0, 0.0}, new SimilarArgs().withScores().withAttribs().count(5));
+List<Similarity> recent = movies.similarTo("matrix", new SimilarArgs().filter(".year > 2000"));
+List<Double> vector = movies.getVector("matrix");
 ```
 
 ### RedisGraph (deprecated)

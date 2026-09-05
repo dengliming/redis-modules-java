@@ -1,7 +1,7 @@
 # Spring Boot Starter
 
 Auto-configures one client bean per enabled module: `RedisJSONClient`, `RediSearchClient`,
-`RedisBloomClient`, `RedisTimeSeriesClient` (and the deprecated `RedisGraphClient`, `RedisAIClient`,
+`RedisBloomClient`, `RedisTimeSeriesClient`, `VectorSetClient` (and the deprecated `RedisGraphClient`, `RedisAIClient`,
 `RedisGearsClient`). Works with Spring Boot 2.7 and 3.x.
 
 ## Dependency
@@ -20,7 +20,7 @@ Auto-configures one client bean per enabled module: `RedisJSONClient`, `RediSear
 | --- | --- |
 | `redis-module.enabled` | Master switch, defaults to `true`. |
 | `redis-module.config` | Redisson configuration (YAML or JSON) shared by every module without its own `config`. Creates a `RedissonClient` bean unless the application already defines one. |
-| `redis-module.<module>.enabled` | Registers the client bean of that module. `<module>` is one of `redisjson`, `redisearch`, `redisbloom`, `redistimeseries`, `redisgraph`, `redisai`, `redisgears`. |
+| `redis-module.<module>.enabled` | Registers the client bean of that module. `<module>` is one of `redisjson`, `redisearch`, `redisbloom`, `redistimeseries`, `vectorset`, `redisgraph`, `redisai`, `redisgears`. |
 | `redis-module.<module>.config` | Dedicated Redisson configuration for that module; the client owns and shuts down this instance. |
 
 Resolution order for a module: its own `config` → the `RedissonClient` bean of the context (yours, or the

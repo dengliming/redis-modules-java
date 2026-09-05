@@ -37,6 +37,7 @@ public class RedisModuleProperties {
     private RedisModuleConfig redisgraph;
     private RedisModuleConfig redisjson;
     private RedisModuleConfig redistimeseries;
+    private RedisModuleConfig vectorset;
 
     public boolean isEnabled() {
         return enabled;
@@ -108,6 +109,14 @@ public class RedisModuleProperties {
 
     public void setRedistimeseries(RedisModuleConfig redistimeseries) {
         this.redistimeseries = redistimeseries;
+    }
+
+    public RedisModuleConfig getVectorset() {
+        return vectorset;
+    }
+
+    public void setVectorset(RedisModuleConfig vectorset) {
+        this.vectorset = vectorset;
     }
 
     public static class RedisModuleConfig {

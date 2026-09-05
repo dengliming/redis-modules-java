@@ -17,6 +17,7 @@
         <module>redisgears</module>
         <module>redisjson</module>
         <module>redisgraph</module>
+        <module>vectorset</module>
         <module>commons</module>
         <module>spring-boot-starter</module>
     </modules>
@@ -131,6 +132,11 @@
             <dependency>
                 <groupId>io.github.dengliming.redismodule</groupId>
                 <artifactId>redisgraph</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.github.dengliming.redismodule</groupId>
+                <artifactId>vectorset</artifactId>
                 <version>${project.version}</version>
             </dependency>
 

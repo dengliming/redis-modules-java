@@ -53,5 +53,10 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>redisgraph</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>vectorset</artifactId>
+        </dependency>
     </dependencies>
 </project>
