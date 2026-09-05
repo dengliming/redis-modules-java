@@ -56,6 +56,14 @@ jobs:
           distribution: temurin
           java-version: 8
           cache: maven
+      - name: Print Redis server versions
+        run: |
+          for c in $(docker ps -q); do
+            echo "== $(docker inspect --format '{{.Config.Image}}' $c)"
+            docker exec $c redis-cli INFO server | grep -E "redis_version|redis_mode" || true
+            docker exec $c redis-cli MODULE LIST || true
+            docker exec $c redis-cli CONFIG GET "search*" | head -40 || true
+          done
       - name: Build with Maven
         run: mvn --fail-at-end clean install -DREDIS_HOST=localhost -DREDIS_PORT=52567 -DREDISAI_PORT=52568 -DREDIS_GEARS_PORT=6383 -DREDIS_GRAPH_PORT=6384 -Dgpg.skip --file pom.xml
       - uses: codecov/codecov-action@v4
