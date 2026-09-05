@@ -41,32 +41,31 @@ public class SearchResultDecoder implements MultiDecoder<SearchResult> {
     @Override
     public SearchResult decode(List<Object> parts, State state) {
         Long total = (Long) parts.get(0);
-        int documentSize = withScores ? 3 : 2;
+        // Each document occupies: key [score] [fields]. The reply is [total, doc1..., doc2..., ...]
+        int documentSize = 1 + (withScores ? 1 : 0) + (noContent ? 0 : 1);
 
         List<Document> documents = new ArrayList<>(total.intValue());
-        // Checks the document size. DocumentSize equals to 2 means only key and parts. DocumentSize equals to 3 means
-        // key, score and parts. Created separated IFs to avoid checking this logic each  document. Also  changed  the
-        // step size to reduce numbers of interactions
-        if (documentSize == 2) {
-            //Only key and parts
-            for (int i = 1; i < parts.size(); i += documentSize) {
-                if (noContent) {
-                    documents.add(new Document((String) parts.get(i), 1.0d, null));
-                } else {
-                    documents.add(new Document((String) parts.get(i), 1.0d, (Map<String, Object>) parts.get(i + 1)));
-                }
+        for (int i = 1; i + documentSize - 1 < parts.size(); i += documentSize) {
+            int offset = i;
+            String id = (String) parts.get(offset++);
+            double score = 1.0d;
+            if (withScores) {
+                score = parseScore(parts.get(offset++));
             }
-        } else {
-            //Key, score and parts
-            for (int i = 1; i < parts.size(); i += documentSize) {
-                if (noContent) {
-                    documents.add(new Document((String) parts.get(i), (Double) parts.get(i + 1), null));
-                } else {
-                    documents.add(new Document((String) parts.get(i), Double.parseDouble((String) parts.get(i + 1)), (Map<String, Object>) parts.get(i + 2)));
-                }
+            Map<String, Object> fields = null;
+            if (!noContent) {
+                fields = (Map<String, Object>) parts.get(offset);
             }
+            documents.add(new Document(id, score, fields));
         }
 
         return new SearchResult(total, documents);
+    }
+
+    private static double parseScore(Object raw) {
+        if (raw instanceof Number) {
+            return ((Number) raw).doubleValue();
+        }
+        return Double.parseDouble(String.valueOf(raw));
     }
 }

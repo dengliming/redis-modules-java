@@ -97,7 +97,7 @@ public class RedisAI {
                 args.add(value);
             }
         }
-        return commandExecutor.writeAsync(getName(), codec, AI_TENSORSET, args.toArray());
+        return commandExecutor.writeAsync(key, codec, AI_TENSORSET, args.toArray());
     }
 
     /**
@@ -117,7 +117,7 @@ public class RedisAI {
         List<Object> args = new ArrayList<>();
         args.add(key);
         modelArgs.build(args);
-        return commandExecutor.writeAsync(getName(), ByteArrayCodec.INSTANCE, AI_MODELSET, args.toArray());
+        return commandExecutor.writeAsync(key, ByteArrayCodec.INSTANCE, AI_MODELSET, args.toArray());
     }
 
     /**
@@ -144,9 +144,9 @@ public class RedisAI {
         RAssert.notNull(script, "script must not be null");
 
         if (tag == null) {
-            return commandExecutor.writeAsync(getName(), codec, AI_SCRIPTSET, key, device, Keywords.SOURCE, script);
+            return commandExecutor.writeAsync(key, codec, AI_SCRIPTSET, key, device, Keywords.SOURCE, script);
         }
-        return commandExecutor.writeAsync(getName(), codec, AI_SCRIPTSET, key, device, Keywords.TAG, tag, Keywords.SOURCE, script);
+        return commandExecutor.writeAsync(key, codec, AI_SCRIPTSET, key, device, Keywords.TAG, tag, Keywords.SOURCE, script);
     }
 
     /**
@@ -175,7 +175,7 @@ public class RedisAI {
         for (int i = 0; i < outputs.length; i++) {
             args[4 + inputs.length + i] = outputs[i];
         }
-        return commandExecutor.writeAsync(getName(), codec, AI_SCRIPTRUN, args);
+        return commandExecutor.writeAsync(key, codec, AI_SCRIPTRUN, args);
     }
 
     /**
@@ -189,7 +189,7 @@ public class RedisAI {
     }
 
     public RFuture<Boolean> deleteModelAsync(String key) {
-        return commandExecutor.writeAsync(getName(), codec, AI_MODELDEL, key);
+        return commandExecutor.writeAsync(key, codec, AI_MODELDEL, key);
     }
 
     /**
@@ -203,7 +203,7 @@ public class RedisAI {
     }
 
     public RFuture<Boolean> deleteScriptAsync(String key) {
-        return commandExecutor.writeAsync(getName(), codec, AI_SCRIPTDEL, key);
+        return commandExecutor.writeAsync(key, codec, AI_SCRIPTDEL, key);
     }
 
     /**
@@ -218,7 +218,7 @@ public class RedisAI {
     }
 
     public RFuture<Boolean> loadBackendAsync(Backend backEnd, String path) {
-        return commandExecutor.readAsync(getName(), StringCodec.INSTANCE, AI_CONFIG, Keywords.LOADBACKEND, backEnd, path);
+        return commandExecutor.writeAsync(getName(), StringCodec.INSTANCE, AI_CONFIG, Keywords.LOADBACKEND, backEnd, path);
     }
 
     /**
@@ -232,7 +232,7 @@ public class RedisAI {
     }
 
     public RFuture<Boolean> setBackendPathAsync(String path) {
-        return commandExecutor.readAsync(getName(), StringCodec.INSTANCE, AI_CONFIG, Keywords.BACKENDSPATH, path);
+        return commandExecutor.writeAsync(getName(), StringCodec.INSTANCE, AI_CONFIG, Keywords.BACKENDSPATH, path);
     }
 
     /**
@@ -246,7 +246,7 @@ public class RedisAI {
     }
 
     public RFuture<Map<String, Object>> getInfoAsync(String key) {
-        return commandExecutor.readAsync(getName(), StringCodec.INSTANCE, AI_INFO, key);
+        return commandExecutor.readAsync(key, StringCodec.INSTANCE, AI_INFO, key);
     }
 
     /**
@@ -260,7 +260,7 @@ public class RedisAI {
     }
 
     public RFuture<Boolean> resetStatAsync(String key) {
-        return commandExecutor.readAsync(getName(), StringCodec.INSTANCE, AI_INFO_RESETSTAT, key, Keywords.RESETSTAT);
+        return commandExecutor.writeAsync(key, StringCodec.INSTANCE, AI_INFO_RESETSTAT, key, Keywords.RESETSTAT);
     }
 
     /**
@@ -276,7 +276,7 @@ public class RedisAI {
     public RFuture<Tensor> getTensorAsync(String key) {
         RAssert.notNull(key, "key must not be null");
 
-        return commandExecutor.readAsync(getName(), StringCodec.INSTANCE, AI_TENSORGET, key, Keywords.META, Keywords.BLOB);
+        return commandExecutor.readAsync(key, StringCodec.INSTANCE, AI_TENSORGET, key, Keywords.META, Keywords.BLOB);
     }
 
     /**
@@ -292,7 +292,7 @@ public class RedisAI {
     public RFuture<Model> getModelAsync(String key) {
         RAssert.notNull(key, "key must not be null");
 
-        return commandExecutor.readAsync(getName(), StringCodec.INSTANCE, AI_MODELGET, key, Keywords.META, Keywords.BLOB);
+        return commandExecutor.readAsync(key, StringCodec.INSTANCE, AI_MODELGET, key, Keywords.META, Keywords.BLOB);
     }
 
     /**
@@ -310,7 +310,7 @@ public class RedisAI {
     public RFuture<Script> getScriptAsync(String key) {
         RAssert.notNull(key, "key must not be null");
 
-        return commandExecutor.readAsync(getName(), StringCodec.INSTANCE, AI_SCRIPTGET, key, Keywords.META, Keywords.SOURCE);
+        return commandExecutor.readAsync(key, StringCodec.INSTANCE, AI_SCRIPTGET, key, Keywords.META, Keywords.SOURCE);
     }
 
     /**
@@ -332,7 +332,7 @@ public class RedisAI {
         List<Object> args = new ArrayList<>();
         args.add(key);
         storeScriptArgs.build(args);
-        return commandExecutor.writeAsync(getName(), StringCodec.INSTANCE, AI_SCRIPTSTORE, args.toArray());
+        return commandExecutor.writeAsync(key, StringCodec.INSTANCE, AI_SCRIPTSTORE, args.toArray());
     }
 
     public String getName() {

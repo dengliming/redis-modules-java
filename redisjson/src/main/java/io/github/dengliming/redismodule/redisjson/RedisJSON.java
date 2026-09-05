@@ -30,7 +30,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
@@ -60,7 +59,8 @@ public class RedisJSON {
 
     static {
         CLASS_TYPE_MAPPING = new HashMap<>();
-        CLASS_TYPE_MAPPING.put("null", null);
+        // JSON null has no Java class; the key is kept so the type name is recognised (see getTypeAsync).
+        CLASS_TYPE_MAPPING.put("null", Void.class);
         CLASS_TYPE_MAPPING.put("boolean", boolean.class);
         CLASS_TYPE_MAPPING.put("integer", int.class);
         CLASS_TYPE_MAPPING.put("number", float.class);
@@ -95,9 +95,9 @@ public class RedisJSON {
         RAssert.notEmpty(key, "key must not be empty");
 
         if (path == null) {
-            return commandExecutor.readAsync(key, StringCodec.INSTANCE, JSON_DEL, key);
+            return commandExecutor.writeAsync(key, StringCodec.INSTANCE, JSON_DEL, key);
         }
-        return commandExecutor.readAsync(key, StringCodec.INSTANCE, JSON_DEL, key, path);
+        return commandExecutor.writeAsync(key, StringCodec.INSTANCE, JSON_DEL, key, path);
     }
 
     /**
@@ -191,7 +191,7 @@ public class RedisJSON {
      *
      * @param key
      * @param path
-     * @return
+     * @return the Java type mapped from the JSON type name; {@link Void} for a JSON null
      */
     public Class getType(String key, String path) {
         return commandExecutor.get(getTypeAsync(key, path));
@@ -210,7 +210,10 @@ public class RedisJSON {
             }
 
             try {
-                result.complete(Optional.ofNullable(CLASS_TYPE_MAPPING.get(res)).orElseThrow(() -> new RuntimeException("Unknown type " + res)));
+                if (!CLASS_TYPE_MAPPING.containsKey(res)) {
+                    throw new RuntimeException("Unknown type " + res);
+                }
+                result.complete(CLASS_TYPE_MAPPING.get(res));
             } catch (Throwable t) {
                 result.completeExceptionally(t);
             }
@@ -445,7 +448,7 @@ public class RedisJSON {
         RAssert.notNull(path, "path must not be null");
         RAssert.notNull(clazz, "clazz must not be null");
 
-        RFuture<String> getFuture = commandExecutor.readAsync(key, StringCodec.INSTANCE, JSON_ARRPOP, key, path, index);
+        RFuture<String> getFuture = commandExecutor.writeAsync(key, StringCodec.INSTANCE, JSON_ARRPOP, key, path, index);
         return transformRPromiseResult(getFuture, clazz);
     }
 

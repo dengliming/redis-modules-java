@@ -17,15 +17,22 @@
 package io.github.dengliming.redismodule.redisgraph;
 
 import io.github.dengliming.redismodule.common.util.RAssert;
+import io.github.dengliming.redismodule.redisgraph.model.Record;
 import io.github.dengliming.redismodule.redisgraph.model.ResultSet;
 import io.github.dengliming.redismodule.redisgraph.model.SlowLogItem;
 import org.redisson.api.RFuture;
 import org.redisson.client.codec.Codec;
 import org.redisson.client.codec.StringCodec;
+import org.redisson.client.protocol.RedisCommand;
 import org.redisson.command.CommandAsyncExecutor;
+import org.redisson.command.CommandBatchService;
+import org.redisson.misc.CompletableFutureWrapper;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static io.github.dengliming.redismodule.redisgraph.protocol.Keywords.__COMPACT;
 import static io.github.dengliming.redismodule.redisgraph.protocol.RedisCommands.GRAPH_CONFIG_GET;
@@ -42,6 +49,7 @@ public class RedisGraph {
 
     private final CommandAsyncExecutor commandExecutor;
     private final Codec codec;
+    private final Map<String, GraphCache> caches = new ConcurrentHashMap<>();
 
     public RedisGraph(CommandAsyncExecutor commandExecutor) {
         this(commandExecutor, commandExecutor.getServiceManager().getCfg().getCodec());
@@ -87,7 +95,7 @@ public class RedisGraph {
         RAssert.notEmpty(name, "name must not be empty");
         RAssert.notNull(value, "value must not be null");
 
-        return commandExecutor.readAsync(getName(), codec, GRAPH_CONFIG_SET, name, value);
+        return commandExecutor.writeAsync(getName(), codec, GRAPH_CONFIG_SET, name, value);
     }
 
     /**
@@ -185,10 +193,7 @@ public class RedisGraph {
     }
 
     public RFuture<ResultSet> queryAsync(String graphName, String query, long timeout) {
-        if (timeout > 0) {
-            return commandExecutor.readAsync(graphName, StringCodec.INSTANCE, GRAPH_QUERY, graphName, query, timeout, __COMPACT.getAlias());
-        }
-        return commandExecutor.readAsync(graphName, StringCodec.INSTANCE, GRAPH_QUERY, graphName, query, __COMPACT.getAlias());
+        return resolveNames(graphName, rawQueryAsync(GRAPH_QUERY, graphName, query, timeout));
     }
 
     /**
@@ -203,10 +208,47 @@ public class RedisGraph {
     }
 
     public RFuture<ResultSet> readOnlyQueryAsync(String graphName, String query, long timeout) {
+        return resolveNames(graphName, rawQueryAsync(GRAPH_READ_ONLY_QUERY, graphName, query, timeout));
+    }
+
+    private RFuture<ResultSet> rawQueryAsync(RedisCommand<ResultSet> command, String graphName, String query, long timeout) {
+        RAssert.notEmpty(graphName, "graphName must not be empty");
+        RAssert.notNull(query, "query must not be null");
+
         if (timeout > 0) {
-            return commandExecutor.readAsync(graphName, StringCodec.INSTANCE, GRAPH_READ_ONLY_QUERY, graphName, query, timeout, __COMPACT.getAlias());
+            return commandExecutor.readAsync(graphName, StringCodec.INSTANCE, command, graphName, query, timeout, __COMPACT.getAlias());
         }
-        return commandExecutor.readAsync(graphName, StringCodec.INSTANCE, GRAPH_READ_ONLY_QUERY, graphName, query, __COMPACT.getAlias());
+        return commandExecutor.readAsync(graphName, StringCodec.INSTANCE, command, graphName, query, __COMPACT.getAlias());
+    }
+
+    /**
+     * The compact protocol returns property keys and relationship types as indices. Look the names up
+     * (cached per graph, refreshed on demand through the db.* procedures) and fill them into the entities.
+     * <p>
+     * Inside a batch the follow-up procedure call cannot be issued, so names stay unresolved there.
+     */
+    private RFuture<ResultSet> resolveNames(String graphName, RFuture<ResultSet> future) {
+        if (commandExecutor instanceof CommandBatchService) {
+            return future;
+        }
+        GraphCache cache = caches.computeIfAbsent(graphName, k -> new GraphCache());
+        CompletableFuture<ResultSet> raw = future.toCompletableFuture();
+        CompletableFuture<ResultSet> result = raw
+                .thenCompose(resultSet -> cache.resolve(resultSet, procedure -> callProcedure(graphName, procedure)));
+        return new CompletableFutureWrapper<>(result);
+    }
+
+    private CompletableFuture<List<String>> callProcedure(String graphName, String procedure) {
+        CompletableFuture<ResultSet> raw = rawQueryAsync(GRAPH_QUERY, graphName, procedure, 0L).toCompletableFuture();
+        return raw.thenApply(resultSet -> {
+            List<String> names = new ArrayList<>();
+            if (resultSet.getResults() != null) {
+                for (Record record : resultSet.getResults()) {
+                    names.add(String.valueOf(record.getValue(0)));
+                }
+            }
+            return names;
+        });
     }
 
     public String getName() {

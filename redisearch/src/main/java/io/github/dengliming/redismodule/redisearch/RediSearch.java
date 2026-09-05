@@ -448,7 +448,7 @@ public class RediSearch extends RedissonObject {
     public RFuture<List<String>> dumpDictAsync(String dictName) {
         RAssert.notNull(dictName, "dictName must be not null");
 
-        return commandExecutor.writeAsync(getName(), StringCodec.INSTANCE, FT_DICTDUMP, dictName);
+        return commandExecutor.readAsync(getName(), StringCodec.INSTANCE, FT_DICTDUMP, dictName);
     }
 
     /**
@@ -498,7 +498,7 @@ public class RediSearch extends RedissonObject {
     }
 
     public RFuture<Map<String, List<Long>>> dumpSynonymsAsync() {
-        return commandExecutor.writeAsync(getName(), StringCodec.INSTANCE, FT_SYNDUMP, getName());
+        return commandExecutor.readAsync(getName(), StringCodec.INSTANCE, FT_SYNDUMP, getName());
     }
 
     /**
@@ -574,7 +574,7 @@ public class RediSearch extends RedissonObject {
     public RFuture<Boolean> deleteSuggestionAsync(String term) {
         RAssert.notNull(term, "term must be not null");
 
-        return commandExecutor.readAsync(getName(), codec, FT_SUGDEL, getName(), term);
+        return commandExecutor.writeAsync(getName(), codec, FT_SUGDEL, getName(), term);
     }
 
     /**

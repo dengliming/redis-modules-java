@@ -58,6 +58,10 @@ public class RedisJSONTest extends AbstractTest {
         assertThat(actual).isNotNull().containsEntry("name", "lisi");
 
         assertThat(redisJSON.getType(key, ".")).isEqualTo(Object.class);
+        assertThat(redisJSON.getType(key, ".name")).isEqualTo(String.class);
+
+        assertThat(redisJSON.set("nullKey", SetArgs.Builder.create(".", "null"))).isEqualTo("OK");
+        assertThat(redisJSON.getType("nullKey", ".")).isEqualTo(Void.class);
 
         assertThat(redisJSON.mget(".", Map.class, key, "null")).hasSize(2);
     }

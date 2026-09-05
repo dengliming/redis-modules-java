@@ -74,7 +74,7 @@ public class RedisGears {
             args.add(Keywords.REQUIREMENTS);
             args.add("\"" + String.join(" ", requirements) + "\"");
         }
-        return commandExecutor.readAsync(getName(), codec, RG_PYEXECUTE, args.toArray());
+        return commandExecutor.writeAsync(getName(), codec, RG_PYEXECUTE, args.toArray());
     }
 
     /**
@@ -115,7 +115,7 @@ public class RedisGears {
             args.add(k);
             args.add(v);
         });
-        return commandExecutor.readAsync(getName(), codec, RG_CONFIGSET, args.toArray());
+        return commandExecutor.writeAsync(getName(), codec, RG_CONFIGSET, args.toArray());
     }
 
     /**
@@ -148,7 +148,7 @@ public class RedisGears {
     public RFuture<Boolean> unRegisterAsync(String id) {
         RAssert.notEmpty(id, "id must not be empty");
 
-        return commandExecutor.readAsync(getName(), codec, RG_UNREGISTER, id);
+        return commandExecutor.writeAsync(getName(), codec, RG_UNREGISTER, id);
     }
 
     /**
@@ -163,7 +163,7 @@ public class RedisGears {
     }
 
     public RFuture<Boolean> refreshClusterAsync() {
-        return commandExecutor.readAsync(getName(), codec, RG_REFRESHCLUSTER);
+        return commandExecutor.writeAsync(getName(), codec, RG_REFRESHCLUSTER);
     }
 
     /**
@@ -179,7 +179,7 @@ public class RedisGears {
     }
 
     public RFuture<Boolean> abortExecutionAsync(String id) {
-        return commandExecutor.readAsync(getName(), codec, RG_ABORTEXECUTION, id);
+        return commandExecutor.writeAsync(getName(), codec, RG_ABORTEXECUTION, id);
     }
 
     /**
@@ -195,7 +195,7 @@ public class RedisGears {
     }
 
     public RFuture<Boolean> dropExecutionAsync(String id) {
-        return commandExecutor.readAsync(getName(), codec, RG_DROPEXECUTION, id);
+        return commandExecutor.writeAsync(getName(), codec, RG_DROPEXECUTION, id);
     }
 
     /**

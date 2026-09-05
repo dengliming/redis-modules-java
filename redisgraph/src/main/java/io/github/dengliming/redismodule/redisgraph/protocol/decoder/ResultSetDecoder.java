@@ -155,9 +155,8 @@ public class ResultSetDecoder implements MultiDecoder<ResultSet> {
         for (List<Object> rawProperty : rawProperties) {
             // trimmed for getting to value using deserializeScalar
             List<Object> propertyScalar = rawProperty.subList(1, rawProperty.size());
-            // TODO
-            String name = "";
-            entity.addProperty(((Long) rawProperty.get(0)).intValue(), name, deserializeScalar(propertyScalar));
+            // The compact protocol only sends the property key index; RedisGraph resolves the name afterwards.
+            entity.addProperty(((Long) rawProperty.get(0)).intValue(), deserializeScalar(propertyScalar));
         }
     }
 

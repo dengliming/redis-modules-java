@@ -164,6 +164,16 @@ public class RediSearchTest extends AbstractTest {
         assertThat(searchResult.getTotal()).isEqualTo(2);
         assertThat(searchResult.getDocuments().size()).isEqualTo(1);
 
+        // WITHSCORES + NOCONTENT: reply is [total, id1, score1, id2, score2]
+        searchResult = rediSearch.search("*", new SearchOptions().noContent().withScores());
+        assertThat(searchResult.getTotal()).isEqualTo(2);
+        assertThat(searchResult.getDocuments()).hasSize(2);
+        assertThat(searchResult.getDocuments()).extracting(Document::getId).containsExactlyInAnyOrder("doc1", "doc2");
+        assertThat(searchResult.getDocuments()).allSatisfy(doc -> {
+            assertThat(doc.getFields()).isNull();
+            assertThat(doc.getScore()).isGreaterThan(0);
+        });
+
         searchResult = rediSearch.search("OOOO", new SearchOptions().noStopwords().language(RSLanguage.ENGLISH));
         assertThat(searchResult.getTotal()).isEqualTo(1);
 

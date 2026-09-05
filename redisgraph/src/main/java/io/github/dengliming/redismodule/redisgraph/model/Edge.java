@@ -18,6 +18,7 @@ package io.github.dengliming.redismodule.redisgraph.model;
 
 public class Edge extends GraphEntity {
     private int relationshipTypeIndex;
+    private String relationshipType;
     private long source;
     private long destination;
 
@@ -27,6 +28,17 @@ public class Edge extends GraphEntity {
 
     public void setRelationshipTypeIndex(int relationshipTypeIndex) {
         this.relationshipTypeIndex = relationshipTypeIndex;
+    }
+
+    /**
+     * @return the relationship type name, or null if it could not be resolved
+     */
+    public String getRelationshipType() {
+        return relationshipType;
+    }
+
+    public void setRelationshipType(String relationshipType) {
+        this.relationshipType = relationshipType;
     }
 
     public long getSource() {

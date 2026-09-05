@@ -16,6 +16,7 @@
 
 package io.github.dengliming.redismodule.redisgraph;
 
+import io.github.dengliming.redismodule.redisgraph.model.Edge;
 import io.github.dengliming.redismodule.redisgraph.model.Header;
 import io.github.dengliming.redismodule.redisgraph.model.Node;
 import io.github.dengliming.redismodule.redisgraph.model.Record;
@@ -126,6 +127,15 @@ public class RedisGraphTest extends AbstractTest {
         Node node = (Node) record.getValue(0);
         assertThat(node).isNotNull();
         assertThat(node.getPropertyList().get(0).getValue()).isEqualTo("roi");
+        assertThat(node.getPropertyList().get(0).getName()).isEqualTo("name");
+        assertThat(node.getProperty("age")).isEqualTo(32L);
+        assertThat(node.getProperty("boolValue")).isEqualTo(true);
+
+        Edge edge = (Edge) record.getValue(1);
+        assertThat(edge).isNotNull();
+        assertThat(edge.getRelationshipType()).isEqualTo("knows");
+        assertThat(edge.getProperty("place")).isEqualTo("TLV");
+        assertThat(edge.getProperty("since")).isEqualTo(2000L);
 
         assertThat(record.getString(2)).isEqualTo("roi");
         assertThat(record.getString(3)).isEqualTo("32");

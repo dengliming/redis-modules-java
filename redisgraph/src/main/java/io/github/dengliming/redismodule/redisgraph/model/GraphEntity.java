@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 dengliming.
+ * Copyright 2021-2024 dengliming.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package io.github.dengliming.redismodule.redisgraph.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.IntFunction;
 
 public abstract class GraphEntity {
     private long id;
@@ -31,8 +32,42 @@ public abstract class GraphEntity {
         this.id = id;
     }
 
+    /**
+     * Adds a property whose name is not yet known. The compact protocol only carries the property key index;
+     * the name is resolved afterwards via {@link #resolvePropertyNames(IntFunction)}.
+     */
+    public void addProperty(int index, Object value) {
+        addProperty(index, null, value);
+    }
+
     public void addProperty(int index, String name, Object value) {
         propertyList.add(new Property(index, name, value));
+    }
+
+    /**
+     * Replaces every property whose name is unknown with a copy carrying the name returned by the resolver.
+     *
+     * @param resolver maps a property key index to its name; may return null if the index is unknown
+     */
+    public void resolvePropertyNames(IntFunction<String> resolver) {
+        for (int i = 0; i < propertyList.size(); i++) {
+            Property<?> property = propertyList.get(i);
+            if (property.getName() == null) {
+                propertyList.set(i, new Property(property.getIndex(), resolver.apply(property.getIndex()), property.getValue()));
+            }
+        }
+    }
+
+    /**
+     * Returns the value of the property with the given name, or null if the entity has no such property.
+     */
+    public Object getProperty(String name) {
+        for (Property<?> property : propertyList) {
+            if (name.equals(property.getName())) {
+                return property.getValue();
+            }
+        }
+        return null;
     }
 
     public List<Property<?>> getPropertyList() {
