@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 dengliming.
+ * Copyright 2024 dengliming.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,13 +17,9 @@
 package io.github.dengliming.redismodule.redisearch.index.schema;
 
 /**
- * @author dengliming
+ * Element type of the vectors stored in a {@link VectorField}. Query vectors must use the same encoding,
+ * see {@link io.github.dengliming.redismodule.redisearch.search.Vectors}.
  */
-public enum FieldType {
-    TAG,
-    TEXT,
-    GEO,
-    NUMERIC,
-    /** Vector similarity field, see {@link VectorField}. */
-    VECTOR;
+public enum VectorType {
+    FLOAT16, BFLOAT16, FLOAT32, FLOAT64
 }

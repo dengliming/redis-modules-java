@@ -24,22 +24,31 @@ import io.github.dengliming.redismodule.redisearch.index.IndexOptions;
 import io.github.dengliming.redismodule.redisearch.index.RSLanguage;
 import io.github.dengliming.redismodule.redisearch.index.Suggestion;
 import io.github.dengliming.redismodule.redisearch.index.SuggestionOptions;
+import io.github.dengliming.redismodule.redisearch.index.schema.DistanceMetric;
 import io.github.dengliming.redismodule.redisearch.index.schema.Field;
 import io.github.dengliming.redismodule.redisearch.index.schema.FieldType;
 import io.github.dengliming.redismodule.redisearch.index.schema.Schema;
 import io.github.dengliming.redismodule.redisearch.index.schema.TagField;
 import io.github.dengliming.redismodule.redisearch.index.schema.TextField;
+import io.github.dengliming.redismodule.redisearch.index.schema.VectorAlgorithm;
+import io.github.dengliming.redismodule.redisearch.index.schema.VectorField;
+import io.github.dengliming.redismodule.redisearch.index.schema.VectorType;
 import io.github.dengliming.redismodule.redisearch.search.GeoFilter;
 import io.github.dengliming.redismodule.redisearch.search.MisspelledTerm;
 import io.github.dengliming.redismodule.redisearch.search.NumericFilter;
 import io.github.dengliming.redismodule.redisearch.search.SearchOptions;
 import io.github.dengliming.redismodule.redisearch.search.SearchResult;
+import io.github.dengliming.redismodule.redisearch.search.SortBy;
 import io.github.dengliming.redismodule.redisearch.search.SpellCheckOptions;
+import io.github.dengliming.redismodule.redisearch.search.Vectors;
 import io.github.dengliming.redismodule.redisjson.RedisJSON;
 import io.github.dengliming.redismodule.redisjson.args.SetArgs;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.redisson.api.RMap;
+import org.redisson.api.SortOrder;
+import org.redisson.client.codec.StringCodec;
+import org.redisson.client.protocol.RedisCommands;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -283,5 +292,48 @@ public class RediSearchTest extends AbstractTest {
 
         assertThat(rediSearch.deleteSuggestion("hello world")).isTrue();
         assertThat(rediSearch.getSuggestionLength()).isEqualTo(1);
+    }
+
+    @Test
+    public void testVectorSearch() {
+        RediSearch rediSearch = getRediSearchClient().getRediSearch("idx:vec");
+        assertThat(rediSearch.createIndex(new Schema()
+                        .addField(new TextField("title").withSuffixTrie())
+                        .addField(new VectorField("vec", VectorAlgorithm.HNSW, VectorType.FLOAT32, 2, DistanceMetric.L2)
+                                .m(16).efConstruction(100)),
+                new IndexOptions().definition(new IndexDefinition().setPrefixes(Arrays.asList("vec:"))))).isTrue();
+
+        // documents are hashes with a binary FLOAT32 blob in the vector field
+        storeVector("vec:1", "east", 1.0f, 0.0f);
+        storeVector("vec:2", "north", 0.0f, 1.0f);
+        storeVector("vec:3", "almost east", 0.9f, 0.1f);
+
+        SearchResult result = rediSearch.search("*=>[KNN 2 @vec $BLOB AS score]", new SearchOptions()
+                .param("BLOB", Vectors.toFloat32Bytes(1.0f, 0.0f))
+                .dialect(2)
+                .timeout(2000)
+                .returnFields("title", "score")
+                .sort(new SortBy("score", SortOrder.ASC)));
+        assertThat(result.getTotal()).isEqualTo(2);
+        assertThat(result.getDocuments()).extracting(Document::getId).containsExactly("vec:1", "vec:3");
+        assertThat(result.getDocuments().get(0).getFields()).containsEntry("title", "east").containsKey("score");
+
+        // FLAT index and FT.INFO reporting the vector field
+        RediSearch flat = getRediSearchClient().getRediSearch("idx:vec:flat");
+        assertThat(flat.createIndex(new Schema()
+                        .addField(new VectorField("vec", VectorAlgorithm.FLAT, VectorType.FLOAT32, 2, DistanceMetric.COSINE).blockSize(64)),
+                new IndexOptions().definition(new IndexDefinition().setPrefixes(Arrays.asList("vec:"))))).isTrue();
+        assertThat(flat.loadIndex()).containsEntry("index_name", "idx:vec:flat");
+
+        AggregateResult aggregate = rediSearch.aggregate("*=>[KNN 3 @vec $BLOB AS score]", new AggregateOptions()
+                .param("BLOB", Vectors.toFloat32Bytes(0.0f, 1.0f))
+                .dialect(2)
+                .loads("@title", "@score"));
+        assertThat(aggregate.getRows()).hasSize(3);
+    }
+
+    private void storeVector(String key, String title, float... vector) {
+        getRediSearchClient().getCommandExecutor().get(getRediSearchClient().getCommandExecutor().writeAsync(key,
+                StringCodec.INSTANCE, RedisCommands.HSET, key, "title", title, "vec", Vectors.toFloat32Bytes(vector)));
     }
 }

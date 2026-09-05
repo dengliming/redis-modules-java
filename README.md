@@ -168,6 +168,22 @@ AggregateResult aggregate = rediSearch.aggregate("*", new AggregateOptions()
 List<Suggestion> suggestions = rediSearch.getSuggestion("pho", new SuggestionOptions().withScores());
 ```
 
+Vector similarity search: declare a `VectorField`, store vectors as little-endian blobs and query with a KNN clause
+bound through `PARAMS` (dialect 2):
+
+```java
+rediSearch.createIndex(new Schema()
+        .addField(new TextField("title"))
+        .addField(new VectorField("embedding", VectorAlgorithm.HNSW, VectorType.FLOAT32, 768, DistanceMetric.COSINE)),
+    new IndexOptions().definition(new IndexDefinition().setPrefixes(Arrays.asList("doc:"))));
+
+SearchResult nearest = rediSearch.search("*=>[KNN 10 @embedding $vec AS score]", new SearchOptions()
+        .param("vec", Vectors.toFloat32Bytes(queryEmbedding))
+        .dialect(2)
+        .returnFields("title", "score")
+        .sort(new SortBy("score", SortOrder.ASC)));
+```
+
 ### RedisJSON
 
 ```java

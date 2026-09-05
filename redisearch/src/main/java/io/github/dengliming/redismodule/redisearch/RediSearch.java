@@ -32,6 +32,7 @@ import io.github.dengliming.redismodule.redisearch.index.schema.Field;
 import io.github.dengliming.redismodule.redisearch.index.schema.Schema;
 import io.github.dengliming.redismodule.redisearch.index.schema.TagField;
 import io.github.dengliming.redismodule.redisearch.index.schema.TextField;
+import io.github.dengliming.redismodule.redisearch.index.schema.VectorField;
 import io.github.dengliming.redismodule.redisearch.protocol.Keywords;
 import io.github.dengliming.redismodule.redisearch.protocol.decoder.SearchResultDecoder;
 import io.github.dengliming.redismodule.redisearch.protocol.decoder.StringMapInfoDecoder;
@@ -165,12 +166,27 @@ public class RediSearch extends RedissonObject {
                     args.add(textField.getPhonetic().name());
                 }
                 break;
+            case VECTOR:
+                ((VectorField) field).buildAttributes(args);
+                break;
             default:
                 break;
         }
 
+        if (field.isWithSuffixTrie()) {
+            args.add(Keywords.WITHSUFFIXTRIE);
+        }
+        if (field.isIndexEmpty()) {
+            args.add(Keywords.INDEXEMPTY);
+        }
+        if (field.isIndexMissing()) {
+            args.add(Keywords.INDEXMISSING);
+        }
         if (field.isSortable()) {
             args.add(Keywords.SORTABLE);
+            if (field.isUnNormalizedForm()) {
+                args.add(Keywords.UNF);
+            }
         }
         if (field.isNoIndex()) {
             args.add(Keywords.NOINDEX);

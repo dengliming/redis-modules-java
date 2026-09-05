@@ -10,13 +10,13 @@ pipelining. Every method has an `*Async` twin.
 
 | Redis command | Java API | Notes |
 | --- | --- | --- |
-| FT.CREATE | `RediSearch.createIndex()` | `VECTOR` fields, `PARAMS` and `DIALECT` not supported yet |
+| FT.CREATE | `RediSearch.createIndex()` | TEXT, TAG, NUMERIC, GEO and `VectorField` (FLAT / HNSW); `WITHSUFFIXTRIE`, `INDEXEMPTY`, `INDEXMISSING`, `SORTABLE UNF` |
 | FT.ALTER | `RediSearch.alterIndex()` | |
 | FT.DROPINDEX | — | not implemented; `dropIndex()` still sends the removed `FT.DROP` |
 | FT.INFO | `RediSearch.loadIndex()` | handles the deeper Redis 8 reply |
 | FT._LIST | `RediSearch.listIndexes()` | |
-| FT.SEARCH | `RediSearch.search()` | options via `SearchOptions` |
-| FT.AGGREGATE | `RediSearch.aggregate()` | options via `AggregateOptions`; `WITHCURSOR` not supported |
+| FT.SEARCH | `RediSearch.search()` | options via `SearchOptions`, including `PARAMS`, `DIALECT`, `TIMEOUT` for KNN queries |
+| FT.AGGREGATE | `RediSearch.aggregate()` | options via `AggregateOptions`, including `PARAMS`, `DIALECT`, `TIMEOUT`; `WITHCURSOR` not supported |
 | FT.CURSOR READ / DEL | — | not implemented |
 | FT.HYBRID | — | not implemented (Redis 8.4) |
 | FT.PROFILE | — | not implemented |

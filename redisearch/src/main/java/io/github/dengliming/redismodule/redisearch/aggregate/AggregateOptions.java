@@ -19,7 +19,9 @@ package io.github.dengliming.redismodule.redisearch.aggregate;
 import io.github.dengliming.redismodule.redisearch.protocol.Keywords;
 import io.github.dengliming.redismodule.redisearch.search.Page;
 
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author dengliming
@@ -33,6 +35,9 @@ public class AggregateOptions {
     private Apply[] applies;
     private Page[] limits;
     private Filter[] filters;
+    private Map<String, Object> params;
+    private Integer dialect;
+    private Long timeout;
 
     public AggregateOptions groups(Group... groups) {
         this.groups = groups;
@@ -66,6 +71,40 @@ public class AggregateOptions {
 
     public AggregateOptions limits(Page... pages) {
         this.limits = pages;
+        return this;
+    }
+
+
+    /**
+     * Binds a query parameter referenced as {@code $name} in the query (PARAMS). Vector blobs are passed as
+     * {@code byte[]}, see {@link io.github.dengliming.redismodule.redisearch.search.Vectors}. Requires dialect 2+.
+     */
+    public AggregateOptions param(String name, Object value) {
+        if (params == null) {
+            params = new LinkedHashMap<>();
+        }
+        params.put(name, value);
+        return this;
+    }
+
+    public AggregateOptions params(Map<String, Object> params) {
+        params.forEach(this::param);
+        return this;
+    }
+
+    /**
+     * Query dialect (DIALECT); vector queries and PARAMS need 2 or higher.
+     */
+    public AggregateOptions dialect(int dialect) {
+        this.dialect = dialect;
+        return this;
+    }
+
+    /**
+     * Maximum processing time in milliseconds (TIMEOUT).
+     */
+    public AggregateOptions timeout(long timeoutMillis) {
+        this.timeout = timeoutMillis;
         return this;
     }
 
@@ -107,6 +146,22 @@ public class AggregateOptions {
             for (Filter filter : filters) {
                 filter.build(args);
             }
+        }
+        if (timeout != null) {
+            args.add(Keywords.TIMEOUT);
+            args.add(timeout);
+        }
+        if (params != null && !params.isEmpty()) {
+            args.add(Keywords.PARAMS);
+            args.add(params.size() * 2);
+            params.forEach((name, value) -> {
+                args.add(name);
+                args.add(value);
+            });
+        }
+        if (dialect != null) {
+            args.add(Keywords.DIALECT);
+            args.add(dialect);
         }
     }
 }

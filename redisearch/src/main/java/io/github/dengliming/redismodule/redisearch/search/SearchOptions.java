@@ -20,7 +20,9 @@ import io.github.dengliming.redismodule.redisearch.index.RSLanguage;
 import io.github.dengliming.redismodule.redisearch.protocol.Keywords;
 
 import java.util.LinkedList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author dengliming
@@ -47,6 +49,9 @@ public class SearchOptions {
     private String payload;
     private SortBy sortBy;
     private Page page;
+    private Map<String, Object> params;
+    private Integer dialect;
+    private Long timeout;
 
     public SearchOptions() {
         this.filters = new LinkedList<>();
@@ -170,6 +175,40 @@ public class SearchOptions {
         return withScores;
     }
 
+
+    /**
+     * Binds a query parameter referenced as {@code $name} in the query (PARAMS). Vector blobs are passed as
+     * {@code byte[]}, see {@link io.github.dengliming.redismodule.redisearch.search.Vectors}. Requires dialect 2+.
+     */
+    public SearchOptions param(String name, Object value) {
+        if (params == null) {
+            params = new LinkedHashMap<>();
+        }
+        params.put(name, value);
+        return this;
+    }
+
+    public SearchOptions params(Map<String, Object> params) {
+        params.forEach(this::param);
+        return this;
+    }
+
+    /**
+     * Query dialect (DIALECT); vector queries and PARAMS need 2 or higher.
+     */
+    public SearchOptions dialect(int dialect) {
+        this.dialect = dialect;
+        return this;
+    }
+
+    /**
+     * Maximum processing time in milliseconds (TIMEOUT).
+     */
+    public SearchOptions timeout(long timeoutMillis) {
+        this.timeout = timeoutMillis;
+        return this;
+    }
+
     public void build(List<Object> args) {
         if (noContent) {
             args.add(Keywords.NOCONTENT);
@@ -250,6 +289,22 @@ public class SearchOptions {
         }
         if (page != null) {
             page.build(args);
+        }
+        if (timeout != null) {
+            args.add(Keywords.TIMEOUT);
+            args.add(timeout);
+        }
+        if (params != null && !params.isEmpty()) {
+            args.add(Keywords.PARAMS);
+            args.add(params.size() * 2);
+            params.forEach((name, value) -> {
+                args.add(name);
+                args.add(value);
+            });
+        }
+        if (dialect != null) {
+            args.add(Keywords.DIALECT);
+            args.add(dialect);
         }
     }
 }

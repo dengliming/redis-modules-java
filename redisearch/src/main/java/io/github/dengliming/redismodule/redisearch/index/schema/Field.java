@@ -24,6 +24,10 @@ public class Field {
     private String attribute;
     private boolean sortable;
     private boolean noIndex;
+    private boolean unNormalizedForm;
+    private boolean withSuffixTrie;
+    private boolean indexEmpty;
+    private boolean indexMissing;
     private FieldType fieldType;
 
     public Field(String name, FieldType fieldType) {
@@ -39,6 +43,54 @@ public class Field {
     public Field noIndex() {
         this.noIndex = true;
         return this;
+    }
+
+    /**
+     * Keep the original letter case and accents of a SORTABLE field (SORTABLE UNF).
+     */
+    public Field unNormalizedForm() {
+        this.unNormalizedForm = true;
+        return this;
+    }
+
+    /**
+     * Build a suffix trie for fast suffix and infix queries (WITHSUFFIXTRIE, TEXT and TAG fields).
+     */
+    public Field withSuffixTrie() {
+        this.withSuffixTrie = true;
+        return this;
+    }
+
+    /**
+     * Index empty strings so that {@code @field:""} matches (INDEXEMPTY, RediSearch 2.10+).
+     */
+    public Field indexEmpty() {
+        this.indexEmpty = true;
+        return this;
+    }
+
+    /**
+     * Index documents lacking the field so that {@code ismissing(@field)} matches (INDEXMISSING, RediSearch 2.10+).
+     */
+    public Field indexMissing() {
+        this.indexMissing = true;
+        return this;
+    }
+
+    public boolean isUnNormalizedForm() {
+        return unNormalizedForm;
+    }
+
+    public boolean isWithSuffixTrie() {
+        return withSuffixTrie;
+    }
+
+    public boolean isIndexEmpty() {
+        return indexEmpty;
+    }
+
+    public boolean isIndexMissing() {
+        return indexMissing;
     }
 
     public String getName() {

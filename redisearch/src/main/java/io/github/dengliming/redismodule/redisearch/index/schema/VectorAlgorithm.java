@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 dengliming.
+ * Copyright 2024 dengliming.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,13 +17,11 @@
 package io.github.dengliming.redismodule.redisearch.index.schema;
 
 /**
- * @author dengliming
+ * Indexing algorithm of a {@link VectorField}.
  */
-public enum FieldType {
-    TAG,
-    TEXT,
-    GEO,
-    NUMERIC,
-    /** Vector similarity field, see {@link VectorField}. */
-    VECTOR;
+public enum VectorAlgorithm {
+    /** Brute force, exact results; best for small sets. */
+    FLAT,
+    /** Hierarchical Navigable Small World graph, approximate results; scales to large sets. */
+    HNSW
 }
