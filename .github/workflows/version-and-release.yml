@@ -4,6 +4,10 @@ on:
   release:
     types: [published]
   workflow_dispatch:
+    inputs:
+      version:
+        description: Version to publish (e.g. 3.0.0); the poms are set to it before deploying
+        required: true
 
 jobs:
   build:
@@ -26,13 +30,19 @@ jobs:
         run: |
           mvn --no-transfer-progress \
             --batch-mode \
-            versions:set -DnewVersion=${{ github.event.release.tag_name  }}
-        if: ${{ github.event.release.tag_name  }}
+            versions:set -DnewVersion=${{ github.event.inputs.version || github.event.release.tag_name }} -DprocessAllModules
 
       - name: Install GPG key
+        # accepts the armored key with real newlines, with escaped "\n", or base64 encoded
         run: |
-          cat <(echo -e "${{ secrets.GPG_SECRET }}") | gpg --batch --import
+          printf '%s' "$GPG_SECRET" > "$RUNNER_TEMP/gpg.key"
+          gpg --batch --import "$RUNNER_TEMP/gpg.key" 2>/dev/null \
+            || printf '%b' "$GPG_SECRET" | gpg --batch --import 2>/dev/null \
+            || base64 -d "$RUNNER_TEMP/gpg.key" | gpg --batch --import
+          rm -f "$RUNNER_TEMP/gpg.key"
           gpg --list-secret-keys --keyid-format LONG
+        env:
+          GPG_SECRET: ${{ secrets.GPG_SECRET }}
 
       - name: Publish to Maven
         run: |
