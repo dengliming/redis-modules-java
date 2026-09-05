@@ -8,6 +8,11 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>examples</artifactId>
+
+    <properties>
+        <!-- demo code prints to stdout, which the project checkstyle rules forbid -->
+        <checkstyle.skip>true</checkstyle.skip>
+    </properties>
     <name>Examples</name>
 
     <dependencies>

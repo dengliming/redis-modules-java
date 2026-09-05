@@ -212,9 +212,9 @@ public class RedisGraph extends AbstractRedisModule {
         RAssert.notNull(query, "query must not be null");
 
         if (timeout > 0) {
-            return read(graphName, StringCodec.INSTANCE, command, graphName, query, timeout, __COMPACT.getAlias());
+            return read(graphName, StringCodec.INSTANCE, command, graphName, query, timeout, __COMPACT);
         }
-        return read(graphName, StringCodec.INSTANCE, command, graphName, query, __COMPACT.getAlias());
+        return read(graphName, StringCodec.INSTANCE, command, graphName, query, __COMPACT);
     }
 
     /**

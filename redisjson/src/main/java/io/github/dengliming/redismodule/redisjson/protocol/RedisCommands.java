@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 dengliming.
+ * Copyright 2020-2024 dengliming.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,25 +26,26 @@ import org.redisson.client.protocol.decoder.StringReplayDecoder;
 import java.util.List;
 
 /**
- * @author dengliming
+ * RedisJSON commands.
  */
+@SuppressWarnings({"unchecked", "rawtypes"})
 public interface RedisCommands {
 
-    RedisCommand JSON_DEL = new RedisCommand<>("JSON.DEL", new LongReplayConvertor());
-    RedisCommand JSON_SET = new RedisCommand<>("JSON.SET", new ObjectDecoder(new StringReplayDecoder()));
-    RedisCommand JSON_GET = new RedisCommand<>("JSON.GET", new ObjectDecoder(new StringDataDecoder()));
-    RedisCommand JSON_TYPE = new RedisCommand<>("JSON.TYPE", new ObjectDecoder(new StringDataDecoder()));
-    RedisCommand JSON_MGET = new RedisCommand<>("JSON.MGET", new ObjectListReplayDecoder<String>());
-    RedisCommand JSON_NUMINCRBY = new RedisCommand<>("JSON.NUMINCRBY", new ObjectDecoder(new StringDataDecoder()));
-    RedisCommand JSON_NUMMULTBY = new RedisCommand<>("JSON.NUMMULTBY", new ObjectDecoder(new StringDataDecoder()));
-    RedisCommand JSON_STRAPPEND = new RedisCommand<>("JSON.STRAPPEND", new LongReplayConvertor());
-    RedisCommand JSON_STRLEN = new RedisCommand<>("JSON.STRLEN", new LongReplayConvertor());
-    RedisCommand JSON_ARRAPPEND = new RedisCommand<>("JSON.ARRAPPEND", new LongReplayConvertor());
-    RedisCommand JSON_ARRLEN = new RedisCommand<>("JSON.ARRLEN", new LongReplayConvertor());
-    RedisCommand JSON_ARRTRIM = new RedisCommand<>("JSON.ARRTRIM", new LongReplayConvertor());
-    RedisCommand JSON_ARRINSERT = new RedisCommand<>("JSON.ARRINSERT", new LongReplayConvertor());
-    RedisCommand JSON_ARRINDEX = new RedisCommand<>("JSON.ARRINDEX", new LongReplayConvertor());
-    RedisCommand JSON_ARRPOP = new RedisCommand<>("JSON.ARRPOP", new ObjectDecoder(new StringDataDecoder()));
-    RedisCommand JSON_OBJLEN = new RedisCommand<>("JSON.OBJLEN", new LongReplayConvertor());
-    RedisCommand<List<Object>> JSON_OBJKEYS = new RedisCommand("JSON.OBJKEYS", new ObjectListReplayDecoder<>());
+    RedisCommand<Long> JSON_DEL = new RedisCommand<>("JSON.DEL", new LongReplayConvertor());
+    RedisCommand<String> JSON_SET = new RedisCommand<>("JSON.SET", new ObjectDecoder(new StringReplayDecoder()));
+    RedisCommand<String> JSON_GET = new RedisCommand<>("JSON.GET", new ObjectDecoder(new StringDataDecoder()));
+    RedisCommand<String> JSON_TYPE = new RedisCommand<>("JSON.TYPE", new ObjectDecoder(new StringDataDecoder()));
+    RedisCommand<List<String>> JSON_MGET = new RedisCommand<>("JSON.MGET", new ObjectListReplayDecoder<>());
+    RedisCommand<String> JSON_NUMINCRBY = new RedisCommand<>("JSON.NUMINCRBY", new ObjectDecoder(new StringDataDecoder()));
+    RedisCommand<String> JSON_NUMMULTBY = new RedisCommand<>("JSON.NUMMULTBY", new ObjectDecoder(new StringDataDecoder()));
+    RedisCommand<Long> JSON_STRAPPEND = new RedisCommand<>("JSON.STRAPPEND", new LongReplayConvertor());
+    RedisCommand<Long> JSON_STRLEN = new RedisCommand<>("JSON.STRLEN", new LongReplayConvertor());
+    RedisCommand<Long> JSON_ARRAPPEND = new RedisCommand<>("JSON.ARRAPPEND", new LongReplayConvertor());
+    RedisCommand<Long> JSON_ARRLEN = new RedisCommand<>("JSON.ARRLEN", new LongReplayConvertor());
+    RedisCommand<Long> JSON_ARRTRIM = new RedisCommand<>("JSON.ARRTRIM", new LongReplayConvertor());
+    RedisCommand<Long> JSON_ARRINSERT = new RedisCommand<>("JSON.ARRINSERT", new LongReplayConvertor());
+    RedisCommand<Long> JSON_ARRINDEX = new RedisCommand<>("JSON.ARRINDEX", new LongReplayConvertor());
+    RedisCommand<String> JSON_ARRPOP = new RedisCommand<>("JSON.ARRPOP", new ObjectDecoder(new StringDataDecoder()));
+    RedisCommand<Long> JSON_OBJLEN = new RedisCommand<>("JSON.OBJLEN", new LongReplayConvertor());
+    RedisCommand<List<Object>> JSON_OBJKEYS = new RedisCommand<>("JSON.OBJKEYS", new ObjectListReplayDecoder<>());
 }

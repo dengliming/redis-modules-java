@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 dengliming.
+ * Copyright 2020-2024 dengliming.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,19 +17,28 @@
 package io.github.dengliming.redismodule.redisbloom.protocol.decoder;
 
 import io.github.dengliming.redismodule.redisbloom.model.BloomFilterInfo;
+import org.redisson.client.codec.Codec;
+import org.redisson.client.codec.StringCodec;
 import org.redisson.client.handler.State;
+import org.redisson.client.protocol.Decoder;
 import org.redisson.client.protocol.decoder.MultiDecoder;
 
 import java.util.List;
 
-/**
- * @author dengliming
- */
 public class BloomFilterDecoder implements MultiDecoder<BloomFilterInfo> {
+
+    /**
+     * Field names arrive as bulk strings; decode them as plain strings whatever codec the caller uses.
+     */
+    @Override
+    public Decoder<Object> getDecoder(Codec codec, int paramNum, State state) {
+        return StringCodec.INSTANCE.getValueDecoder();
+    }
 
     @Override
     public BloomFilterInfo decode(List<Object> parts, State state) {
-        return new BloomFilterInfo(((Long) parts.get(1)).intValue(), ((Long) parts.get(3)).intValue(),
-                ((Long) parts.get(5)).intValue(), ((Long) parts.get(7)).intValue(), ((Long) parts.get(9)).intValue());
+        InfoReply info = new InfoReply(parts);
+        return new BloomFilterInfo(info.getInteger("Capacity"), info.getInteger("Size"), info.getInteger("Number of filters"),
+                info.getInteger("Number of items inserted"), info.getInteger("Expansion rate"));
     }
 }

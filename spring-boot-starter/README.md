@@ -14,7 +14,26 @@ Add dependency
 </dependencies>
 ```
 
-RedisJSON
+Every module gets its own `enabled` flag. Each module either has its own Redisson `config` (YAML or JSON), or shares
+the one under `redis-module.config`. If the application already defines a `RedissonClient` bean (for example through
+the Redisson starter), modules without their own config wrap that bean instead and leave its lifecycle alone.
+
+Shared connection pool for several modules
+```yaml
+redis-module:
+  enabled: true
+  config: |
+    singleServerConfig:
+      address: "redis://127.0.0.1:6379"
+  redisjson:
+    enabled: true
+  redisearch:
+    enabled: true
+  redisbloom:
+    enabled: true
+```
+
+Dedicated Redisson instance for one module
 ```yaml
 redis-module:
   enabled: true

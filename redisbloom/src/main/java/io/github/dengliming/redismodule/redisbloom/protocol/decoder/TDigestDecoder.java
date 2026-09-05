@@ -1,5 +1,5 @@
 /*
- * Copyright 2021-2022 dengliming.
+ * Copyright 2020-2024 dengliming.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,17 +17,29 @@
 package io.github.dengliming.redismodule.redisbloom.protocol.decoder;
 
 import io.github.dengliming.redismodule.redisbloom.model.TDigestInfo;
+import org.redisson.client.codec.Codec;
+import org.redisson.client.codec.StringCodec;
 import org.redisson.client.handler.State;
+import org.redisson.client.protocol.Decoder;
 import org.redisson.client.protocol.decoder.MultiDecoder;
 
 import java.util.List;
 
 public class TDigestDecoder implements MultiDecoder<TDigestInfo> {
 
+    /**
+     * Field names arrive as bulk strings; decode them as plain strings whatever codec the caller uses.
+     */
+    @Override
+    public Decoder<Object> getDecoder(Codec codec, int paramNum, State state) {
+        return StringCodec.INSTANCE.getValueDecoder();
+    }
+
     @Override
     public TDigestInfo decode(List<Object> parts, State state) {
-        return new TDigestInfo((Long) parts.get(1), (Long) parts.get(3), (Long) parts.get(5), (Long) parts.get(7),
-                Double.parseDouble(String.valueOf(parts.get(9))), Double.parseDouble(String.valueOf(parts.get(11))),
-                Long.parseLong(String.valueOf(parts.get(13))));
+        InfoReply info = new InfoReply(parts);
+        return new TDigestInfo(info.getLong("Compression", 0), info.getLong("Capacity", 0), info.getLong("Merged nodes", 0),
+                info.getLong("Unmerged nodes", 0), info.getDouble("Merged weight", 0), info.getDouble("Unmerged weight", 0),
+                info.getLong("Total compressions", 0));
     }
 }

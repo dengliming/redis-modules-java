@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 dengliming.
+ * Copyright 2020-2024 dengliming.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,8 @@
 
 package io.github.dengliming.redismodule.redistimeseries.protocol;
 
+import io.github.dengliming.redismodule.redistimeseries.Sample.Value;
+import io.github.dengliming.redismodule.redistimeseries.TimeSeries;
 import io.github.dengliming.redismodule.redistimeseries.protocol.decoder.TimeSeriesDecoder;
 import io.github.dengliming.redismodule.redistimeseries.protocol.decoder.ValueDecoder;
 import org.redisson.client.protocol.RedisCommand;
@@ -27,24 +29,28 @@ import org.redisson.client.protocol.decoder.ObjectListReplayDecoder;
 import org.redisson.client.protocol.decoder.ObjectMapReplayDecoder;
 import org.redisson.client.protocol.decoder.StringListReplayDecoder;
 
+import java.util.List;
+import java.util.Map;
+
 /**
- * @author dengliming
+ * RedisTimeSeries commands.
  */
+@SuppressWarnings({"unchecked", "rawtypes"})
 public interface RedisCommands {
 
-    RedisCommand TS_CREATE = new RedisCommand<>("TS.CREATE", new BooleanReplayConvertor());
-    RedisCommand TS_ALTER = new RedisCommand<>("TS.ALTER", new BooleanReplayConvertor());
-    RedisCommand TS_ADD = new RedisCommand<>("TS.ADD", new LongReplayConvertor());
-    RedisCommand TS_MADD = new RedisCommand<>("TS.MADD", new ObjectListReplayDecoder<>());
-    RedisCommand TS_INCRBY = new RedisCommand<>("TS.INCRBY", new LongReplayConvertor());
-    RedisCommand TS_DECRBY = new RedisCommand<>("TS.DECRBY", new LongReplayConvertor());
-    RedisCommand TS_CREATERULE = new RedisCommand<>("TS.CREATERULE", new BooleanReplayConvertor());
-    RedisCommand TS_DELETERULE = new RedisCommand<>("TS.DELETERULE", new BooleanReplayConvertor());
-    RedisCommand TS_RANGE = new RedisCommand<>("TS.RANGE", new ListMultiDecoder2(new ObjectListReplayDecoder<>(), new ValueDecoder()));
-    RedisCommand TS_MRANGE = new RedisCommand<>("TS.MRANGE", new ListMultiDecoder2(new TimeSeriesDecoder(), new CodecDecoder(), new CodecDecoder(), new CodecDecoder()));
-    RedisCommand TS_GET = new RedisCommand<>("TS.GET", new ValueDecoder());
-    RedisCommand TS_MGET = new RedisCommand<>("TS.MGET", new ListMultiDecoder2(new TimeSeriesDecoder(), new CodecDecoder(), new CodecDecoder(), new CodecDecoder()));
-    RedisCommand TS_INFO = new RedisCommand<>("TS.INFO", new ListMultiDecoder2(new ObjectMapReplayDecoder(), new ObjectListReplayDecoder<>(), new ObjectListReplayDecoder<>()));
-    RedisCommand TS_QUERYINDEX = new RedisCommand<>("TS.QUERYINDEX", new StringListReplayDecoder());
-    RedisCommand TS_REVRANGE = new RedisCommand<>("TS.REVRANGE", new ListMultiDecoder2(new ObjectListReplayDecoder<>(), new ValueDecoder()));
+    RedisCommand<Boolean> TS_CREATE = new RedisCommand<>("TS.CREATE", new BooleanReplayConvertor());
+    RedisCommand<Boolean> TS_ALTER = new RedisCommand<>("TS.ALTER", new BooleanReplayConvertor());
+    RedisCommand<Long> TS_ADD = new RedisCommand<>("TS.ADD", new LongReplayConvertor());
+    RedisCommand<List<Long>> TS_MADD = new RedisCommand<>("TS.MADD", new ObjectListReplayDecoder<>());
+    RedisCommand<Long> TS_INCRBY = new RedisCommand<>("TS.INCRBY", new LongReplayConvertor());
+    RedisCommand<Long> TS_DECRBY = new RedisCommand<>("TS.DECRBY", new LongReplayConvertor());
+    RedisCommand<Boolean> TS_CREATERULE = new RedisCommand<>("TS.CREATERULE", new BooleanReplayConvertor());
+    RedisCommand<Boolean> TS_DELETERULE = new RedisCommand<>("TS.DELETERULE", new BooleanReplayConvertor());
+    RedisCommand<List<Value>> TS_RANGE = new RedisCommand<>("TS.RANGE", new ListMultiDecoder2(new ObjectListReplayDecoder<>(), new ValueDecoder()));
+    RedisCommand<List<Value>> TS_REVRANGE = new RedisCommand<>("TS.REVRANGE", new ListMultiDecoder2(new ObjectListReplayDecoder<>(), new ValueDecoder()));
+    RedisCommand<List<TimeSeries>> TS_MRANGE = new RedisCommand<>("TS.MRANGE", new ListMultiDecoder2(new TimeSeriesDecoder(), new CodecDecoder(), new CodecDecoder(), new CodecDecoder()));
+    RedisCommand<Value> TS_GET = new RedisCommand<>("TS.GET", new ValueDecoder());
+    RedisCommand<List<TimeSeries>> TS_MGET = new RedisCommand<>("TS.MGET", new ListMultiDecoder2(new TimeSeriesDecoder(), new CodecDecoder(), new CodecDecoder(), new CodecDecoder()));
+    RedisCommand<Map<String, Object>> TS_INFO = new RedisCommand<>("TS.INFO", new ListMultiDecoder2(new ObjectMapReplayDecoder(), new ObjectListReplayDecoder<>(), new ObjectListReplayDecoder<>()));
+    RedisCommand<List<String>> TS_QUERYINDEX = new RedisCommand<>("TS.QUERYINDEX", new StringListReplayDecoder());
 }

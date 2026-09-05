@@ -39,7 +39,6 @@ public class Examples {
         bloomFilter.create(0.1d, 100);
         bloomFilter.madd(new String[] {"a", "b", "c"});
 
-
         TopKFilter topKFilter = redisBloomClient.getTopKFilter("topk_add");
         topKFilter.reserve(1, 2000, 7, 0.925d);
         topKFilter.add("test");

@@ -155,6 +155,52 @@ Map<String, Object> actual = redisJSON.get(key, Map.class, new GetArgs().path(".
 redisJSONClient.shutdown();
 ```
 
+RedisGraph
+```java
+Config config = new Config();
+config.useSingleServer().setAddress("redis://127.0.0.1:6379");
+RedisGraphClient redisGraphClient = new RedisGraphClient(config);
+
+RedisGraph redisGraph = redisGraphClient.getRedisGraph();
+redisGraph.query("social", "CREATE (:person{name:'roi',age:32})-[:knows{since:2000}]->(:person{name:'amit',age:30})", 0L);
+ResultSet resultSet = redisGraph.query("social", "MATCH (a:person)-[r:knows]->(b:person) RETURN a, r, b.name", 0L);
+for (Record record : resultSet.getResults()) {
+    Node a = (Node) record.getValue("a");
+    Edge r = (Edge) record.getValue("r");
+    // property names and relationship types are resolved, not just indices
+    System.out.println(a.getProperty("name") + " " + r.getRelationshipType() + " " + record.getString("b.name"));
+}
+redisGraphClient.shutdown();
+```
+
+Pipelining (batch)
+
+Every client has `createXxxBatch()`. Objects obtained from the batch queue their `*Async` calls; `execute()` sends them in one round trip.
+```java
+RedisBloomBatch batch = redisBloomClient.createRedisBloomBatch();
+BloomFilter bloomFilter = batch.getRBloomFilter("bf");
+bloomFilter.createAsync(0.01d, 1000);
+bloomFilter.maddAsync("a", "b", "c");
+bloomFilter.existsAsync("a");
+BatchResult<?> result = batch.execute();
+// [true, [true, true, true], true]
+System.out.println(result.getResponses());
+```
+See [PipeliningExamples](examples/src/main/java/io/github/dengliming/redismodule/examples/redisbloom/PipeliningExamples.java).
+
+Sharing one Redisson instance
+
+Every client can wrap an existing `RedissonClient` so that several modules share a single connection pool. The wrapping client never shuts the shared instance down.
+```java
+RedissonClient redisson = Redisson.create(config);
+RedisJSONClient redisJSONClient = new RedisJSONClient(redisson);
+RediSearchClient rediSearchClient = new RediSearchClient(redisson);
+RedisBloomClient redisBloomClient = new RedisBloomClient(redisson);
+// ...
+redisson.shutdown();
+```
+See [SharedRedissonExamples](examples/src/main/java/io/github/dengliming/redismodule/examples/SharedRedissonExamples.java).
+
 SpringBoot Starter
 
 see [spring-boot-starter](./spring-boot-starter)

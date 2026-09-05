@@ -111,7 +111,7 @@ public class RedisTimeSeries extends AbstractRedisModule {
         args.add(sample.getValue().getTimestamp() > 0 ? sample.getValue().getTimestamp() : "*");
         args.add(sample.getValue().getValue());
         if (options != null) {
-            options.isAdd(true).build(args);
+            options.build(args, true);
         }
         return write(sample.getKey(), TS_ADD, args.toArray());
     }

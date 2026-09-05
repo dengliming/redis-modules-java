@@ -34,6 +34,7 @@ import io.github.dengliming.redismodule.redisearch.index.schema.TextField;
 import io.github.dengliming.redismodule.redisearch.protocol.Keywords;
 import io.github.dengliming.redismodule.redisearch.protocol.decoder.SearchResultDecoder;
 import io.github.dengliming.redismodule.redisearch.protocol.decoder.StringMapInfoDecoder;
+import io.github.dengliming.redismodule.redisearch.protocol.decoder.SuggestionDecoder;
 import io.github.dengliming.redismodule.redisearch.search.MisspelledTerm;
 import io.github.dengliming.redismodule.redisearch.search.SearchOptions;
 import io.github.dengliming.redismodule.redisearch.search.SearchResult;
@@ -75,7 +76,6 @@ import static io.github.dengliming.redismodule.redisearch.protocol.RedisCommands
 import static io.github.dengliming.redismodule.redisearch.protocol.RedisCommands.FT_SPELLCHECK;
 import static io.github.dengliming.redismodule.redisearch.protocol.RedisCommands.FT_SUGADD;
 import static io.github.dengliming.redismodule.redisearch.protocol.RedisCommands.FT_SUGDEL;
-import static io.github.dengliming.redismodule.redisearch.protocol.RedisCommands.FT_SUGGET;
 import static io.github.dengliming.redismodule.redisearch.protocol.RedisCommands.FT_SUGLEN;
 import static io.github.dengliming.redismodule.redisearch.protocol.RedisCommands.FT_SYNADD;
 import static io.github.dengliming.redismodule.redisearch.protocol.RedisCommands.FT_SYNDUMP;
@@ -116,7 +116,7 @@ public class RediSearch extends RedissonObject {
         List<Object> args = new ArrayList<>();
         args.add(getName());
         indexOptions.build(args);
-        args.add(Keywords.SCHEMA.name());
+        args.add(Keywords.SCHEMA);
         schema.getFields().forEach(field -> appendFieldArgs(args, field));
         return commandExecutor.writeAsync(getName(), codec, FT_CREATE, args.toArray());
     }
@@ -130,8 +130,8 @@ public class RediSearch extends RedissonObject {
 
         List<Object> args = new ArrayList<>();
         args.add(getName());
-        args.add(Keywords.SCHEMA.name());
-        args.add(Keywords.ADD.name());
+        args.add(Keywords.SCHEMA);
+        args.add(Keywords.ADD);
         for (Field field : fields) {
             appendFieldArgs(args, field);
         }
@@ -147,18 +147,18 @@ public class RediSearch extends RedissonObject {
         args.add(field.getFieldType().name());
         switch (field.getFieldType()) {
             case TAG:
-                args.add(Keywords.SEPARATOR.name());
+                args.add(Keywords.SEPARATOR);
                 args.add(((TagField) field).getSeparator());
                 break;
             case TEXT:
                 TextField textField = (TextField) field;
-                args.add(Keywords.WEIGHT.name());
+                args.add(Keywords.WEIGHT);
                 args.add(textField.getWeight());
                 if (textField.isNoStem()) {
-                    args.add(Keywords.NOSTEM.name());
+                    args.add(Keywords.NOSTEM);
                 }
                 if (textField.getPhonetic() != null) {
-                    args.add(Keywords.PHONETIC.name());
+                    args.add(Keywords.PHONETIC);
                     args.add(textField.getPhonetic().name());
                 }
                 break;
@@ -167,10 +167,10 @@ public class RediSearch extends RedissonObject {
         }
 
         if (field.isSortable()) {
-            args.add(Keywords.SORTABLE.name());
+            args.add(Keywords.SORTABLE);
         }
         if (field.isNoIndex()) {
-            args.add(Keywords.NOINDEX.name());
+            args.add(Keywords.NOINDEX);
         }
     }
 
@@ -189,7 +189,7 @@ public class RediSearch extends RedissonObject {
 
     public RFuture<Boolean> dropIndexAsync(boolean keepDocs) {
         if (keepDocs) {
-            return commandExecutor.writeAsync(getName(), codec, FT_DROP, getName(), Keywords.KEEPDOCS.name());
+            return commandExecutor.writeAsync(getName(), codec, FT_DROP, getName(), Keywords.KEEPDOCS);
         }
         return commandExecutor.writeAsync(getName(), codec, FT_DROP, getName());
     }
@@ -225,11 +225,11 @@ public class RediSearch extends RedissonObject {
         args.add(document.getId());
         args.add(document.getScore());
         if (document.getPayload() != null) {
-            args.add(Keywords.PAYLOAD.name());
+            args.add(Keywords.PAYLOAD);
             args.add(document.getPayload());
         }
         options.build(args);
-        args.add(Keywords.FIELDS.name());
+        args.add(Keywords.FIELDS);
         document.getFields().forEach((k, v) -> {
             args.add(k);
             args.add(v);
@@ -287,7 +287,7 @@ public class RediSearch extends RedissonObject {
         RAssert.notNull(docId, "docId must be not null");
 
         if (deleteDocument) {
-            return commandExecutor.writeAsync(getName(), codec, FT_DEL, getName(), docId, Keywords.DD.name());
+            return commandExecutor.writeAsync(getName(), codec, FT_DEL, getName(), docId, Keywords.DD);
         }
         return commandExecutor.writeAsync(getName(), codec, FT_DEL, getName(), docId);
     }
@@ -319,11 +319,11 @@ public class RediSearch extends RedissonObject {
         args.add(docId);
         args.add(score);
         if (language != null) {
-            args.add(Keywords.LANGUAGE.name());
+            args.add(Keywords.LANGUAGE);
             args.add(language.name().toLowerCase());
         }
         if (replace) {
-            args.add(Keywords.REPLACE.name());
+            args.add(Keywords.REPLACE);
         }
         return commandExecutor.writeAsync(getName(), codec, FT_ADDHASH, args.toArray());
     }
@@ -539,10 +539,10 @@ public class RediSearch extends RedissonObject {
         args.add(suggestion.getTerm());
         args.add(suggestion.getScore());
         if (increment) {
-            args.add(Keywords.INCR.name());
+            args.add(Keywords.INCR);
         }
         if (suggestion.getPayload() != null) {
-            args.add(Keywords.PAYLOAD.name());
+            args.add(Keywords.PAYLOAD);
             args.add(suggestion.getPayload());
         }
         return commandExecutor.writeAsync(getName(), codec, FT_SUGADD, args.toArray());
@@ -596,7 +596,9 @@ public class RediSearch extends RedissonObject {
         args.add(getName());
         args.add(prefix);
         options.build(args);
-        return commandExecutor.readAsync(getName(), codec, FT_SUGGET, args.toArray());
+        RedisCommand<List<Suggestion>> command = new RedisCommand<>("FT.SUGGET",
+                new ListMultiDecoder2(new SuggestionDecoder(options.isWithScores(), options.isWithPayloads())));
+        return commandExecutor.readAsync(getName(), StringCodec.INSTANCE, command, args.toArray());
     }
 
     /**

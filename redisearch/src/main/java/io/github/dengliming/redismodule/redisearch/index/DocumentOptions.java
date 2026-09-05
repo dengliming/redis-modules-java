@@ -63,20 +63,20 @@ public class DocumentOptions {
 
     public void build(List<Object> args) {
         if (isNoSave()) {
-            args.add(Keywords.NOSAVE.name());
+            args.add(Keywords.NOSAVE);
         }
         if (getReplacePolicy() != null) {
-            args.add(Keywords.REPLACE.name());
+            args.add(Keywords.REPLACE);
             if (getReplacePolicy() != DocumentOptions.ReplacePolicy.NONE) {
                 args.add(getReplacePolicy().name());
             }
         }
         if (getLanguage() != null) {
-            args.add(Keywords.LANGUAGE.name());
+            args.add(Keywords.LANGUAGE);
             args.add(getLanguage().name().toLowerCase());
         }
         if (getReplaceCondition() != null) {
-            args.add(Keywords.IF.name());
+            args.add(Keywords.IF);
             args.add(getReplaceCondition());
         }
     }

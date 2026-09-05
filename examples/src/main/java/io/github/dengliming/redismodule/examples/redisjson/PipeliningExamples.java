@@ -18,7 +18,6 @@ package io.github.dengliming.redismodule.examples.redisjson;
 
 import io.github.dengliming.redismodule.redisjson.RedisJSON;
 import io.github.dengliming.redismodule.redisjson.RedisJSONBatch;
-import io.github.dengliming.redismodule.redisjson.args.GetArgs;
 import io.github.dengliming.redismodule.redisjson.args.SetArgs;
 import io.github.dengliming.redismodule.redisjson.client.RedisJSONClient;
 import io.github.dengliming.redismodule.redisjson.utils.GsonUtils;

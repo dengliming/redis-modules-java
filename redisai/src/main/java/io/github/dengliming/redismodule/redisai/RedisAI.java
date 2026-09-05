@@ -82,11 +82,9 @@ public class RedisAI extends AbstractRedisModule {
 
         List<Object> args = new ArrayList<>();
         args.add(key);
-        if (dimensions != null) {
-            args.add(type);
-            for (int dimension : dimensions) {
-                args.add(dimension);
-            }
+        args.add(type);
+        for (int dimension : dimensions) {
+            args.add(dimension);
         }
         if (data != null) {
             args.add(Keywords.BLOB);

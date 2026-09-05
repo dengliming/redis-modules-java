@@ -22,6 +22,8 @@ import io.github.dengliming.redismodule.redisearch.index.DocumentOptions;
 import io.github.dengliming.redismodule.redisearch.index.IndexDefinition;
 import io.github.dengliming.redismodule.redisearch.index.IndexOptions;
 import io.github.dengliming.redismodule.redisearch.index.RSLanguage;
+import io.github.dengliming.redismodule.redisearch.index.Suggestion;
+import io.github.dengliming.redismodule.redisearch.index.SuggestionOptions;
 import io.github.dengliming.redismodule.redisearch.index.schema.Field;
 import io.github.dengliming.redismodule.redisearch.index.schema.FieldType;
 import io.github.dengliming.redismodule.redisearch.index.schema.Schema;
@@ -261,5 +263,25 @@ public class RediSearchTest extends AbstractTest {
         assertThat(misspelledTerms).hasSize(2);
         misspelledTerms = rediSearch.spellCheck("*", new SpellCheckOptions().distance(2));
         assertThat(misspelledTerms).isEmpty();
+    }
+
+    @Test
+    public void testSuggestion() {
+        RediSearch rediSearch = getRediSearchClient().getRediSearch("testSuggestion");
+        assertThat(rediSearch.addSuggestion(new Suggestion("hello world", 1.0d, "p1"))).isEqualTo(1);
+        assertThat(rediSearch.addSuggestion(new Suggestion("hello there", 2.0d, null))).isEqualTo(2);
+        assertThat(rediSearch.getSuggestionLength()).isEqualTo(2);
+
+        List<Suggestion> suggestions = rediSearch.getSuggestion("hel", new SuggestionOptions());
+        assertThat(suggestions).extracting(Suggestion::getTerm).containsExactlyInAnyOrder("hello world", "hello there");
+
+        suggestions = rediSearch.getSuggestion("hel", new SuggestionOptions().withScores().withPayloads().maxNum(5));
+        assertThat(suggestions).hasSize(2);
+        Suggestion withPayload = suggestions.stream().filter(s -> "hello world".equals(s.getTerm())).findFirst().get();
+        assertThat(withPayload.getPayload()).isEqualTo("p1");
+        assertThat(withPayload.getScore()).isGreaterThan(0);
+
+        assertThat(rediSearch.deleteSuggestion("hello world")).isTrue();
+        assertThat(rediSearch.getSuggestionLength()).isEqualTo(1);
     }
 }

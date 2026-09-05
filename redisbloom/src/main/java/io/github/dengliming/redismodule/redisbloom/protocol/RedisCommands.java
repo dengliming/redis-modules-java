@@ -1,5 +1,5 @@
 /*
- * Copyright 2020-2022 dengliming.
+ * Copyright 2020-2024 dengliming.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import io.github.dengliming.redismodule.redisbloom.model.BloomFilterInfo;
 import io.github.dengliming.redismodule.redisbloom.model.ChunksData;
 import io.github.dengliming.redismodule.redisbloom.model.CountMinSketchInfo;
 import io.github.dengliming.redismodule.redisbloom.model.CuckooFilterInfo;
+import io.github.dengliming.redismodule.redisbloom.model.TDigestInfo;
 import io.github.dengliming.redismodule.redisbloom.model.TopKFilterInfo;
 import io.github.dengliming.redismodule.redisbloom.protocol.decoder.BloomFilterDecoder;
 import io.github.dengliming.redismodule.redisbloom.protocol.decoder.ChunksDecoder;
@@ -37,8 +38,11 @@ import org.redisson.client.protocol.decoder.ObjectListReplayDecoder;
 import java.util.List;
 
 /**
- * @author dengliming
+ * RedisBloom commands. Commands whose reply is a list with per-element conversion use the raw
+ * {@code RedisCommand} constructor because Redisson types the convertor as {@code Convertor<R>}
+ * while it is actually applied to each element.
  */
+@SuppressWarnings({"unchecked", "rawtypes"})
 public interface RedisCommands {
 
     RedisCommand<Boolean> BF_RESERVE = new RedisCommand<>("BF.RESERVE", new BooleanReplayConvertor());
@@ -60,36 +64,36 @@ public interface RedisCommands {
     RedisCommand<Boolean> CF_DEL = new RedisCommand<>("CF.DEL", new BooleanReplayConvertor());
     RedisCommand<Integer> CF_COUNT = new RedisCommand<>("CF.COUNT", new IntegerReplayConvertor());
     RedisCommand<ChunksData> CF_SCANDUMP = new RedisCommand<>("CF.SCANDUMP", new ListMultiDecoder2(new ChunksDecoder()));
-    RedisCommand<Boolean> CF_LOADCHUNK = new RedisCommand("CF.LOADCHUNK", new BooleanReplayConvertor());
+    RedisCommand<Boolean> CF_LOADCHUNK = new RedisCommand<>("CF.LOADCHUNK", new BooleanReplayConvertor());
     RedisCommand<CuckooFilterInfo> CF_INFO = new RedisCommand<>("CF.INFO", new ListMultiDecoder2(new CuckooFilterDecoder()));
 
     RedisCommand<Boolean> CMS_INITBYDIM = new RedisCommand<>("CMS.INITBYDIM", new BooleanReplayConvertor());
     RedisCommand<Boolean> CMS_INITBYPROB = new RedisCommand<>("CMS.INITBYPROB", new BooleanReplayConvertor());
-    RedisCommand<List<Integer>> CMS_INCRBY = new RedisCommand("CMS.INCRBY", new ObjectListReplayDecoder(), new IntegerReplayConvertor());
-    RedisCommand<List<Integer>> CMS_QUERY = new RedisCommand("CMS.QUERY", new ObjectListReplayDecoder(), new IntegerReplayConvertor());
+    RedisCommand<List<Integer>> CMS_INCRBY = new RedisCommand("CMS.INCRBY", new ObjectListReplayDecoder<Integer>(), new IntegerReplayConvertor());
+    RedisCommand<List<Integer>> CMS_QUERY = new RedisCommand("CMS.QUERY", new ObjectListReplayDecoder<Integer>(), new IntegerReplayConvertor());
     RedisCommand<Boolean> CMS_MERGE = new RedisCommand<>("CMS.MERGE", new BooleanReplayConvertor());
-    RedisCommand<CountMinSketchInfo> CMS_INFO = new RedisCommand("CMS.INFO", new ListMultiDecoder2(new CountMinSketchDecoder()));
+    RedisCommand<CountMinSketchInfo> CMS_INFO = new RedisCommand<>("CMS.INFO", new ListMultiDecoder2(new CountMinSketchDecoder()));
 
     RedisCommand<Boolean> TOPK_RESERVE = new RedisCommand<>("TOPK.RESERVE", new BooleanReplayConvertor());
     RedisCommand<List<String>> TOPK_ADD = new RedisCommand<>("TOPK.ADD", new ObjectListReplayDecoder<>());
-    RedisCommand<List<String>> TOPK_INCRBY = new RedisCommand<>("TOPK.INCRBY", new ObjectListReplayDecoder());
-    RedisCommand<List<Boolean>> TOPK_QUERY = new RedisCommand<>("TOPK.QUERY", new ObjectListReplayDecoder(), new BooleanReplayConvertor());
-    RedisCommand<List<Integer>> TOPK_COUNT = new RedisCommand<>("TOPK.COUNT", new ObjectListReplayDecoder(), new IntegerReplayConvertor());
-    RedisCommand<List<String>> TOPK_LIST = new RedisCommand("TOPK.LIST", new ObjectListReplayDecoder());
+    RedisCommand<List<String>> TOPK_INCRBY = new RedisCommand<>("TOPK.INCRBY", new ObjectListReplayDecoder<>());
+    RedisCommand<List<Boolean>> TOPK_QUERY = new RedisCommand("TOPK.QUERY", new ObjectListReplayDecoder<Boolean>(), new BooleanReplayConvertor());
+    RedisCommand<List<Integer>> TOPK_COUNT = new RedisCommand("TOPK.COUNT", new ObjectListReplayDecoder<Integer>(), new IntegerReplayConvertor());
+    RedisCommand<List<String>> TOPK_LIST = new RedisCommand<>("TOPK.LIST", new ObjectListReplayDecoder<>());
     RedisCommand<TopKFilterInfo> TOPK_INFO = new RedisCommand<>("TOPK.INFO", new ListMultiDecoder2(new TopKFilterDecoder()));
 
     RedisCommand<Boolean> TDIGEST_CREATE = new RedisCommand<>("TDIGEST.CREATE", new BooleanReplayConvertor());
     RedisCommand<Boolean> TDIGEST_RESET = new RedisCommand<>("TDIGEST.RESET", new BooleanReplayConvertor());
-    RedisCommand TDIGEST_ADD = new RedisCommand("TDIGEST.ADD", new BooleanReplayConvertor());
-    RedisCommand TDIGEST_INFO = new RedisCommand("TDIGEST.INFO", new ListMultiDecoder2(new TDigestDecoder()));
-    RedisCommand TDIGEST_MIN = new RedisCommand("TDIGEST.MIN", new DoubleReplayConvertor());
-    RedisCommand TDIGEST_MAX = new RedisCommand("TDIGEST.MAX", new DoubleReplayConvertor());
-    RedisCommand<List<Double>> TDIGEST_QUANTILE = new RedisCommand("TDIGEST.QUANTILE", new ObjectListReplayDecoder(), new DoubleReplayConvertor());
-    RedisCommand<List<Double>> TDIGEST_CDF = new RedisCommand("TDIGEST.CDF", new ObjectListReplayDecoder(), new DoubleReplayConvertor());
-    RedisCommand TDIGEST_MERGE = new RedisCommand("TDIGEST.MERGE", new BooleanReplayConvertor());
-    RedisCommand<List<Integer>> TDIGEST_RANK = new RedisCommand("TDIGEST.RANK", new ObjectListReplayDecoder(), new IntegerReplayConvertor());
-    RedisCommand<List<Integer>> TDIGEST_REVRANK = new RedisCommand("TDIGEST.REVRANK", new ObjectListReplayDecoder(), new IntegerReplayConvertor());
-    RedisCommand<List<Double>> TDIGEST_BYRANK = new RedisCommand("TDIGEST.BYRANK", new ObjectListReplayDecoder(), new DoubleReplayConvertor());
-    RedisCommand<List<Double>> TDIGEST_BYREVRANK = new RedisCommand("TDIGEST.BYREVRANK", new ObjectListReplayDecoder(), new DoubleReplayConvertor());
-    RedisCommand TDIGEST_TRIMMED_MEAN = new RedisCommand("TDIGEST.TRIMMED_MEAN");
+    RedisCommand<Boolean> TDIGEST_ADD = new RedisCommand<>("TDIGEST.ADD", new BooleanReplayConvertor());
+    RedisCommand<TDigestInfo> TDIGEST_INFO = new RedisCommand<>("TDIGEST.INFO", new ListMultiDecoder2(new TDigestDecoder()));
+    RedisCommand<Double> TDIGEST_MIN = new RedisCommand<>("TDIGEST.MIN", new DoubleReplayConvertor());
+    RedisCommand<Double> TDIGEST_MAX = new RedisCommand<>("TDIGEST.MAX", new DoubleReplayConvertor());
+    RedisCommand<List<Double>> TDIGEST_QUANTILE = new RedisCommand("TDIGEST.QUANTILE", new ObjectListReplayDecoder<Double>(), new DoubleReplayConvertor());
+    RedisCommand<List<Double>> TDIGEST_CDF = new RedisCommand("TDIGEST.CDF", new ObjectListReplayDecoder<Double>(), new DoubleReplayConvertor());
+    RedisCommand<Boolean> TDIGEST_MERGE = new RedisCommand<>("TDIGEST.MERGE", new BooleanReplayConvertor());
+    RedisCommand<List<Integer>> TDIGEST_RANK = new RedisCommand("TDIGEST.RANK", new ObjectListReplayDecoder<Integer>(), new IntegerReplayConvertor());
+    RedisCommand<List<Integer>> TDIGEST_REVRANK = new RedisCommand("TDIGEST.REVRANK", new ObjectListReplayDecoder<Integer>(), new IntegerReplayConvertor());
+    RedisCommand<List<Double>> TDIGEST_BYRANK = new RedisCommand("TDIGEST.BYRANK", new ObjectListReplayDecoder<Double>(), new DoubleReplayConvertor());
+    RedisCommand<List<Double>> TDIGEST_BYREVRANK = new RedisCommand("TDIGEST.BYREVRANK", new ObjectListReplayDecoder<Double>(), new DoubleReplayConvertor());
+    RedisCommand<String> TDIGEST_TRIMMED_MEAN = new RedisCommand<>("TDIGEST.TRIMMED_MEAN");
 }

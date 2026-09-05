@@ -68,16 +68,16 @@ public class SuggestionOptions {
 
     public void build(List<Object> args) {
         if (isFuzzy()) {
-            args.add(Keywords.FUZZY.name());
+            args.add(Keywords.FUZZY);
         }
         if (isWithScores()) {
-            args.add(Keywords.WITHSCORES.name());
+            args.add(Keywords.WITHSCORES);
         }
         if (isWithPayloads()) {
-            args.add(Keywords.WITHPAYLOADS.name());
+            args.add(Keywords.WITHPAYLOADS);
         }
         if (getMaxNum() > 0) {
-            args.add(Keywords.MAX.name());
+            args.add(Keywords.MAX);
             args.add(getMaxNum());
         }
     }

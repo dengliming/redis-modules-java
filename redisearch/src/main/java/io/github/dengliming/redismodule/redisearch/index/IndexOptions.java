@@ -126,7 +126,7 @@ public class IndexOptions {
             args.add(definition.getDataType());
 
             if (definition.getPrefixes() != null) {
-                args.add(Keywords.PREFIX.name());
+                args.add(Keywords.PREFIX);
                 args.add(definition.getPrefixes().size());
                 args.addAll(definition.getPrefixes());
             }
@@ -161,26 +161,26 @@ public class IndexOptions {
         }
 
         if (isMaxTextFields()) {
-            args.add(Keywords.MAXTEXTFIELDS.name());
+            args.add(Keywords.MAXTEXTFIELDS);
         }
         if (getExpire() > 0) {
-            args.add(Keywords.TEMPORARY.name());
+            args.add(Keywords.TEMPORARY);
             args.add(getExpire());
         }
         if (isNoOffsets()) {
-            args.add(Keywords.NOOFFSETS.name());
+            args.add(Keywords.NOOFFSETS);
         }
         if (isNoHL()) {
-            args.add(Keywords.NOHL.name());
+            args.add(Keywords.NOHL);
         }
         if (isNoFields()) {
-            args.add(Keywords.NOFIELDS.name());
+            args.add(Keywords.NOFIELDS);
         }
         if (isNoFreqs()) {
-            args.add(Keywords.NOFREQS.name());
+            args.add(Keywords.NOFREQS);
         }
         if (getStopwords() != null) {
-            args.add(Keywords.STOPWORDS.name());
+            args.add(Keywords.STOPWORDS);
             args.add(getStopwords().size());
             args.addAll(getStopwords());
         }

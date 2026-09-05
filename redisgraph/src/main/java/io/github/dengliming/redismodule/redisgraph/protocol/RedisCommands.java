@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 dengliming.
+ * Copyright 2020-2024 dengliming.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,27 +16,33 @@
 
 package io.github.dengliming.redismodule.redisgraph.protocol;
 
-import io.github.dengliming.redismodule.redisgraph.protocol.decoder.SlowLogItemDecoder;
+import io.github.dengliming.redismodule.redisgraph.model.ResultSet;
+import io.github.dengliming.redismodule.redisgraph.model.SlowLogItem;
 import io.github.dengliming.redismodule.redisgraph.protocol.decoder.ResultSetDecoder;
+import io.github.dengliming.redismodule.redisgraph.protocol.decoder.SlowLogItemDecoder;
 import org.redisson.client.protocol.RedisCommand;
 import org.redisson.client.protocol.convertor.BooleanReplayConvertor;
 import org.redisson.client.protocol.decoder.ListMultiDecoder2;
 import org.redisson.client.protocol.decoder.ObjectListReplayDecoder;
 import org.redisson.client.protocol.decoder.ObjectMapReplayDecoder;
 
-/**
- * @author dengliming
- */
-public interface RedisCommands {
-    RedisCommand GRAPH_CONFIG_SET = new RedisCommand<>("GRAPH.CONFIG", "SET", new BooleanReplayConvertor());
-    RedisCommand GRAPH_CONFIG_GET = new RedisCommand<>("GRAPH.CONFIG", "GET", new ObjectMapReplayDecoder<String, Object>());
+import java.util.List;
+import java.util.Map;
 
-    RedisCommand GRAPH_DELETE = new RedisCommand<>("GRAPH.DELETE");
-    RedisCommand GRAPH_LIST = new RedisCommand<>("GRAPH.LIST", new ObjectListReplayDecoder());
-    RedisCommand GRAPH_PROFILE = new RedisCommand<>("GRAPH.PROFILE", new ObjectListReplayDecoder());
-    RedisCommand GRAPH_EXPLAIN = new RedisCommand<>("GRAPH.EXPLAIN", new ObjectListReplayDecoder());
-    RedisCommand GRAPH_SLOWLOG = new RedisCommand<>("GRAPH.SLOWLOG", new ListMultiDecoder2(new ObjectListReplayDecoder<>(), new SlowLogItemDecoder()));
-    RedisCommand GRAPH_QUERY = new RedisCommand<>("GRAPH.QUERY", new ListMultiDecoder2(
+/**
+ * RedisGraph commands.
+ */
+@SuppressWarnings({"unchecked", "rawtypes"})
+public interface RedisCommands {
+
+    RedisCommand<Boolean> GRAPH_CONFIG_SET = new RedisCommand<>("GRAPH.CONFIG", "SET", new BooleanReplayConvertor());
+    RedisCommand<Map<String, Object>> GRAPH_CONFIG_GET = new RedisCommand<>("GRAPH.CONFIG", "GET", new ObjectMapReplayDecoder<String, Object>());
+    RedisCommand<String> GRAPH_DELETE = new RedisCommand<>("GRAPH.DELETE");
+    RedisCommand<List<String>> GRAPH_LIST = new RedisCommand<>("GRAPH.LIST", new ObjectListReplayDecoder<>());
+    RedisCommand<List<String>> GRAPH_PROFILE = new RedisCommand<>("GRAPH.PROFILE", new ObjectListReplayDecoder<>());
+    RedisCommand<List<String>> GRAPH_EXPLAIN = new RedisCommand<>("GRAPH.EXPLAIN", new ObjectListReplayDecoder<>());
+    RedisCommand<List<SlowLogItem>> GRAPH_SLOWLOG = new RedisCommand<>("GRAPH.SLOWLOG", new ListMultiDecoder2(new ObjectListReplayDecoder<>(), new SlowLogItemDecoder()));
+    RedisCommand<ResultSet> GRAPH_QUERY = new RedisCommand<>("GRAPH.QUERY", new ListMultiDecoder2(
             new ResultSetDecoder(),
             new ObjectListReplayDecoder<>(),
             new ObjectListReplayDecoder<>(),
@@ -45,8 +51,7 @@ public interface RedisCommands {
             new ObjectListReplayDecoder<>(),
             new ObjectListReplayDecoder<>()
     ));
-
-    RedisCommand GRAPH_READ_ONLY_QUERY = new RedisCommand<>("GRAPH.RO_QUERY", new ListMultiDecoder2(
+    RedisCommand<ResultSet> GRAPH_READ_ONLY_QUERY = new RedisCommand<>("GRAPH.RO_QUERY", new ListMultiDecoder2(
             new ResultSetDecoder(),
             new ObjectListReplayDecoder<>(),
             new ObjectListReplayDecoder<>(),

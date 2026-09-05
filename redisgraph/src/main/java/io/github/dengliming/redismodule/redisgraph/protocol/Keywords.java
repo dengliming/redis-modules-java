@@ -35,4 +35,12 @@ public enum Keywords {
     public String getAlias() {
         return alias;
     }
+
+    /**
+     * Redisson encodes command arguments with {@code toString()}, so passing the enum itself sends the alias.
+     */
+    @Override
+    public String toString() {
+        return alias;
+    }
 }

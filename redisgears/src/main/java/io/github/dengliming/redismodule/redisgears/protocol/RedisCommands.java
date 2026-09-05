@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 dengliming.
+ * Copyright 2020-2024 dengliming.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package io.github.dengliming.redismodule.redisgears.protocol;
 
+import io.github.dengliming.redismodule.redisgears.model.ClusterInfo;
 import io.github.dengliming.redismodule.redisgears.protocol.decoder.ClusterInfoDecoder;
 import org.redisson.client.protocol.RedisCommand;
 import org.redisson.client.protocol.convertor.BooleanReplayConvertor;
@@ -24,18 +25,22 @@ import org.redisson.client.protocol.decoder.ObjectListReplayDecoder;
 import org.redisson.client.protocol.decoder.ObjectMapReplayDecoder;
 import org.redisson.client.protocol.decoder.StringListReplayDecoder;
 
+import java.util.List;
+import java.util.Map;
+
 /**
- * @author dengliming
+ * RedisGears commands.
  */
+@SuppressWarnings({"unchecked", "rawtypes"})
 public interface RedisCommands {
 
-    RedisCommand RG_PYEXECUTE = new RedisCommand<>("RG.PYEXECUTE", new ObjectListReplayDecoder<>());
-    RedisCommand RG_CONFIGGET = new RedisCommand<>("RG.CONFIGGET", new StringListReplayDecoder());
-    RedisCommand RG_CONFIGSET = new RedisCommand<>("RG.CONFIGSET", new StringListReplayDecoder());
-    RedisCommand RG_PYSTATS = new RedisCommand<>("RG.PYSTATS", new ObjectMapReplayDecoder<String, Object>());
-    RedisCommand RG_UNREGISTER = new RedisCommand("RG.UNREGISTER", new BooleanReplayConvertor());
-    RedisCommand RG_REFRESHCLUSTER = new RedisCommand("RG.REFRESHCLUSTER", new BooleanReplayConvertor());
-    RedisCommand RG_DROPEXECUTION = new RedisCommand("RG.DROPEXECUTION", new BooleanReplayConvertor());
-    RedisCommand RG_ABORTEXECUTION = new RedisCommand("RG.ABORTEXECUTION", new BooleanReplayConvertor());
-    RedisCommand RG_INFOCLUSTER = new RedisCommand("RG.INFOCLUSTER", new ListMultiDecoder2(new ClusterInfoDecoder(), new ObjectListReplayDecoder<>(), new ObjectListReplayDecoder<>()));
+    RedisCommand<Object> RG_PYEXECUTE = new RedisCommand("RG.PYEXECUTE", new ObjectListReplayDecoder<>());
+    RedisCommand<List<String>> RG_CONFIGGET = new RedisCommand<>("RG.CONFIGGET", new StringListReplayDecoder());
+    RedisCommand<List<String>> RG_CONFIGSET = new RedisCommand<>("RG.CONFIGSET", new StringListReplayDecoder());
+    RedisCommand<Map<String, Object>> RG_PYSTATS = new RedisCommand<>("RG.PYSTATS", new ObjectMapReplayDecoder<String, Object>());
+    RedisCommand<Boolean> RG_UNREGISTER = new RedisCommand<>("RG.UNREGISTER", new BooleanReplayConvertor());
+    RedisCommand<Boolean> RG_REFRESHCLUSTER = new RedisCommand<>("RG.REFRESHCLUSTER", new BooleanReplayConvertor());
+    RedisCommand<Boolean> RG_DROPEXECUTION = new RedisCommand<>("RG.DROPEXECUTION", new BooleanReplayConvertor());
+    RedisCommand<Boolean> RG_ABORTEXECUTION = new RedisCommand<>("RG.ABORTEXECUTION", new BooleanReplayConvertor());
+    RedisCommand<ClusterInfo> RG_INFOCLUSTER = new RedisCommand<>("RG.INFOCLUSTER", new ListMultiDecoder2(new ClusterInfoDecoder(), new ObjectListReplayDecoder<>(), new ObjectListReplayDecoder<>()));
 }

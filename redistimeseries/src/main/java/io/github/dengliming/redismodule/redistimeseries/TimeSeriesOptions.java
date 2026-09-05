@@ -29,7 +29,6 @@ public class TimeSeriesOptions {
     private boolean unCompressed;
     private Label[] labels;
     private DuplicatePolicy duplicatePolicy;
-    private boolean isAdd;
 
     public TimeSeriesOptions retentionTime(long retentionTime) {
         this.retentionTime = retentionTime;
@@ -51,12 +50,17 @@ public class TimeSeriesOptions {
         return this;
     }
 
-    public TimeSeriesOptions isAdd(boolean add) {
-        this.isAdd = add;
-        return this;
+    /**
+     * Appends the TS.CREATE / TS.ALTER form of these options (DUPLICATE_POLICY).
+     */
+    public void build(List<Object> args) {
+        build(args, false);
     }
 
-    public void build(List<Object> args) {
+    /**
+     * @param onDuplicate true for TS.ADD, which spells the duplicate policy as ON_DUPLICATE instead of DUPLICATE_POLICY
+     */
+    public void build(List<Object> args, boolean onDuplicate) {
         if (retentionTime > 0) {
             args.add(Keywords.RETENTION);
             args.add(retentionTime);
@@ -67,7 +71,7 @@ public class TimeSeriesOptions {
         }
 
         if (duplicatePolicy != null) {
-            args.add(isAdd ? Keywords.ON_DUPLICATE : Keywords.DUPLICATE_POLICY);
+            args.add(onDuplicate ? Keywords.ON_DUPLICATE : Keywords.DUPLICATE_POLICY);
             args.add(duplicatePolicy.name());
         }
 
