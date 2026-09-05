@@ -1,4 +1,5 @@
 name: Release
+# Needs CENTRAL_USERNAME / CENTRAL_PASSWORD (Sonatype Central Portal user token) plus GPG_SECRET / GPG_PASSWORD.
 on:
   release:
     types: [published]
@@ -17,7 +18,7 @@ jobs:
           java-version: '8'
           distribution: 'temurin'
           cache: 'maven'
-          server-id: oss
+          server-id: central
           server-username: MAVEN_USERNAME
           server-password: MAVEN_PASSWORD
 
@@ -38,8 +39,8 @@ jobs:
           mvn --no-transfer-progress \
             --batch-mode \
             -Dgpg.passphrase='${{ secrets.GPG_PASSWORD }}' \
-            -DskipTests deploy -P sonatype-oss-release
+            -DskipTests deploy -P release
 
         env:
-          MAVEN_USERNAME: ${{secrets.OSSRH_USER}}
-          MAVEN_PASSWORD: ${{secrets.OSSRH_PASSWORD}}
+          MAVEN_USERNAME: ${{ secrets.CENTRAL_USERNAME }}
+          MAVEN_PASSWORD: ${{ secrets.CENTRAL_PASSWORD }}
