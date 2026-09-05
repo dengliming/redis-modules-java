@@ -52,7 +52,7 @@ All modules in one dependency:
 <dependency>
     <groupId>io.github.dengliming.redismodule</groupId>
     <artifactId>all</artifactId>
-    <version>2.0.4</version>
+    <version>3.0.0</version>
 </dependency>
 ```
 
@@ -62,20 +62,20 @@ Or a single module, for example RedisTimeSeries:
 <dependency>
     <groupId>io.github.dengliming.redismodule</groupId>
     <artifactId>redistimeseries</artifactId>
-    <version>2.0.4</version>
+    <version>3.0.0</version>
 </dependency>
 ```
 
 Gradle:
 
 ```groovy
-implementation 'io.github.dengliming.redismodule:all:2.0.4'
+implementation 'io.github.dengliming.redismodule:all:3.0.0'
 ```
 
 <details>
 <summary>Snapshots</summary>
 
-Every push to `master` publishes `2.0.5-SNAPSHOT` to the Central snapshot repository:
+Every push to `master` publishes `3.0.1-SNAPSHOT` to the Central snapshot repository:
 
 ```xml
 <repositories>

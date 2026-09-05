@@ -10,7 +10,7 @@ Auto-configures one client bean per enabled module: `RedisJSONClient`, `RediSear
 <dependency>
     <groupId>io.github.dengliming.redismodule</groupId>
     <artifactId>spring-boot-starter</artifactId>
-    <version>2.0.4</version>
+    <version>3.0.0</version>
 </dependency>
 ```
 
