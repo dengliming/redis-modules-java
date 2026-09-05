@@ -25,6 +25,11 @@ public class RedisModuleProperties {
     public static final String PREFIX = "redis-module";
 
     private boolean enabled;
+    /**
+     * Redisson configuration (YAML or JSON) shared by every module that has no config of its own.
+     * A RedissonClient bean already present in the context takes precedence.
+     */
+    private String config;
     private RedisModuleConfig redisai;
     private RedisModuleConfig redisbloom;
     private RedisModuleConfig redisearch;
@@ -39,6 +44,14 @@ public class RedisModuleProperties {
 
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
+    }
+
+    public String getConfig() {
+        return config;
+    }
+
+    public void setConfig(String config) {
+        this.config = config;
     }
 
     public RedisModuleConfig getRedisai() {

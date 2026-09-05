@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2024 dengliming.
+ * Copyright 2024 dengliming.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import io.github.dengliming.redismodule.common.BaseRedissonClient;
 import io.github.dengliming.redismodule.redisgraph.RedisGraph;
 import io.github.dengliming.redismodule.redisgraph.RedisGraphBatch;
 import org.redisson.api.BatchOptions;
+import org.redisson.api.RedissonClient;
 import org.redisson.config.Config;
 
 public class RedisGraphClient extends BaseRedissonClient {
@@ -28,12 +29,20 @@ public class RedisGraphClient extends BaseRedissonClient {
         super(config);
     }
 
+    /**
+     * Wraps an existing Redisson instance so that it can be shared with other clients.
+     * The caller stays responsible for shutting it down.
+     */
+    public RedisGraphClient(RedissonClient redisson) {
+        super(redisson);
+    }
+
     public RedisGraph getRedisGraph() {
         return new RedisGraph(getCommandExecutor());
     }
 
     public RedisGraphBatch createRedisGraphBatch() {
-        return this.createRedisGraphBatch(BatchOptions.defaults());
+        return createRedisGraphBatch(BatchOptions.defaults());
     }
 
     public RedisGraphBatch createRedisGraphBatch(BatchOptions options) {

@@ -17,31 +17,59 @@
 package io.github.dengliming.redismodule.common;
 
 import org.redisson.Redisson;
+import org.redisson.api.RedissonClient;
 import org.redisson.client.protocol.RedisCommands;
 import org.redisson.command.CommandAsyncExecutor;
 import org.redisson.config.Config;
 
+/**
+ * Base class of the per-module clients. A client either owns its Redisson instance (created from a
+ * {@link Config}) or wraps one supplied by the caller, in which case several module clients can share
+ * a single connection pool and {@link #shutdown()} leaves the shared instance untouched.
+ */
 public abstract class BaseRedissonClient {
-    private final Redisson redisson;
+    private final RedissonClient redisson;
+    private final boolean ownsRedisson;
 
     protected BaseRedissonClient(Config config) {
-        this.redisson = (Redisson) Redisson.create(config);
+        this(Redisson.create(config), true);
     }
 
+    /**
+     * Wraps an existing Redisson instance. The caller stays responsible for shutting it down.
+     */
+    protected BaseRedissonClient(RedissonClient redisson) {
+        this(redisson, false);
+    }
+
+    private BaseRedissonClient(RedissonClient redisson, boolean ownsRedisson) {
+        this.redisson = redisson;
+        this.ownsRedisson = ownsRedisson;
+    }
+
+    /**
+     * Flushes every database on every node. Intended for tests.
+     */
     public Void flushall() {
-        CommandAsyncExecutor commandExecutor = redisson.getCommandExecutor();
+        CommandAsyncExecutor commandExecutor = getCommandExecutor();
         return commandExecutor.get(commandExecutor.writeAllVoidAsync(RedisCommands.FLUSHALL));
     }
 
+    /**
+     * Shuts down the underlying Redisson instance if this client created it. A shared instance passed in
+     * through {@link #BaseRedissonClient(RedissonClient)} is left running.
+     */
     public void shutdown() {
-        redisson.shutdown();
+        if (ownsRedisson) {
+            redisson.shutdown();
+        }
     }
 
-    public Redisson getRedisson() {
+    public RedissonClient getRedisson() {
         return redisson;
     }
 
     public CommandAsyncExecutor getCommandExecutor() {
-        return redisson.getCommandExecutor();
+        return RedissonAdapter.commandExecutor(redisson);
     }
 }

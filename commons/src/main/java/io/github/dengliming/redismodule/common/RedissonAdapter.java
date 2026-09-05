@@ -16,7 +16,9 @@
 
 package io.github.dengliming.redismodule.common;
 
+import org.redisson.Redisson;
 import org.redisson.api.RFuture;
+import org.redisson.api.RedissonClient;
 import org.redisson.client.codec.Codec;
 import org.redisson.command.CommandAsyncExecutor;
 import org.redisson.command.CommandBatchService;
@@ -34,6 +36,16 @@ import java.util.function.Function;
 public final class RedissonAdapter {
 
     private RedissonAdapter() {
+    }
+
+    /**
+     * The command executor of a Redisson instance. Only the concrete {@link Redisson} class exposes it.
+     */
+    public static CommandAsyncExecutor commandExecutor(RedissonClient redisson) {
+        if (!(redisson instanceof Redisson)) {
+            throw new IllegalArgumentException("Unsupported RedissonClient implementation: " + redisson.getClass().getName());
+        }
+        return ((Redisson) redisson).getCommandExecutor();
     }
 
     /**
