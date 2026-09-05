@@ -33,7 +33,7 @@ public class RawVector {
     }
 
     /**
-     * @return {@code fp32}, {@code int8} or {@code bin}
+     * @return {@code f32}, {@code int8} or {@code bin}
      */
     public String getQuantization() {
         return quantization;

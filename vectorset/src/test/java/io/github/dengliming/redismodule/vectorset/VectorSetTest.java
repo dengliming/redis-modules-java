@@ -132,7 +132,8 @@ public class VectorSetTest extends AbstractTest {
         buffer.putFloat(0.5f).putFloat(0.5f);
         assertThat(vectorSet.add("x", buffer.array(), new AddArgs().quantization(Quantization.NOQUANT))).isTrue();
         assertThat(vectorSet.dimension()).isEqualTo(2);
-        assertThat(vectorSet.getRawVector("x").getQuantization()).isEqualTo("fp32");
+        // the server reports "f32" for unquantized vectors (the docs call it fp32)
+        assertThat(vectorSet.getRawVector("x").getQuantization()).isEqualTo("f32");
 
         List<Similarity> similar = vectorSet.similar(buffer.array(), new SimilarArgs().withScores());
         assertThat(similar.get(0).getElement()).isEqualTo("x");
