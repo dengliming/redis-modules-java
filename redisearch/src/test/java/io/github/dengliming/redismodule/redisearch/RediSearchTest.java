@@ -16,6 +16,8 @@
 
 package io.github.dengliming.redismodule.redisearch;
 
+import io.github.dengliming.redismodule.redisearch.aggregate.AggregateOptions;
+import io.github.dengliming.redismodule.redisearch.aggregate.AggregateResult;
 import io.github.dengliming.redismodule.redisearch.index.ConfigOption;
 import io.github.dengliming.redismodule.redisearch.index.Document;
 import io.github.dengliming.redismodule.redisearch.index.DocumentOptions;
