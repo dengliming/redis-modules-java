@@ -39,6 +39,11 @@ import static io.github.dengliming.redismodule.redisgears.protocol.RedisCommands
 import static io.github.dengliming.redismodule.redisgears.protocol.RedisCommands.RG_REFRESHCLUSTER;
 import static io.github.dengliming.redismodule.redisgears.protocol.RedisCommands.RG_UNREGISTER;
 
+/**
+ * @deprecated RedisGears has reached end of life and is no longer maintained by Redis. This module is kept for
+ *             existing users and will be removed in a future release.
+ */
+@Deprecated
 public class RedisGears extends AbstractRedisModule {
 
     public RedisGears(CommandAsyncExecutor commandExecutor) {

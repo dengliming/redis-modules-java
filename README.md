@@ -7,10 +7,10 @@ Java Client libraries for [redis-modules](https://redis.io/modules), based on [R
 * [RedisBloom](redisbloom) 
 * [RediSearch](redisearch)
 * [RedisTimeSeries](redistimeseries)
-* [RedisAI](redisai)
-* [RedisGears](redisgears)
+* [RedisAI](redisai) (deprecated: end of life upstream)
+* [RedisGears](redisgears) (deprecated: end of life upstream)
 * [RedisJSON](redisjson)
-* [RedisGraph](redisgraph)
+* [RedisGraph](redisgraph) (deprecated: end of life upstream)
 
 ## TODO
 * [RediSQL](https://redisql.com/)

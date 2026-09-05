@@ -44,6 +44,11 @@ import static io.github.dengliming.redismodule.redisgraph.protocol.RedisCommands
 import static io.github.dengliming.redismodule.redisgraph.protocol.RedisCommands.GRAPH_READ_ONLY_QUERY;
 import static io.github.dengliming.redismodule.redisgraph.protocol.RedisCommands.GRAPH_SLOWLOG;
 
+/**
+ * @deprecated RedisGraph has reached end of life and is no longer maintained by Redis. This module is kept for
+ *             existing users and will be removed in a future release.
+ */
+@Deprecated
 public class RedisGraph extends AbstractRedisModule {
 
     private final Map<String, GraphCache> caches = new ConcurrentHashMap<>();

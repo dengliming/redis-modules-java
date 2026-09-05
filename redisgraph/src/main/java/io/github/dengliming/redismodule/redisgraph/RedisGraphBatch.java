@@ -20,6 +20,11 @@ import io.github.dengliming.redismodule.common.api.RCommonBatch;
 import org.redisson.api.BatchOptions;
 import org.redisson.command.CommandAsyncExecutor;
 
+/**
+ * @deprecated RedisGraph has reached end of life and is no longer maintained by Redis. This module is kept for
+ *             existing users and will be removed in a future release.
+ */
+@Deprecated
 public class RedisGraphBatch extends RCommonBatch {
 
     public RedisGraphBatch(CommandAsyncExecutor executor, BatchOptions options) {

@@ -23,6 +23,11 @@ import org.redisson.api.BatchOptions;
 import org.redisson.api.RedissonClient;
 import org.redisson.config.Config;
 
+/**
+ * @deprecated RedisGears has reached end of life and is no longer maintained by Redis. This module is kept for
+ *             existing users and will be removed in a future release.
+ */
+@Deprecated
 public class RedisGearsClient extends BaseRedissonClient {
 
     public RedisGearsClient(Config config) {

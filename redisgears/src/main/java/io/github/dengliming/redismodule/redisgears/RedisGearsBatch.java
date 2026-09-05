@@ -22,7 +22,11 @@ import org.redisson.command.CommandAsyncExecutor;
 
 /**
  * Pipelines RedisGears commands: call the *Async methods of {@link #getRedisGears()}, then {@link #execute()}.
+ *
+ * @deprecated RedisGears has reached end of life and is no longer maintained by Redis. This module is kept for
+ *             existing users and will be removed in a future release.
  */
+@Deprecated
 public class RedisGearsBatch extends RCommonBatch {
 
     public RedisGearsBatch(CommandAsyncExecutor executor, BatchOptions options) {

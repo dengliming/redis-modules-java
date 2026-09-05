@@ -22,7 +22,11 @@ import org.redisson.command.CommandAsyncExecutor;
 
 /**
  * Pipelines RedisAI commands: call the *Async methods of {@link #getRedisAI()}, then {@link #execute()}.
+ *
+ * @deprecated RedisAI has reached end of life and is no longer maintained by Redis. This module is kept for
+ *             existing users and will be removed in a future release.
  */
+@Deprecated
 public class RedisAIBatch extends RCommonBatch {
 
     public RedisAIBatch(CommandAsyncExecutor executor, BatchOptions options) {
