@@ -41,7 +41,7 @@ users; they will be removed in a future major release.
 - Java 8 or later
 - Redis 8.x (modules built in), or Redis 7.x with the corresponding module loaded
 - Vector sets need Redis 8.0+ (`VRANGE` needs 8.4+)
-- Redisson 3.27.x (pulled in transitively)
+- Redisson 4.7.x (pulled in transitively)
 
 ## Installation
 

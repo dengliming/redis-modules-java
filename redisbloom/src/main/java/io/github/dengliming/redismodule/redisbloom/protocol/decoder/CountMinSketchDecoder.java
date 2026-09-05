@@ -31,7 +31,7 @@ public class CountMinSketchDecoder implements MultiDecoder<CountMinSketchInfo> {
      * Field names arrive as bulk strings; decode them as plain strings whatever codec the caller uses.
      */
     @Override
-    public Decoder<Object> getDecoder(Codec codec, int paramNum, State state) {
+    public Decoder<Object> getDecoder(Codec codec, int paramNum, State state, long size) {
         return StringCodec.INSTANCE.getValueDecoder();
     }
 

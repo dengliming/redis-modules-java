@@ -38,7 +38,7 @@ public class RawVectorDecoder implements MultiDecoder<RawVector> {
      * The blob must stay binary; every other part is text.
      */
     @Override
-    public Decoder<Object> getDecoder(Codec codec, int paramNum, State state) {
+    public Decoder<Object> getDecoder(Codec codec, int paramNum, State state, long size) {
         if (paramNum == BLOB_INDEX) {
             return ByteArrayCodec.INSTANCE.getValueDecoder();
         }

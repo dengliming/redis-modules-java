@@ -41,7 +41,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.util.StringUtils;
 
-import java.io.IOException;
 import java.util.function.Function;
 
 /**
@@ -156,17 +155,11 @@ public class RedisModuleAutoConfiguration {
     }
 
     private Config parseRedisModuleConfig(String configStr) {
-        Config config;
         try {
-            config = Config.fromYAML(configStr);
-        } catch (IOException e) {
-            try {
-                config = Config.fromJSON(configStr);
-            } catch (IOException ex) {
-                ex.addSuppressed(e);
-                throw new IllegalArgumentException("Can't parse config", ex);
-            }
+            // YAML is a superset of JSON, so JSON configurations parse as well
+            return Config.fromYAML(configStr);
+        } catch (RuntimeException e) {
+            throw new IllegalArgumentException("Can't parse Redisson config", e);
         }
-        return config;
     }
 }
