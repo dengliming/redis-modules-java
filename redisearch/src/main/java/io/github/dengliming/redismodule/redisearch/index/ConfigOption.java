@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 dengliming.
+ * Copyright 2020-2024 dengliming.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,23 +17,32 @@
 package io.github.dengliming.redismodule.redisearch.index;
 
 /**
- * @author dengliming
+ * RediSearch runtime configuration options.
+ * <p>
+ * {@link #getKeyword()} is the FT.CONFIG name used up to RediSearch 2.x; {@link #getConfigParameter()} is the
+ * {@code CONFIG GET/SET} parameter that replaces it from Redis 8 on, where FT.CONFIG no longer exists.
  */
 public enum ConfigOption {
-    NOGC("NOGC"),
-    MINPREFIX("MINPREFIX"),
-    MAXEXPANSIONS("MAXEXPANSIONS"),
-    TIMEOUT("TIMEOUT"),
-    ON_TIMEOUT("ON_TIMEOUT"),
-    MIN_PHONETIC_TERM_LEN("MIN_PHONETIC_TERM_LEN");
+    NOGC("NOGC", "search-no-gc"),
+    MINPREFIX("MINPREFIX", "search-min-prefix"),
+    MAXEXPANSIONS("MAXEXPANSIONS", "search-max-prefix-expansions"),
+    TIMEOUT("TIMEOUT", "search-timeout"),
+    ON_TIMEOUT("ON_TIMEOUT", "search-on-timeout"),
+    MIN_PHONETIC_TERM_LEN("MIN_PHONETIC_TERM_LEN", "search-min-phonetic-term-len");
 
-    private String keyword;
+    private final String keyword;
+    private final String configParameter;
 
-    ConfigOption(String keyword) {
+    ConfigOption(String keyword, String configParameter) {
         this.keyword = keyword;
+        this.configParameter = configParameter;
     }
 
     public String getKeyword() {
         return keyword;
+    }
+
+    public String getConfigParameter() {
+        return configParameter;
     }
 }

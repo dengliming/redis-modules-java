@@ -50,7 +50,9 @@ public interface RedisCommands {
     RedisCommand<Boolean> FT_ALIASADD = new RedisCommand<>("FT.ALIASADD", new BooleanReplayConvertor());
     RedisCommand<Boolean> FT_ALIASUPDATE = new RedisCommand<>("FT.ALIASUPDATE", new BooleanReplayConvertor());
     RedisCommand<Boolean> FT_ALIASDEL = new RedisCommand<>("FT.ALIASDEL", new BooleanReplayConvertor());
-    RedisCommand<Map<String, Object>> FT_INFO = new RedisCommand<>("FT.INFO", new ListMultiDecoder2(new StringMapInfoDecoder(), new CodecDecoder(), new CodecDecoder()));
+    // Redis 8 replies nest attributes and index options several levels deep; one CodecDecoder per level
+    RedisCommand<Map<String, Object>> FT_INFO = new RedisCommand<>("FT.INFO", new ListMultiDecoder2(new StringMapInfoDecoder(),
+            new CodecDecoder(), new CodecDecoder(), new CodecDecoder(), new CodecDecoder(), new CodecDecoder(), new CodecDecoder(), new CodecDecoder()));
     RedisCommand<AggregateResult> FT_AGGREGATE = new RedisCommand<>("FT.AGGREGATE", new ListMultiDecoder2(new AggregateDecoder(), new ObjectMapReplayDecoder()));
     RedisCommand<String> FT_EXPLAIN = new RedisCommand<>("FT.EXPLAIN");
     RedisCommand<List<String>> FT_EXPLAINCLI = new RedisCommand<>("FT.EXPLAINCLI", new ObjectListReplayDecoder<>());

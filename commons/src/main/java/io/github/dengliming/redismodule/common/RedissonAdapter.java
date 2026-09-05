@@ -25,8 +25,11 @@ import org.redisson.command.CommandBatchService;
 import org.redisson.misc.CompletableFutureWrapper;
 
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 /**
  * Single point of contact with Redisson internals that are not part of its public API.
@@ -74,6 +77,35 @@ public final class RedissonAdapter {
     public static <T, R> RFuture<R> transform(RFuture<T> future, Function<? super T, ? extends R> mapper) {
         CompletableFuture<T> source = future.toCompletableFuture();
         return toRFuture(source.thenApply(mapper));
+    }
+
+    /**
+     * Completes with the result of {@code future}; if it fails with an error matching {@code when}, completes with
+     * the result of {@code fallback} instead. Any other error is propagated unchanged.
+     */
+    public static <T> RFuture<T> recover(RFuture<T> future, Predicate<Throwable> when,
+                                         Supplier<? extends CompletionStage<T>> fallback) {
+        CompletableFuture<T> source = future.toCompletableFuture();
+        CompletableFuture<T> result = new CompletableFuture<>();
+        source.whenComplete((value, error) -> {
+            if (error == null) {
+                result.complete(value);
+                return;
+            }
+            Throwable cause = error instanceof CompletionException && error.getCause() != null ? error.getCause() : error;
+            if (!when.test(cause)) {
+                result.completeExceptionally(cause);
+                return;
+            }
+            fallback.get().whenComplete((fallbackValue, fallbackError) -> {
+                if (fallbackError != null) {
+                    result.completeExceptionally(fallbackError);
+                } else {
+                    result.complete(fallbackValue);
+                }
+            });
+        });
+        return toRFuture(result);
     }
 
     /**

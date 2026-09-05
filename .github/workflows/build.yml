@@ -57,7 +57,7 @@ jobs:
           java-version: 8
           cache: maven
       - name: Build with Maven
-        run: mvn clean install -DREDIS_HOST=localhost -DREDIS_PORT=52567 -DREDISAI_PORT=52568 -DREDIS_GEARS_PORT=6383 -DREDIS_GRAPH_PORT=6384 -Dgpg.skip --file pom.xml
+        run: mvn --fail-at-end clean install -DREDIS_HOST=localhost -DREDIS_PORT=52567 -DREDISAI_PORT=52568 -DREDIS_GEARS_PORT=6383 -DREDIS_GRAPH_PORT=6384 -Dgpg.skip --file pom.xml
       - uses: codecov/codecov-action@v4
         with:
           token: ${{ secrets.CODECOV_TOKEN }}

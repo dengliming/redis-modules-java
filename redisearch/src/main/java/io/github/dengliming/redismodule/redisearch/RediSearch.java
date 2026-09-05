@@ -16,6 +16,7 @@
 
 package io.github.dengliming.redismodule.redisearch;
 
+import io.github.dengliming.redismodule.common.RedissonAdapter;
 import io.github.dengliming.redismodule.common.util.ArgsUtil;
 import io.github.dengliming.redismodule.common.util.RAssert;
 import io.github.dengliming.redismodule.redisearch.aggregate.AggregateOptions;
@@ -49,7 +50,9 @@ import org.redisson.command.CommandAsyncExecutor;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import static io.github.dengliming.redismodule.redisearch.protocol.RedisCommands.FT_ADD;
@@ -376,7 +379,13 @@ public class RediSearch extends RedissonObject {
         RAssert.notNull(option, "ConfigOption must be not null");
         RAssert.notNull(value, "value must be not null");
 
-        return commandExecutor.writeAsync(getName(), codec, FT_CONFIG_SET, option.getKeyword(), value);
+        RFuture<Boolean> legacy = commandExecutor.writeAsync(getName(), codec, FT_CONFIG_SET, option.getKeyword(), value);
+        // Redis 8 removed FT.CONFIG in favour of CONFIG SET search-*
+        return RedissonAdapter.recover(legacy, RediSearch::isUnknownCommand, () -> {
+            RFuture<Void> modern = commandExecutor.writeAsync(getName(), codec,
+                    org.redisson.client.protocol.RedisCommands.CONFIG_SET, option.getConfigParameter(), value);
+            return RedissonAdapter.transform(modern, v -> Boolean.TRUE);
+        });
     }
 
     public Map<String, String> getConfig(ConfigOption option) {
@@ -386,7 +395,17 @@ public class RediSearch extends RedissonObject {
     public RFuture<Map<String, String>> getConfigAsync(ConfigOption option) {
         RAssert.notNull(option, "ConfigOption must be not null");
 
-        return commandExecutor.readAsync(getName(), StringCodec.INSTANCE, FT_CONFIG_GET, option.getKeyword());
+        RFuture<Map<String, String>> legacy = commandExecutor.readAsync(getName(), StringCodec.INSTANCE, FT_CONFIG_GET, option.getKeyword());
+        // Redis 8 removed FT.CONFIG in favour of CONFIG GET search-*; report the value under the FT.CONFIG keyword
+        return RedissonAdapter.recover(legacy, RediSearch::isUnknownCommand, () -> {
+            RFuture<Map<String, String>> modern = commandExecutor.readAsync(getName(), StringCodec.INSTANCE,
+                    org.redisson.client.protocol.RedisCommands.CONFIG_GET_MAP, option.getConfigParameter());
+            return RedissonAdapter.transform(modern, values -> {
+                Map<String, String> result = new HashMap<>();
+                values.forEach((k, v) -> result.put(option.getKeyword(), v));
+                return result;
+            });
+        });
     }
 
     public Map<String, String> getHelp(ConfigOption option) {
@@ -687,6 +706,11 @@ public class RediSearch extends RedissonObject {
 
     public RFuture<List<String>> listIndexesAsync() {
         return commandExecutor.readAsync(getName(), StringCodec.INSTANCE, FT_LIST);
+    }
+
+    private static boolean isUnknownCommand(Throwable error) {
+        String message = error.getMessage();
+        return message != null && message.toLowerCase(Locale.ROOT).contains("unknown command");
     }
 
     private void checkQueryArgument(String query) {
