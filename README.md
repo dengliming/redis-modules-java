@@ -155,7 +155,7 @@ Map<String, Object> actual = redisJSON.get(key, Map.class, new GetArgs().path(".
 redisJSONClient.shutdown();
 ```
 
-RedisJSON serializes with Gson by default. Plug in your own `JsonCodec` (Jackson, Moshi, ...) per client, or as a Spring bean when using the starter:
+RedisJSON serializes with Gson by default. Gson is an optional dependency of the `redisjson` artifact: add `com.google.code.gson:gson` yourself, or plug in your own `JsonCodec` (Jackson, Moshi, ...) per client or as a Spring bean when using the starter. The `all` artifact includes Gson.
 ```java
 JsonCodec jackson = new JsonCodec() {
     private final ObjectMapper mapper = new ObjectMapper();

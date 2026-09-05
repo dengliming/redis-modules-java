@@ -17,8 +17,8 @@
 package io.github.dengliming.redismodule.redisjson;
 
 import io.github.dengliming.redismodule.common.api.RCommonBatch;
-import io.github.dengliming.redismodule.redisjson.codec.GsonJsonCodec;
 import io.github.dengliming.redismodule.redisjson.codec.JsonCodec;
+import io.github.dengliming.redismodule.redisjson.codec.JsonCodecs;
 import org.redisson.api.BatchOptions;
 import org.redisson.command.CommandAsyncExecutor;
 
@@ -27,7 +27,7 @@ public class RedisJSONBatch extends RCommonBatch {
     private final JsonCodec jsonCodec;
 
     public RedisJSONBatch(CommandAsyncExecutor executor, BatchOptions options) {
-        this(executor, options, GsonJsonCodec.INSTANCE);
+        this(executor, options, JsonCodecs.defaultCodec());
     }
 
     public RedisJSONBatch(CommandAsyncExecutor executor, BatchOptions options, JsonCodec jsonCodec) {

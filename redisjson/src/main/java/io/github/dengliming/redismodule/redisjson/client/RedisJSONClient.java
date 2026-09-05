@@ -20,8 +20,8 @@ import io.github.dengliming.redismodule.common.BaseRedissonClient;
 import io.github.dengliming.redismodule.common.util.RAssert;
 import io.github.dengliming.redismodule.redisjson.RedisJSON;
 import io.github.dengliming.redismodule.redisjson.RedisJSONBatch;
-import io.github.dengliming.redismodule.redisjson.codec.GsonJsonCodec;
 import io.github.dengliming.redismodule.redisjson.codec.JsonCodec;
+import io.github.dengliming.redismodule.redisjson.codec.JsonCodecs;
 import org.redisson.api.BatchOptions;
 import org.redisson.api.RedissonClient;
 import org.redisson.config.Config;
@@ -31,7 +31,7 @@ public class RedisJSONClient extends BaseRedissonClient {
     private final JsonCodec jsonCodec;
 
     public RedisJSONClient(Config config) {
-        this(config, GsonJsonCodec.INSTANCE);
+        this(config, JsonCodecs.defaultCodec());
     }
 
     /**
@@ -48,7 +48,7 @@ public class RedisJSONClient extends BaseRedissonClient {
      * The caller stays responsible for shutting it down.
      */
     public RedisJSONClient(RedissonClient redisson) {
-        this(redisson, GsonJsonCodec.INSTANCE);
+        this(redisson, JsonCodecs.defaultCodec());
     }
 
     public RedisJSONClient(RedissonClient redisson, JsonCodec jsonCodec) {

@@ -20,8 +20,8 @@ import io.github.dengliming.redismodule.common.AbstractRedisModule;
 import io.github.dengliming.redismodule.common.util.RAssert;
 import io.github.dengliming.redismodule.redisjson.args.GetArgs;
 import io.github.dengliming.redismodule.redisjson.args.SetArgs;
-import io.github.dengliming.redismodule.redisjson.codec.GsonJsonCodec;
 import io.github.dengliming.redismodule.redisjson.codec.JsonCodec;
+import io.github.dengliming.redismodule.redisjson.codec.JsonCodecs;
 import org.redisson.api.RFuture;
 import org.redisson.client.codec.Codec;
 import org.redisson.client.codec.StringCodec;
@@ -70,7 +70,7 @@ public class RedisJSON extends AbstractRedisModule {
     private final JsonCodec jsonCodec;
 
     public RedisJSON(CommandAsyncExecutor commandExecutor) {
-        this(commandExecutor, GsonJsonCodec.INSTANCE);
+        this(commandExecutor, JsonCodecs.defaultCodec());
     }
 
     public RedisJSON(CommandAsyncExecutor commandExecutor, JsonCodec jsonCodec) {
@@ -79,7 +79,7 @@ public class RedisJSON extends AbstractRedisModule {
     }
 
     public RedisJSON(CommandAsyncExecutor commandExecutor, Codec codec) {
-        this(commandExecutor, codec, GsonJsonCodec.INSTANCE);
+        this(commandExecutor, codec, JsonCodecs.defaultCodec());
     }
 
     /**

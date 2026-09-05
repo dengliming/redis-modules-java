@@ -43,6 +43,11 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>redisjson</artifactId>
         </dependency>
+        <dependency>
+            <!-- Gson is optional in redisjson; the all-in-one artifact keeps the default JsonCodec working -->
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+        </dependency>
 
         <dependency>
             <groupId>${project.groupId}</groupId>
