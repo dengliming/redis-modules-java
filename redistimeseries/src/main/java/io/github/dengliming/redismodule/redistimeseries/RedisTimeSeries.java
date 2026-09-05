@@ -16,6 +16,7 @@
 
 package io.github.dengliming.redismodule.redistimeseries;
 
+import io.github.dengliming.redismodule.common.AbstractRedisModule;
 import io.github.dengliming.redismodule.common.util.RAssert;
 import io.github.dengliming.redismodule.redistimeseries.protocol.Keywords;
 import org.redisson.api.RFuture;
@@ -47,14 +48,14 @@ import static io.github.dengliming.redismodule.redistimeseries.protocol.RedisCom
 /**
  * @author dengliming
  */
-public class RedisTimeSeries {
-
-    private final CommandAsyncExecutor commandExecutor;
-    private final Codec codec;
+public class RedisTimeSeries extends AbstractRedisModule {
 
     public RedisTimeSeries(CommandAsyncExecutor commandExecutor) {
-        this.commandExecutor = commandExecutor;
-        this.codec = commandExecutor.getServiceManager().getCfg().getCodec();
+        super(commandExecutor);
+    }
+
+    public RedisTimeSeries(CommandAsyncExecutor commandExecutor, Codec codec) {
+        super(commandExecutor, codec);
     }
 
     /**
@@ -65,7 +66,7 @@ public class RedisTimeSeries {
      * @return
      */
     public boolean create(String key, TimeSeriesOptions options) {
-        return commandExecutor.get(createOrAlterAsync(key, options, true));
+        return get(createOrAlterAsync(key, options, true));
     }
 
     /**
@@ -75,7 +76,7 @@ public class RedisTimeSeries {
      * @return
      */
     public boolean alter(String key, TimeSeriesOptions options) {
-        return commandExecutor.get(createOrAlterAsync(key, options, false));
+        return get(createOrAlterAsync(key, options, false));
     }
 
     public RFuture<Boolean> createOrAlterAsync(String key, TimeSeriesOptions options, boolean create) {
@@ -86,9 +87,9 @@ public class RedisTimeSeries {
         args.add(key);
         options.build(args);
         if (create) {
-            return commandExecutor.writeAsync(key, codec, TS_CREATE, args.toArray());
+            return write(key, TS_CREATE, args.toArray());
         }
-        return commandExecutor.writeAsync(key, codec, TS_ALTER, args.toArray());
+        return write(key, TS_ALTER, args.toArray());
     }
 
     /**
@@ -99,7 +100,7 @@ public class RedisTimeSeries {
      * @return
      */
     public Long add(Sample sample, TimeSeriesOptions options) {
-        return commandExecutor.get(addAsync(sample, options));
+        return get(addAsync(sample, options));
     }
 
     public RFuture<Long> addAsync(Sample sample, TimeSeriesOptions options) {
@@ -112,7 +113,7 @@ public class RedisTimeSeries {
         if (options != null) {
             options.isAdd(true).build(args);
         }
-        return commandExecutor.writeAsync(sample.getKey(), codec, TS_ADD, args.toArray());
+        return write(sample.getKey(), TS_ADD, args.toArray());
     }
 
     /**
@@ -122,7 +123,7 @@ public class RedisTimeSeries {
      * @return
      */
     public List<Long> add(Sample... samples) {
-        return commandExecutor.get(addAsync(samples));
+        return get(addAsync(samples));
     }
 
     public RFuture<List<Long>> addAsync(Sample... samples) {
@@ -133,7 +134,7 @@ public class RedisTimeSeries {
             args.add(sample.getValue().getTimestamp() > 0 ? sample.getValue().getTimestamp() : "*");
             args.add(sample.getValue().getValue());
         }
-        return commandExecutor.writeAsync(samples[0].getKey(), codec, TS_MADD, args.toArray());
+        return write(samples[0].getKey(), TS_MADD, args.toArray());
     }
 
     /**
@@ -152,13 +153,13 @@ public class RedisTimeSeries {
     }
 
     public Long incrBy(String key, double value, long timestamp, TimeSeriesOptions options) {
-        return commandExecutor.get(incrByAsync(key, value, timestamp, options));
+        return get(incrByAsync(key, value, timestamp, options));
     }
 
     public RFuture<Long> incrByAsync(String key, double value, long timestamp, TimeSeriesOptions options) {
         RAssert.notNull(key, "key must not be empty");
 
-        return commandExecutor.writeAsync(key, codec, TS_INCRBY, buildCounterArgs(key, value, timestamp, options).toArray());
+        return write(key, TS_INCRBY, buildCounterArgs(key, value, timestamp, options).toArray());
     }
 
     /**
@@ -177,13 +178,13 @@ public class RedisTimeSeries {
     }
 
     public Long decrBy(String key, double value, long timestamp, TimeSeriesOptions options) {
-        return commandExecutor.get(decrByAsync(key, value, timestamp, options));
+        return get(decrByAsync(key, value, timestamp, options));
     }
 
     public RFuture<Long> decrByAsync(String key, double value, long timestamp, TimeSeriesOptions options) {
         RAssert.notNull(key, "key must not be null");
 
-        return commandExecutor.writeAsync(key, codec, TS_DECRBY, buildCounterArgs(key, value, timestamp, options).toArray());
+        return write(key, TS_DECRBY, buildCounterArgs(key, value, timestamp, options).toArray());
     }
 
     private List<Object> buildCounterArgs(String key, double value, long timestamp, TimeSeriesOptions options) {
@@ -208,7 +209,7 @@ public class RedisTimeSeries {
      * @return
      */
     public boolean createRule(String sourceKey, String destKey, Aggregation aggregationType, long timeBucket) {
-        return commandExecutor.get(createRuleAsync(sourceKey, destKey, aggregationType, timeBucket));
+        return get(createRuleAsync(sourceKey, destKey, aggregationType, timeBucket));
     }
 
     public RFuture<Boolean> createRuleAsync(String sourceKey, String destKey, Aggregation aggregationType, long timeBucket) {
@@ -216,7 +217,7 @@ public class RedisTimeSeries {
         RAssert.notNull(destKey, "destKey must not be null");
         RAssert.notNull(aggregationType, "aggregationType must not be null");
 
-        return commandExecutor.writeAsync(sourceKey, codec, TS_CREATERULE, sourceKey, destKey, Keywords.AGGREGATION, aggregationType.getKey(), timeBucket);
+        return write(sourceKey, TS_CREATERULE, sourceKey, destKey, Keywords.AGGREGATION, aggregationType.getKey(), timeBucket);
     }
 
     /**
@@ -227,14 +228,14 @@ public class RedisTimeSeries {
      * @return
      */
     public boolean deleteRule(String sourceKey, String destKey) {
-        return commandExecutor.get(deleteRuleAsync(sourceKey, destKey));
+        return get(deleteRuleAsync(sourceKey, destKey));
     }
 
     public RFuture<Boolean> deleteRuleAsync(String sourceKey, String destKey) {
         RAssert.notNull(sourceKey, "sourceKey must not be null");
         RAssert.notNull(destKey, "destKey must not be null");
 
-        return commandExecutor.writeAsync(sourceKey, codec, TS_DELETERULE, sourceKey, destKey);
+        return write(sourceKey, TS_DELETERULE, sourceKey, destKey);
     }
 
     /**
@@ -250,7 +251,7 @@ public class RedisTimeSeries {
     }
 
     public List<Value> range(String key, long from, long to, RangeOptions rangeOptions) {
-        return commandExecutor.get(rangeAsync(key, from, to, rangeOptions));
+        return get(rangeAsync(key, from, to, rangeOptions));
     }
 
     public RFuture<List<Value>> rangeAsync(String key, long from, long to, RangeOptions rangeOptions) {
@@ -261,7 +262,7 @@ public class RedisTimeSeries {
         if (rangeOptions != null) {
             rangeOptions.build(args);
         }
-        return commandExecutor.readAsync(key, StringCodec.INSTANCE, TS_RANGE, args.toArray());
+        return read(key, StringCodec.INSTANCE, TS_RANGE, args.toArray());
     }
 
     /**
@@ -277,7 +278,7 @@ public class RedisTimeSeries {
     }
 
     public List<Value> revRange(String key, long from, long to, RangeOptions rangeOptions) {
-        return commandExecutor.get(revRangeAsync(key, from, to, rangeOptions));
+        return get(revRangeAsync(key, from, to, rangeOptions));
     }
 
     public RFuture<List<Value>> revRangeAsync(String key, long from, long to, RangeOptions rangeOptions) {
@@ -288,7 +289,7 @@ public class RedisTimeSeries {
         if (rangeOptions != null) {
             rangeOptions.build(args);
         }
-        return commandExecutor.readAsync(key, StringCodec.INSTANCE, TS_REVRANGE, args.toArray());
+        return read(key, StringCodec.INSTANCE, TS_REVRANGE, args.toArray());
     }
 
     /**
@@ -301,7 +302,7 @@ public class RedisTimeSeries {
      * @return
      */
     public List<TimeSeries> mrange(long from, long to, RangeOptions rangeOptions, String... filters) {
-        return commandExecutor.get(mrangeAsync(from, to, rangeOptions, filters));
+        return get(mrangeAsync(from, to, rangeOptions, filters));
     }
 
     public RFuture<List<TimeSeries>> mrangeAsync(long from, long to, RangeOptions rangeOptions, String... filters) {
@@ -317,7 +318,7 @@ public class RedisTimeSeries {
         for (String filter : filters) {
             args.add(filter);
         }
-        return commandExecutor.readAsync(getName(), StringCodec.INSTANCE, TS_MRANGE, args.toArray());
+        return read(NO_KEY, StringCodec.INSTANCE, TS_MRANGE, args.toArray());
     }
 
     /**
@@ -331,7 +332,7 @@ public class RedisTimeSeries {
      * @return List of TimeSeries
      */
     public List<TimeSeries> mrange(long from, long to, RangeOptions rangeOptions, GroupByOptions groupBy, String... filters) {
-        return commandExecutor.get(mrangeAsync(from, to, rangeOptions, groupBy, filters));
+        return get(mrangeAsync(from, to, rangeOptions, groupBy, filters));
     }
 
     public RFuture<List<TimeSeries>> mrangeAsync(long from, long to, RangeOptions rangeOptions, GroupByOptions groupBy, String... filters) {
@@ -352,7 +353,7 @@ public class RedisTimeSeries {
             groupBy.build(args);
         }
 
-        return commandExecutor.readAsync(getName(), StringCodec.INSTANCE, TS_MRANGE, args.toArray());
+        return read(NO_KEY, StringCodec.INSTANCE, TS_MRANGE, args.toArray());
     }
 
     /**
@@ -362,11 +363,11 @@ public class RedisTimeSeries {
      * @return
      */
     public Value get(String key) {
-        return commandExecutor.get(getAsync(key));
+        return get(getAsync(key));
     }
 
     public RFuture<Value> getAsync(String key) {
-        return commandExecutor.readAsync(key, StringCodec.INSTANCE, TS_GET, key);
+        return read(key, StringCodec.INSTANCE, TS_GET, key);
     }
 
     /**
@@ -377,7 +378,7 @@ public class RedisTimeSeries {
      * @return
      */
     public List<TimeSeries> mget(boolean withLabels, String... filters) {
-        return commandExecutor.get(mgetAsync(withLabels, filters));
+        return get(mgetAsync(withLabels, filters));
     }
 
     public RFuture<List<TimeSeries>> mgetAsync(boolean withLabels, String... filters) {
@@ -390,7 +391,7 @@ public class RedisTimeSeries {
             args.add(filter);
         }
 
-        return commandExecutor.readAsync(getName(), StringCodec.INSTANCE, TS_MGET, args.toArray());
+        return read(NO_KEY, StringCodec.INSTANCE, TS_MGET, args.toArray());
     }
 
     /**
@@ -400,11 +401,11 @@ public class RedisTimeSeries {
      * @return
      */
     public Map<String, Object> info(String key) {
-        return commandExecutor.get(infoAsync(key));
+        return get(infoAsync(key));
     }
 
     public RFuture<Map<String, Object>> infoAsync(String key) {
-        return commandExecutor.readAsync(key, StringCodec.INSTANCE, TS_INFO, key);
+        return read(key, StringCodec.INSTANCE, TS_INFO, key);
     }
 
     /**
@@ -414,16 +415,13 @@ public class RedisTimeSeries {
      * @return
      */
     public List<String> queryIndex(String... filters) {
-        return commandExecutor.get(queryIndexAsync(filters));
+        return get(queryIndexAsync(filters));
     }
 
     public RFuture<List<String>> queryIndexAsync(String... filters) {
         RAssert.notEmpty(filters, "filters must not be empty");
 
-        return commandExecutor.readAsync(getName(), StringCodec.INSTANCE, TS_QUERYINDEX, filters);
+        return read(NO_KEY, StringCodec.INSTANCE, TS_QUERYINDEX, filters);
     }
 
-    public String getName() {
-        return null;
-    }
 }

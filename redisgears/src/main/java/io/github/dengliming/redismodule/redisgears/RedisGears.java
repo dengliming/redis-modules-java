@@ -16,6 +16,7 @@
 
 package io.github.dengliming.redismodule.redisgears;
 
+import io.github.dengliming.redismodule.common.AbstractRedisModule;
 import io.github.dengliming.redismodule.common.util.RAssert;
 import io.github.dengliming.redismodule.redisgears.model.ClusterInfo;
 import io.github.dengliming.redismodule.redisgears.protocol.Keywords;
@@ -38,18 +39,14 @@ import static io.github.dengliming.redismodule.redisgears.protocol.RedisCommands
 import static io.github.dengliming.redismodule.redisgears.protocol.RedisCommands.RG_REFRESHCLUSTER;
 import static io.github.dengliming.redismodule.redisgears.protocol.RedisCommands.RG_UNREGISTER;
 
-public class RedisGears {
-
-    private final CommandAsyncExecutor commandExecutor;
-    private final Codec codec;
+public class RedisGears extends AbstractRedisModule {
 
     public RedisGears(CommandAsyncExecutor commandExecutor) {
         this(commandExecutor, StringCodec.INSTANCE);
     }
 
     public RedisGears(CommandAsyncExecutor commandExecutor, Codec codec) {
-        this.commandExecutor = commandExecutor;
-        this.codec = codec;
+        super(commandExecutor, codec);
     }
 
     /**
@@ -59,7 +56,7 @@ public class RedisGears {
      * @return
      */
     public Object pyExecute(String function, boolean unBlocking, String... requirements) {
-        return commandExecutor.get(pyExecuteAsync(function, unBlocking, requirements));
+        return get(pyExecuteAsync(function, unBlocking, requirements));
     }
 
     public RFuture<Object> pyExecuteAsync(String function, boolean unBlocking, String... requirements) {
@@ -74,7 +71,7 @@ public class RedisGears {
             args.add(Keywords.REQUIREMENTS);
             args.add("\"" + String.join(" ", requirements) + "\"");
         }
-        return commandExecutor.writeAsync(getName(), codec, RG_PYEXECUTE, args.toArray());
+        return write(NO_KEY, RG_PYEXECUTE, args.toArray());
     }
 
     /**
@@ -86,13 +83,13 @@ public class RedisGears {
      * @return
      */
     public List<String> getConfig(String... keys) {
-        return commandExecutor.get(getConfigAsync(keys));
+        return get(getConfigAsync(keys));
     }
 
     public RFuture<List<String>> getConfigAsync(String... keys) {
         RAssert.notEmpty(keys, "keys must not be empty");
 
-        return commandExecutor.readAsync(getName(), codec, RG_CONFIGGET, keys);
+        return read(NO_KEY, RG_CONFIGGET, keys);
     }
 
     /**
@@ -104,7 +101,7 @@ public class RedisGears {
      * @return
      */
     public List<String> setConfig(Map<String, String> kvs) {
-        return commandExecutor.get(setConfigAsync(kvs));
+        return get(setConfigAsync(kvs));
     }
 
     public RFuture<List<String>> setConfigAsync(Map<String, String> kvs) {
@@ -115,7 +112,7 @@ public class RedisGears {
             args.add(k);
             args.add(v);
         });
-        return commandExecutor.writeAsync(getName(), codec, RG_CONFIGSET, args.toArray());
+        return write(NO_KEY, RG_CONFIGSET, args.toArray());
     }
 
     /**
@@ -126,11 +123,11 @@ public class RedisGears {
      * @return
      */
     public Map<String, Object> pyStats() {
-        return commandExecutor.get(pyStatsAsync());
+        return get(pyStatsAsync());
     }
 
     public RFuture<Map<String, Object>> pyStatsAsync() {
-        return commandExecutor.readAsync(getName(), codec, RG_PYSTATS);
+        return read(NO_KEY, RG_PYSTATS);
     }
 
     /**
@@ -142,13 +139,13 @@ public class RedisGears {
      * @return
      */
     public Boolean unRegister(String id) {
-        return commandExecutor.get(unRegisterAsync(id));
+        return get(unRegisterAsync(id));
     }
 
     public RFuture<Boolean> unRegisterAsync(String id) {
         RAssert.notEmpty(id, "id must not be empty");
 
-        return commandExecutor.writeAsync(getName(), codec, RG_UNREGISTER, id);
+        return write(NO_KEY, RG_UNREGISTER, id);
     }
 
     /**
@@ -159,11 +156,11 @@ public class RedisGears {
      * @return
      */
     public Boolean refreshCluster() {
-        return commandExecutor.get(refreshClusterAsync());
+        return get(refreshClusterAsync());
     }
 
     public RFuture<Boolean> refreshClusterAsync() {
-        return commandExecutor.writeAsync(getName(), codec, RG_REFRESHCLUSTER);
+        return write(NO_KEY, RG_REFRESHCLUSTER);
     }
 
     /**
@@ -175,11 +172,11 @@ public class RedisGears {
      * @return
      */
     public Boolean abortExecution(String id) {
-        return commandExecutor.get(abortExecutionAsync(id));
+        return get(abortExecutionAsync(id));
     }
 
     public RFuture<Boolean> abortExecutionAsync(String id) {
-        return commandExecutor.writeAsync(getName(), codec, RG_ABORTEXECUTION, id);
+        return write(NO_KEY, RG_ABORTEXECUTION, id);
     }
 
     /**
@@ -191,11 +188,11 @@ public class RedisGears {
      * @return
      */
     public Boolean dropExecution(String id) {
-        return commandExecutor.get(dropExecutionAsync(id));
+        return get(dropExecutionAsync(id));
     }
 
     public RFuture<Boolean> dropExecutionAsync(String id) {
-        return commandExecutor.writeAsync(getName(), codec, RG_DROPEXECUTION, id);
+        return write(NO_KEY, RG_DROPEXECUTION, id);
     }
 
     /**
@@ -206,14 +203,11 @@ public class RedisGears {
      * @return
      */
     public ClusterInfo clusterInfo() {
-        return commandExecutor.get(clusterInfoAsync());
+        return get(clusterInfoAsync());
     }
 
     public RFuture<ClusterInfo> clusterInfoAsync() {
-        return commandExecutor.readAsync(getName(), codec, RG_INFOCLUSTER);
+        return read(NO_KEY, RG_INFOCLUSTER);
     }
 
-    public String getName() {
-        return "";
-    }
 }

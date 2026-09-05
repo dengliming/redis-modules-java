@@ -52,7 +52,7 @@ public class BloomFilter extends RedissonObject {
     }
 
     public BloomFilter(CommandAsyncExecutor commandExecutor, String name) {
-        this(commandExecutor.getServiceManager().getCfg().getCodec(), commandExecutor, name);
+        super(commandExecutor, name);
     }
 
     /**

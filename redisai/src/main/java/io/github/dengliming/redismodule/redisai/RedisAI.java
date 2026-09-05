@@ -16,6 +16,7 @@
 
 package io.github.dengliming.redismodule.redisai;
 
+import io.github.dengliming.redismodule.common.AbstractRedisModule;
 import io.github.dengliming.redismodule.common.util.RAssert;
 import io.github.dengliming.redismodule.redisai.args.SetModelArgs;
 import io.github.dengliming.redismodule.redisai.args.StoreScriptArgs;
@@ -50,14 +51,14 @@ import static io.github.dengliming.redismodule.redisai.protocol.RedisCommands.AI
 /**
  * @author dengliming
  */
-public class RedisAI {
-
-    private final CommandAsyncExecutor commandExecutor;
-    private final Codec codec;
+public class RedisAI extends AbstractRedisModule {
 
     public RedisAI(CommandAsyncExecutor commandExecutor) {
-        this.commandExecutor = commandExecutor;
-        this.codec = commandExecutor.getServiceManager().getCfg().getCodec();
+        super(commandExecutor);
+    }
+
+    public RedisAI(CommandAsyncExecutor commandExecutor, Codec codec) {
+        super(commandExecutor, codec);
     }
 
     /**
@@ -71,7 +72,7 @@ public class RedisAI {
      * @return
      */
     public boolean setTensor(String key, DataType type, int[] dimensions, byte[] data, String[] values) {
-        return commandExecutor.get(setTensorAsync(key, type, dimensions, data, values));
+        return get(setTensorAsync(key, type, dimensions, data, values));
     }
 
     public RFuture<Boolean> setTensorAsync(String key, DataType type, int[] dimensions, byte[] data, String[] values) {
@@ -97,7 +98,7 @@ public class RedisAI {
                 args.add(value);
             }
         }
-        return commandExecutor.writeAsync(key, codec, AI_TENSORSET, args.toArray());
+        return write(key, AI_TENSORSET, args.toArray());
     }
 
     /**
@@ -108,7 +109,7 @@ public class RedisAI {
      * @return
      */
     public boolean setModel(String key, SetModelArgs args) {
-        return commandExecutor.get(setModelAsync(key, args));
+        return get(setModelAsync(key, args));
     }
 
     public RFuture<Boolean> setModelAsync(String key, SetModelArgs modelArgs) {
@@ -117,7 +118,7 @@ public class RedisAI {
         List<Object> args = new ArrayList<>();
         args.add(key);
         modelArgs.build(args);
-        return commandExecutor.writeAsync(key, ByteArrayCodec.INSTANCE, AI_MODELSET, args.toArray());
+        return write(key, ByteArrayCodec.INSTANCE, AI_MODELSET, args.toArray());
     }
 
     /**
@@ -135,7 +136,7 @@ public class RedisAI {
     }
 
     public boolean setScript(String key, Device device, String source, String tag) {
-        return commandExecutor.get(setScriptAsync(key, device, source, tag));
+        return get(setScriptAsync(key, device, source, tag));
     }
 
     public RFuture<Boolean> setScriptAsync(String key, Device device, String script, String tag) {
@@ -144,9 +145,9 @@ public class RedisAI {
         RAssert.notNull(script, "script must not be null");
 
         if (tag == null) {
-            return commandExecutor.writeAsync(key, codec, AI_SCRIPTSET, key, device, Keywords.SOURCE, script);
+            return write(key, AI_SCRIPTSET, key, device, Keywords.SOURCE, script);
         }
-        return commandExecutor.writeAsync(key, codec, AI_SCRIPTSET, key, device, Keywords.TAG, tag, Keywords.SOURCE, script);
+        return write(key, AI_SCRIPTSET, key, device, Keywords.TAG, tag, Keywords.SOURCE, script);
     }
 
     /**
@@ -155,7 +156,7 @@ public class RedisAI {
      * @return
      */
     public boolean runScript(String key, String function, String[] inputs, String[] outputs) {
-        return commandExecutor.get(runScriptAsync(key, function, inputs, outputs));
+        return get(runScriptAsync(key, function, inputs, outputs));
     }
 
     public RFuture<Boolean> runScriptAsync(String key, String function, String[] inputs, String[] outputs) {
@@ -175,7 +176,7 @@ public class RedisAI {
         for (int i = 0; i < outputs.length; i++) {
             args[4 + inputs.length + i] = outputs[i];
         }
-        return commandExecutor.writeAsync(key, codec, AI_SCRIPTRUN, args);
+        return write(key, AI_SCRIPTRUN, args);
     }
 
     /**
@@ -185,11 +186,11 @@ public class RedisAI {
      * @return
      */
     public boolean deleteModel(String key) {
-        return commandExecutor.get(deleteModelAsync(key));
+        return get(deleteModelAsync(key));
     }
 
     public RFuture<Boolean> deleteModelAsync(String key) {
-        return commandExecutor.writeAsync(key, codec, AI_MODELDEL, key);
+        return write(key, AI_MODELDEL, key);
     }
 
     /**
@@ -199,11 +200,11 @@ public class RedisAI {
      * @return
      */
     public boolean deleteScript(String key) {
-        return commandExecutor.get(deleteScriptAsync(key));
+        return get(deleteScriptAsync(key));
     }
 
     public RFuture<Boolean> deleteScriptAsync(String key) {
-        return commandExecutor.writeAsync(key, codec, AI_SCRIPTDEL, key);
+        return write(key, AI_SCRIPTDEL, key);
     }
 
     /**
@@ -214,11 +215,11 @@ public class RedisAI {
      * @return
      */
     public boolean loadBackend(Backend backEnd, String path) {
-        return commandExecutor.get(loadBackendAsync(backEnd, path));
+        return get(loadBackendAsync(backEnd, path));
     }
 
     public RFuture<Boolean> loadBackendAsync(Backend backEnd, String path) {
-        return commandExecutor.writeAsync(getName(), StringCodec.INSTANCE, AI_CONFIG, Keywords.LOADBACKEND, backEnd, path);
+        return write(NO_KEY, StringCodec.INSTANCE, AI_CONFIG, Keywords.LOADBACKEND, backEnd, path);
     }
 
     /**
@@ -228,11 +229,11 @@ public class RedisAI {
      * @return
      */
     public boolean setBackendPath(String path) {
-        return commandExecutor.get(setBackendPathAsync(path));
+        return get(setBackendPathAsync(path));
     }
 
     public RFuture<Boolean> setBackendPathAsync(String path) {
-        return commandExecutor.writeAsync(getName(), StringCodec.INSTANCE, AI_CONFIG, Keywords.BACKENDSPATH, path);
+        return write(NO_KEY, StringCodec.INSTANCE, AI_CONFIG, Keywords.BACKENDSPATH, path);
     }
 
     /**
@@ -242,11 +243,11 @@ public class RedisAI {
      * @return
      */
     public Map<String, Object> getInfo(String key) {
-        return commandExecutor.get(getInfoAsync(key));
+        return get(getInfoAsync(key));
     }
 
     public RFuture<Map<String, Object>> getInfoAsync(String key) {
-        return commandExecutor.readAsync(key, StringCodec.INSTANCE, AI_INFO, key);
+        return read(key, StringCodec.INSTANCE, AI_INFO, key);
     }
 
     /**
@@ -256,11 +257,11 @@ public class RedisAI {
      * @return
      */
     public boolean resetStat(String key) {
-        return commandExecutor.get(resetStatAsync(key));
+        return get(resetStatAsync(key));
     }
 
     public RFuture<Boolean> resetStatAsync(String key) {
-        return commandExecutor.writeAsync(key, StringCodec.INSTANCE, AI_INFO_RESETSTAT, key, Keywords.RESETSTAT);
+        return write(key, StringCodec.INSTANCE, AI_INFO_RESETSTAT, key, Keywords.RESETSTAT);
     }
 
     /**
@@ -270,13 +271,13 @@ public class RedisAI {
      * @return
      */
     public Tensor getTensor(String key) {
-        return commandExecutor.get(getTensorAsync(key));
+        return get(getTensorAsync(key));
     }
 
     public RFuture<Tensor> getTensorAsync(String key) {
         RAssert.notNull(key, "key must not be null");
 
-        return commandExecutor.readAsync(key, StringCodec.INSTANCE, AI_TENSORGET, key, Keywords.META, Keywords.BLOB);
+        return read(key, StringCodec.INSTANCE, AI_TENSORGET, key, Keywords.META, Keywords.BLOB);
     }
 
     /**
@@ -286,13 +287,13 @@ public class RedisAI {
      * @return
      */
     public Model getModel(String key) {
-        return commandExecutor.get(getModelAsync(key));
+        return get(getModelAsync(key));
     }
 
     public RFuture<Model> getModelAsync(String key) {
         RAssert.notNull(key, "key must not be null");
 
-        return commandExecutor.readAsync(key, StringCodec.INSTANCE, AI_MODELGET, key, Keywords.META, Keywords.BLOB);
+        return read(key, StringCodec.INSTANCE, AI_MODELGET, key, Keywords.META, Keywords.BLOB);
     }
 
     /**
@@ -304,13 +305,13 @@ public class RedisAI {
      * @return
      */
     public Script getScript(String key) {
-        return commandExecutor.get(getScriptAsync(key));
+        return get(getScriptAsync(key));
     }
 
     public RFuture<Script> getScriptAsync(String key) {
         RAssert.notNull(key, "key must not be null");
 
-        return commandExecutor.readAsync(key, StringCodec.INSTANCE, AI_SCRIPTGET, key, Keywords.META, Keywords.SOURCE);
+        return read(key, StringCodec.INSTANCE, AI_SCRIPTGET, key, Keywords.META, Keywords.SOURCE);
     }
 
     /**
@@ -321,7 +322,7 @@ public class RedisAI {
      * @return
      */
     public boolean storeScript(String key, StoreScriptArgs args) {
-        return commandExecutor.get(storeScriptAsync(key, args));
+        return get(storeScriptAsync(key, args));
     }
 
     public RFuture<Boolean> storeScriptAsync(String key, StoreScriptArgs storeScriptArgs) {
@@ -332,10 +333,7 @@ public class RedisAI {
         List<Object> args = new ArrayList<>();
         args.add(key);
         storeScriptArgs.build(args);
-        return commandExecutor.writeAsync(key, StringCodec.INSTANCE, AI_SCRIPTSTORE, args.toArray());
+        return write(key, StringCodec.INSTANCE, AI_SCRIPTSTORE, args.toArray());
     }
 
-    public String getName() {
-        return null;
-    }
 }

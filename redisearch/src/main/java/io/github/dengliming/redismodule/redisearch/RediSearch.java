@@ -92,7 +92,7 @@ public class RediSearch extends RedissonObject {
     }
 
     public RediSearch(CommandAsyncExecutor commandExecutor, String name) {
-        this(commandExecutor.getServiceManager().getCfg().getCodec(), commandExecutor, name);
+        super(commandExecutor, name);
     }
 
     /**

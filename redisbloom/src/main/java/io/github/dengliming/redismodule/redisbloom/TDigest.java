@@ -51,7 +51,7 @@ public class TDigest extends RedissonObject {
     }
 
     public TDigest(CommandAsyncExecutor commandExecutor, String name) {
-        this(commandExecutor.getServiceManager().getCfg().getCodec(), commandExecutor, name);
+        super(commandExecutor, name);
     }
 
     /**

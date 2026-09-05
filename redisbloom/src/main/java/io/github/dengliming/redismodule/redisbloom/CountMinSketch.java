@@ -46,7 +46,7 @@ public class CountMinSketch extends RedissonObject {
     }
 
     public CountMinSketch(CommandAsyncExecutor commandExecutor, String name) {
-        this(commandExecutor.getServiceManager().getCfg().getCodec(), commandExecutor, name);
+        super(commandExecutor, name);
     }
 
     /**

@@ -16,6 +16,7 @@
 
 package io.github.dengliming.redismodule.redisgraph;
 
+import io.github.dengliming.redismodule.common.AbstractRedisModule;
 import io.github.dengliming.redismodule.common.util.RAssert;
 import io.github.dengliming.redismodule.redisgraph.model.Record;
 import io.github.dengliming.redismodule.redisgraph.model.ResultSet;
@@ -25,8 +26,6 @@ import org.redisson.client.codec.Codec;
 import org.redisson.client.codec.StringCodec;
 import org.redisson.client.protocol.RedisCommand;
 import org.redisson.command.CommandAsyncExecutor;
-import org.redisson.command.CommandBatchService;
-import org.redisson.misc.CompletableFutureWrapper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,19 +44,16 @@ import static io.github.dengliming.redismodule.redisgraph.protocol.RedisCommands
 import static io.github.dengliming.redismodule.redisgraph.protocol.RedisCommands.GRAPH_READ_ONLY_QUERY;
 import static io.github.dengliming.redismodule.redisgraph.protocol.RedisCommands.GRAPH_SLOWLOG;
 
-public class RedisGraph {
+public class RedisGraph extends AbstractRedisModule {
 
-    private final CommandAsyncExecutor commandExecutor;
-    private final Codec codec;
     private final Map<String, GraphCache> caches = new ConcurrentHashMap<>();
 
     public RedisGraph(CommandAsyncExecutor commandExecutor) {
-        this(commandExecutor, commandExecutor.getServiceManager().getCfg().getCodec());
+        super(commandExecutor);
     }
 
     public RedisGraph(CommandAsyncExecutor commandExecutor, Codec codec) {
-        this.commandExecutor = commandExecutor;
-        this.codec = codec;
+        super(commandExecutor, codec);
     }
 
     /**
@@ -69,13 +65,13 @@ public class RedisGraph {
      * @return
      */
     public Map<String, Object> getConfig(String parameter) {
-        return commandExecutor.get(getConfigAsync(parameter));
+        return get(getConfigAsync(parameter));
     }
 
     public RFuture<Map<String, Object>> getConfigAsync(String parameter) {
         RAssert.notEmpty(parameter, "parameter must not be empty");
 
-        return commandExecutor.readAsync(getName(), StringCodec.INSTANCE, GRAPH_CONFIG_GET, parameter);
+        return read(NO_KEY, StringCodec.INSTANCE, GRAPH_CONFIG_GET, parameter);
     }
 
     /**
@@ -88,14 +84,14 @@ public class RedisGraph {
      * @return
      */
     public Boolean setConfig(String name, Object value) {
-        return commandExecutor.get(setConfigAsync(name, value));
+        return get(setConfigAsync(name, value));
     }
 
     public RFuture<Boolean> setConfigAsync(String name, Object value) {
         RAssert.notEmpty(name, "name must not be empty");
         RAssert.notNull(value, "value must not be null");
 
-        return commandExecutor.writeAsync(getName(), codec, GRAPH_CONFIG_SET, name, value);
+        return write(NO_KEY, GRAPH_CONFIG_SET, name, value);
     }
 
     /**
@@ -107,13 +103,13 @@ public class RedisGraph {
      * @return
      */
     public String delete(String name) {
-        return commandExecutor.get(deleteAsync(name));
+        return get(deleteAsync(name));
     }
 
     public RFuture<String> deleteAsync(String name) {
         RAssert.notEmpty(name, "name must not be empty");
 
-        return commandExecutor.writeAsync(name, StringCodec.INSTANCE, GRAPH_DELETE, name);
+        return write(name, StringCodec.INSTANCE, GRAPH_DELETE, name);
     }
 
     /**
@@ -124,11 +120,11 @@ public class RedisGraph {
      * @return
      */
     public List<String> list() {
-        return commandExecutor.get(listAsync());
+        return get(listAsync());
     }
 
     public RFuture<List<String>> listAsync() {
-        return commandExecutor.readAsync(getName(), StringCodec.INSTANCE, GRAPH_LIST);
+        return read(NO_KEY, StringCodec.INSTANCE, GRAPH_LIST);
     }
 
     /**
@@ -139,14 +135,14 @@ public class RedisGraph {
      * @return
      */
     public List<String> profile(String graphName, String query, long timeout) {
-        return commandExecutor.get(profileAsync(graphName, query, timeout));
+        return get(profileAsync(graphName, query, timeout));
     }
 
     public RFuture<List<String>> profileAsync(String graphName, String query, long timeout) {
         if (timeout > 0) {
-            return commandExecutor.readAsync(graphName, StringCodec.INSTANCE, GRAPH_PROFILE, graphName, query, timeout);
+            return read(graphName, StringCodec.INSTANCE, GRAPH_PROFILE, graphName, query, timeout);
         }
-        return commandExecutor.readAsync(graphName, StringCodec.INSTANCE, GRAPH_PROFILE, graphName, query);
+        return read(graphName, StringCodec.INSTANCE, GRAPH_PROFILE, graphName, query);
     }
 
 
@@ -159,11 +155,11 @@ public class RedisGraph {
      * @return
      */
     public List<String> explain(String graphName, String query) {
-        return commandExecutor.get(explainAsync(graphName, query));
+        return get(explainAsync(graphName, query));
     }
 
     public RFuture<List<String>> explainAsync(String graphName, String query) {
-        return commandExecutor.readAsync(graphName, StringCodec.INSTANCE, GRAPH_EXPLAIN, graphName, query);
+        return read(graphName, StringCodec.INSTANCE, GRAPH_EXPLAIN, graphName, query);
     }
 
     /**
@@ -174,11 +170,11 @@ public class RedisGraph {
      * @return
      */
     public List<SlowLogItem> slowLog(String graphName) {
-        return commandExecutor.get(slowLogAsync(graphName));
+        return get(slowLogAsync(graphName));
     }
 
     public RFuture<List<SlowLogItem>> slowLogAsync(String graphName) {
-        return commandExecutor.readAsync(graphName, StringCodec.INSTANCE, GRAPH_SLOWLOG, graphName);
+        return read(graphName, StringCodec.INSTANCE, GRAPH_SLOWLOG, graphName);
     }
 
     /**
@@ -189,7 +185,7 @@ public class RedisGraph {
      * @return
      */
     public ResultSet query(String graphName, String query, long timeout) {
-        return commandExecutor.get(queryAsync(graphName, query, timeout));
+        return get(queryAsync(graphName, query, timeout));
     }
 
     public RFuture<ResultSet> queryAsync(String graphName, String query, long timeout) {
@@ -204,7 +200,7 @@ public class RedisGraph {
      * @return
      */
     public ResultSet readOnlyQuery(String graphName, String query, long timeout) {
-        return commandExecutor.get(readOnlyQueryAsync(graphName, query, timeout));
+        return get(readOnlyQueryAsync(graphName, query, timeout));
     }
 
     public RFuture<ResultSet> readOnlyQueryAsync(String graphName, String query, long timeout) {
@@ -216,9 +212,9 @@ public class RedisGraph {
         RAssert.notNull(query, "query must not be null");
 
         if (timeout > 0) {
-            return commandExecutor.readAsync(graphName, StringCodec.INSTANCE, command, graphName, query, timeout, __COMPACT.getAlias());
+            return read(graphName, StringCodec.INSTANCE, command, graphName, query, timeout, __COMPACT.getAlias());
         }
-        return commandExecutor.readAsync(graphName, StringCodec.INSTANCE, command, graphName, query, __COMPACT.getAlias());
+        return read(graphName, StringCodec.INSTANCE, command, graphName, query, __COMPACT.getAlias());
     }
 
     /**
@@ -228,30 +224,25 @@ public class RedisGraph {
      * Inside a batch the follow-up procedure call cannot be issued, so names stay unresolved there.
      */
     private RFuture<ResultSet> resolveNames(String graphName, RFuture<ResultSet> future) {
-        if (commandExecutor instanceof CommandBatchService) {
+        if (isBatch()) {
             return future;
         }
         GraphCache cache = caches.computeIfAbsent(graphName, k -> new GraphCache());
-        CompletableFuture<ResultSet> raw = future.toCompletableFuture();
-        CompletableFuture<ResultSet> result = raw
-                .thenCompose(resultSet -> cache.resolve(resultSet, procedure -> callProcedure(graphName, procedure)));
-        return new CompletableFutureWrapper<>(result);
+        return compose(future, resultSet -> cache.resolve(resultSet, procedure -> callProcedure(graphName, procedure)));
     }
 
     private CompletableFuture<List<String>> callProcedure(String graphName, String procedure) {
-        CompletableFuture<ResultSet> raw = rawQueryAsync(GRAPH_QUERY, graphName, procedure, 0L).toCompletableFuture();
-        return raw.thenApply(resultSet -> {
-            List<String> names = new ArrayList<>();
+        RFuture<ResultSet> raw = rawQueryAsync(GRAPH_QUERY, graphName, procedure, 0L);
+        RFuture<List<String>> names = transform(raw, resultSet -> {
+            List<String> result = new ArrayList<>();
             if (resultSet.getResults() != null) {
                 for (Record record : resultSet.getResults()) {
-                    names.add(String.valueOf(record.getValue(0)));
+                    result.add(String.valueOf(record.getValue(0)));
                 }
             }
-            return names;
+            return result;
         });
+        return names.toCompletableFuture();
     }
 
-    public String getName() {
-        return "";
-    }
 }

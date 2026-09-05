@@ -16,6 +16,7 @@
 
 package io.github.dengliming.redismodule.redisjson;
 
+import io.github.dengliming.redismodule.common.AbstractRedisModule;
 import io.github.dengliming.redismodule.common.util.RAssert;
 import io.github.dengliming.redismodule.redisjson.args.GetArgs;
 import io.github.dengliming.redismodule.redisjson.args.SetArgs;
@@ -24,13 +25,11 @@ import org.redisson.api.RFuture;
 import org.redisson.client.codec.Codec;
 import org.redisson.client.codec.StringCodec;
 import org.redisson.command.CommandAsyncExecutor;
-import org.redisson.misc.CompletableFutureWrapper;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 import static io.github.dengliming.redismodule.redisjson.protocol.RedisCommands.JSON_ARRAPPEND;
@@ -51,11 +50,9 @@ import static io.github.dengliming.redismodule.redisjson.protocol.RedisCommands.
 import static io.github.dengliming.redismodule.redisjson.protocol.RedisCommands.JSON_STRLEN;
 import static io.github.dengliming.redismodule.redisjson.protocol.RedisCommands.JSON_TYPE;
 
-public class RedisJSON {
+public class RedisJSON extends AbstractRedisModule {
 
     private static final Map<String, Class> CLASS_TYPE_MAPPING;
-    private final CommandAsyncExecutor commandExecutor;
-    private final Codec codec;
 
     static {
         CLASS_TYPE_MAPPING = new HashMap<>();
@@ -70,12 +67,11 @@ public class RedisJSON {
     }
 
     public RedisJSON(CommandAsyncExecutor commandExecutor) {
-        this(commandExecutor, commandExecutor.getServiceManager().getCfg().getCodec());
+        super(commandExecutor);
     }
 
     public RedisJSON(CommandAsyncExecutor commandExecutor, Codec codec) {
-        this.commandExecutor = commandExecutor;
-        this.codec = codec;
+        super(commandExecutor, codec);
     }
 
     /**
@@ -88,16 +84,16 @@ public class RedisJSON {
      * @return the number of paths deleted (0 or 1).
      */
     public long del(String key, String path) {
-        return commandExecutor.get(delAsync(key, path));
+        return get(delAsync(key, path));
     }
 
     public RFuture<Long> delAsync(String key, String path) {
         RAssert.notEmpty(key, "key must not be empty");
 
         if (path == null) {
-            return commandExecutor.writeAsync(key, StringCodec.INSTANCE, JSON_DEL, key);
+            return write(key, StringCodec.INSTANCE, JSON_DEL, key);
         }
-        return commandExecutor.writeAsync(key, StringCodec.INSTANCE, JSON_DEL, key, path);
+        return write(key, StringCodec.INSTANCE, JSON_DEL, key, path);
     }
 
     /**
@@ -111,14 +107,14 @@ public class RedisJSON {
      * @return Simple String OK if executed correctly.
      */
     public String set(String key, SetArgs setArgs) {
-        return commandExecutor.get(setAsync(key, setArgs));
+        return get(setAsync(key, setArgs));
     }
 
     public RFuture<String> setAsync(String key, SetArgs setArgs) {
         RAssert.notEmpty(key, "key must not be empty");
         RAssert.notNull(setArgs, "setArgs must not be null");
 
-        return commandExecutor.writeAsync(key, StringCodec.INSTANCE, JSON_SET, setArgs.build(key).toArray());
+        return write(key, StringCodec.INSTANCE, JSON_SET, setArgs.build(key).toArray());
     }
 
     /**
@@ -138,7 +134,7 @@ public class RedisJSON {
      * @return
      */
     public <T> T get(String key, Class<T> clazz, GetArgs getArgs) {
-        return commandExecutor.get(getAsync(key, clazz, getArgs));
+        return get(getAsync(key, clazz, getArgs));
     }
 
     public <T> RFuture<T> getAsync(String key, Class<T> clazz, GetArgs getArgs) {
@@ -146,7 +142,7 @@ public class RedisJSON {
         RAssert.notNull(clazz, "clazz must not be null");
         RAssert.notNull(getArgs, "getArgs must not be null");
 
-        RFuture<String> getFuture = commandExecutor.readAsync(key, StringCodec.INSTANCE, JSON_GET, getArgs.build(key).toArray());
+        RFuture<String> getFuture = read(key, StringCodec.INSTANCE, JSON_GET, getArgs.build(key).toArray());
         return transformRPromiseResult(getFuture, clazz);
     }
 
@@ -154,7 +150,7 @@ public class RedisJSON {
      * Returns the values at path from multiple key s. Non-existing keys and non-existing paths are reported as null.
      */
     public <T> List<T> mget(String path, Class<T> clazz, String... keys) {
-        return commandExecutor.get(mgetAsync(path, clazz, keys));
+        return get(mgetAsync(path, clazz, keys));
     }
 
     public <T> RFuture<List<T>> mgetAsync(String path, Class<T> clazz, String... keys) {
@@ -162,26 +158,13 @@ public class RedisJSON {
         RAssert.notEmpty(path, "path must not be empty");
         RAssert.notNull(clazz, "clazz must not be null");
 
-        CompletableFuture result = new CompletableFuture();
         List<String> args = new ArrayList<>(keys.length + 1);
         for (String key : keys) {
             args.add(key);
         }
         args.add(path);
-        RFuture<List<String>> getFuture = commandExecutor.readAsync(keys[0], StringCodec.INSTANCE, JSON_MGET, args.toArray());
-        getFuture.onComplete((res, e) -> {
-            if (e != null) {
-                result.completeExceptionally(e);
-                return;
-            }
-
-            try {
-                result.complete(res.stream().map(it -> GsonUtils.fromJson(it, clazz)).collect(Collectors.toList()));
-            } catch (Throwable t) {
-                result.completeExceptionally(t);
-            }
-        });
-        return new CompletableFutureWrapper<List<T>>(result);
+        RFuture<List<String>> getFuture = read(keys[0], StringCodec.INSTANCE, JSON_MGET, args.toArray());
+        return transform(getFuture, res -> res.stream().map(it -> GsonUtils.fromJson(it, clazz)).collect(Collectors.toList()));
     }
 
     /**
@@ -194,31 +177,20 @@ public class RedisJSON {
      * @return the Java type mapped from the JSON type name; {@link Void} for a JSON null
      */
     public Class getType(String key, String path) {
-        return commandExecutor.get(getTypeAsync(key, path));
+        return get(getTypeAsync(key, path));
     }
 
     public RFuture<Class> getTypeAsync(String key, String path) {
         RAssert.notEmpty(key, "key must not be empty");
         RAssert.notNull(path, "path must not be null");
 
-        CompletableFuture result = new CompletableFuture<Class>();
-        RFuture<String> getFuture = commandExecutor.readAsync(key, StringCodec.INSTANCE, JSON_TYPE, key, path);
-        getFuture.onComplete((res, e) -> {
-            if (e != null) {
-                result.completeExceptionally(e);
-                return;
+        RFuture<String> getFuture = read(key, StringCodec.INSTANCE, JSON_TYPE, key, path);
+        return transform(getFuture, res -> {
+            if (!CLASS_TYPE_MAPPING.containsKey(res)) {
+                throw new RuntimeException("Unknown type " + res);
             }
-
-            try {
-                if (!CLASS_TYPE_MAPPING.containsKey(res)) {
-                    throw new RuntimeException("Unknown type " + res);
-                }
-                result.complete(CLASS_TYPE_MAPPING.get(res));
-            } catch (Throwable t) {
-                result.completeExceptionally(t);
-            }
+            return CLASS_TYPE_MAPPING.get(res);
         });
-        return new CompletableFutureWrapper<Class>(result);
     }
 
     /**
@@ -232,14 +204,14 @@ public class RedisJSON {
      * @return Bulk String, specifically the stringified new value.
      */
     public String incrBy(String key, String path, long num) {
-        return commandExecutor.get(incrByAsync(key, path, num));
+        return get(incrByAsync(key, path, num));
     }
 
     public RFuture<String> incrByAsync(String key, String path, long num) {
         RAssert.notEmpty(key, "key must not be empty");
         RAssert.notNull(path, "path must not be null");
 
-        return commandExecutor.writeAsync(key, StringCodec.INSTANCE, JSON_NUMINCRBY, key, path, num);
+        return write(key, StringCodec.INSTANCE, JSON_NUMINCRBY, key, path, num);
     }
 
     /**
@@ -253,14 +225,14 @@ public class RedisJSON {
      * @return Bulk String, specifically the stringified new value.
      */
     public String multBy(String key, String path, long num) {
-        return commandExecutor.get(multByAsync(key, path, num));
+        return get(multByAsync(key, path, num));
     }
 
     public RFuture<String> multByAsync(String key, String path, long num) {
         RAssert.notEmpty(key, "key must not be empty");
         RAssert.notNull(path, "path must not be null");
 
-        return commandExecutor.writeAsync(key, StringCodec.INSTANCE, JSON_NUMMULTBY, key, path, num);
+        return write(key, StringCodec.INSTANCE, JSON_NUMMULTBY, key, path, num);
     }
 
     /**
@@ -274,7 +246,7 @@ public class RedisJSON {
      * @return
      */
     public long strAppend(String key, String path, Object object) {
-        return commandExecutor.get(strAppendAsync(key, path, object));
+        return get(strAppendAsync(key, path, object));
     }
 
     public RFuture<Long> strAppendAsync(String key, String path, Object object) {
@@ -282,7 +254,7 @@ public class RedisJSON {
         RAssert.notNull(path, "path must not be null");
         RAssert.notNull(object, "object must not be null");
 
-        return commandExecutor.writeAsync(key, StringCodec.INSTANCE, JSON_STRAPPEND, key, path, GsonUtils.toJson(object));
+        return write(key, StringCodec.INSTANCE, JSON_STRAPPEND, key, path, GsonUtils.toJson(object));
     }
 
     /**
@@ -295,14 +267,14 @@ public class RedisJSON {
      * @return
      */
     public long strLen(String key, String path) {
-        return commandExecutor.get(strLenAsync(key, path));
+        return get(strLenAsync(key, path));
     }
 
     public RFuture<Long> strLenAsync(String key, String path) {
         RAssert.notEmpty(key, "key must not be empty");
         RAssert.notNull(path, "path must not be null");
 
-        return commandExecutor.readAsync(key, StringCodec.INSTANCE, JSON_STRLEN, key, path);
+        return read(key, StringCodec.INSTANCE, JSON_STRLEN, key, path);
     }
 
     /**
@@ -315,7 +287,7 @@ public class RedisJSON {
      * @return
      */
     public long arrAppend(String key, String path, Object... objects) {
-        return commandExecutor.get(arrAppendAsync(key, path, objects));
+        return get(arrAppendAsync(key, path, objects));
     }
 
     public RFuture<Long> arrAppendAsync(String key, String path, Object... objects) {
@@ -329,7 +301,7 @@ public class RedisJSON {
         for (Object object : objects) {
             args.add(GsonUtils.toJson(object));
         }
-        return commandExecutor.writeAsync(key, StringCodec.INSTANCE, JSON_ARRAPPEND, args.toArray());
+        return write(key, StringCodec.INSTANCE, JSON_ARRAPPEND, args.toArray());
     }
 
     /**
@@ -342,7 +314,7 @@ public class RedisJSON {
      * @return
      */
     public long arrInsert(String key, String path, long index, Object... objects) {
-        return commandExecutor.get(arrInsertAsync(key, path, index, objects));
+        return get(arrInsertAsync(key, path, index, objects));
     }
 
     public RFuture<Long> arrInsertAsync(String key, String path, long index, Object... objects) {
@@ -357,7 +329,7 @@ public class RedisJSON {
         for (Object object : objects) {
             args.add(GsonUtils.toJson(object));
         }
-        return commandExecutor.writeAsync(key, StringCodec.INSTANCE, JSON_ARRINSERT, args.toArray());
+        return write(key, StringCodec.INSTANCE, JSON_ARRINSERT, args.toArray());
     }
 
     /**
@@ -370,14 +342,14 @@ public class RedisJSON {
      * @return
      */
     public long arrLen(String key, String path) {
-        return commandExecutor.get(arrLenAsync(key, path));
+        return get(arrLenAsync(key, path));
     }
 
     public RFuture<Long> arrLenAsync(String key, String path) {
         RAssert.notEmpty(key, "key must not be empty");
         RAssert.notNull(path, "path must not be null");
 
-        return commandExecutor.readAsync(key, StringCodec.INSTANCE, JSON_ARRLEN, key, path);
+        return read(key, StringCodec.INSTANCE, JSON_ARRLEN, key, path);
     }
 
     /**
@@ -392,14 +364,14 @@ public class RedisJSON {
      * @return
      */
     public long arrTrim(String key, String path, long start, long stop) {
-        return commandExecutor.get(arrTrimAsync(key, path, start, stop));
+        return get(arrTrimAsync(key, path, start, stop));
     }
 
     public RFuture<Long> arrTrimAsync(String key, String path, long start, long stop) {
         RAssert.notEmpty(key, "key must not be empty");
         RAssert.notNull(path, "path must not be null");
 
-        return commandExecutor.readAsync(key, StringCodec.INSTANCE, JSON_ARRTRIM, key, path, start, stop);
+        return read(key, StringCodec.INSTANCE, JSON_ARRTRIM, key, path, start, stop);
     }
 
     /**
@@ -415,7 +387,7 @@ public class RedisJSON {
      * @return
      */
     public long arrIndex(String key, String path, Object scalar, long start, long stop) {
-        return commandExecutor.get(arrIndexAsync(key, path, scalar, start, stop));
+        return get(arrIndexAsync(key, path, scalar, start, stop));
     }
 
     public RFuture<Long> arrIndexAsync(String key, String path, Object scalar, long start, long stop) {
@@ -423,7 +395,7 @@ public class RedisJSON {
         RAssert.notNull(path, "path must not be null");
         RAssert.notNull(scalar, "scalar must not be null");
 
-        return commandExecutor.readAsync(key, StringCodec.INSTANCE, JSON_ARRINDEX, key, path,
+        return read(key, StringCodec.INSTANCE, JSON_ARRINDEX, key, path,
                 GsonUtils.toJson(scalar), start, stop);
     }
 
@@ -440,7 +412,7 @@ public class RedisJSON {
      * @return
      */
     public <T> T arrPop(String key, String path, Class<T> clazz, long index) {
-        return commandExecutor.get(arrPopAsync(key, path, clazz, index));
+        return get(arrPopAsync(key, path, clazz, index));
     }
 
     public <T> RFuture<T> arrPopAsync(String key, String path, Class<T> clazz, long index) {
@@ -448,25 +420,12 @@ public class RedisJSON {
         RAssert.notNull(path, "path must not be null");
         RAssert.notNull(clazz, "clazz must not be null");
 
-        RFuture<String> getFuture = commandExecutor.writeAsync(key, StringCodec.INSTANCE, JSON_ARRPOP, key, path, index);
+        RFuture<String> getFuture = write(key, StringCodec.INSTANCE, JSON_ARRPOP, key, path, index);
         return transformRPromiseResult(getFuture, clazz);
     }
 
     private <T> RFuture<T> transformRPromiseResult(RFuture<String> getFuture, Class<T> clazz) {
-        CompletableFuture result = new CompletableFuture();
-        getFuture.onComplete((res, e) -> {
-            if (e != null) {
-                result.completeExceptionally(e);
-                return;
-            }
-
-            try {
-                result.complete(GsonUtils.fromJson(res, clazz));
-            } catch (Throwable t) {
-                result.completeExceptionally(t);
-            }
-        });
-        return new CompletableFutureWrapper<T>(result);
+        return transform(getFuture, res -> GsonUtils.fromJson(res, clazz));
     }
 
     /**
@@ -479,14 +438,14 @@ public class RedisJSON {
      * @return
      */
     public Long objLen(String key, String path) {
-        return commandExecutor.get(objLenAsync(key, path));
+        return get(objLenAsync(key, path));
     }
 
     public RFuture<Long> objLenAsync(String key, String path) {
         RAssert.notEmpty(key, "key must not be empty");
         RAssert.notNull(path, "path must not be null");
 
-        return commandExecutor.readAsync(key, StringCodec.INSTANCE, JSON_OBJLEN, key, path);
+        return read(key, StringCodec.INSTANCE, JSON_OBJLEN, key, path);
     }
 
     /**
@@ -499,17 +458,14 @@ public class RedisJSON {
      * @return
      */
     public List<Object> objKeys(String key, String path) {
-        return commandExecutor.get(objKeysAsync(key, path));
+        return get(objKeysAsync(key, path));
     }
 
     public RFuture<List<Object>> objKeysAsync(String key, String path) {
         RAssert.notEmpty(key, "key must not be empty");
         RAssert.notNull(path, "path must not be null");
 
-        return commandExecutor.readAsync(key, StringCodec.INSTANCE, JSON_OBJKEYS, key, path);
+        return read(key, StringCodec.INSTANCE, JSON_OBJKEYS, key, path);
     }
 
-    public String getName() {
-        return "";
-    }
 }

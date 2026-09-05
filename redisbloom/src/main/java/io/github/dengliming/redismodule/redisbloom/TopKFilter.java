@@ -42,7 +42,7 @@ import static io.github.dengliming.redismodule.redisbloom.protocol.RedisCommands
 public class TopKFilter extends RedissonObject {
 
     public TopKFilter(CommandAsyncExecutor commandExecutor, String name) {
-        this(commandExecutor.getServiceManager().getCfg().getCodec(), commandExecutor, name);
+        super(commandExecutor, name);
     }
 
     public TopKFilter(Codec codec, CommandAsyncExecutor commandExecutor, String name) {
