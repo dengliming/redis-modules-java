@@ -1,16 +1,24 @@
-# Java Client for RedisGraph 
-See https://oss.redislabs.com/redisgraph/ for more details.
+# RedisGraph Client
 
-## Redis commands mapping
-Redis command|Sync / Async Api|
-| --- | --- |
-GRAPH.CONFIG | RedisGraph.<br/>getConfig()<br/>getConfigAsync()<br/>setConfig()<br/>setConfigAsync() |
-GRAPH.DELETE | RedisGraph.<br/>delete()<br/>deleteAsync()<br/> |
-GRAPH.EXPLAIN | RedisGraph.<br/>explain()<br/>explainAsync()<br/> |
-GRAPH.LIST | RedisGraph.<br/>list()<br/>listAsync()<br/> |
-GRAPH.PROFILE | RedisGraph.<br/>profile()<br/>profileAsync()<br/> |
-GRAPH.QUERY | RedisGraph.<br/>query()<br/>queryAsync()<br/> |
-GRAPH.RO_QUERY | RedisGraph.<br/>readOnlyQuery()<br/>readOnlyQueryAsync()<br/> |
-GRAPH.SLOWLOG | RedisGraph.<br/>slowLog()<br/>slowLogAsync()<br/> |
+> **Deprecated.** RedisGraph reached end of life upstream and is not part of Redis 8. This module is kept
+> for existing users of RedisGraph 2.x and will be removed in a future major release.
 
+Project: https://github.com/RedisGraph/RedisGraph
 
+Obtain `RedisGraph` from `RedisGraphClient.getRedisGraph()` or from `RedisGraphBatch` for pipelining.
+Query results are returned in compact form; property names and relationship types are resolved through a
+per-graph cache (not inside a batch). Every method has an `*Async` twin.
+
+## Command mapping
+
+| Redis command | Java API | Notes |
+| --- | --- | --- |
+| GRAPH.QUERY | `RedisGraph.query()` | |
+| GRAPH.RO_QUERY | `RedisGraph.readOnlyQuery()` | |
+| GRAPH.EXPLAIN | `RedisGraph.explain()` | |
+| GRAPH.PROFILE | `RedisGraph.profile()` | |
+| GRAPH.DELETE | `RedisGraph.delete()` | |
+| GRAPH.LIST | `RedisGraph.list()` | |
+| GRAPH.SLOWLOG | `RedisGraph.slowLog()` | |
+| GRAPH.CONFIG GET / SET | `RedisGraph.getConfig()`, `setConfig()` | |
+| GRAPH.CONSTRAINT | — | not implemented |

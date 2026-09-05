@@ -1,35 +1,56 @@
-# Java Client for RediSearch 
-See https://oss.redislabs.com/redisearch/ for more details.
+# RediSearch Client
 
-## Redis commands mapping
-Redis command|Sync / Async Api|
+Java client for RediSearch (the Redis Query Engine). Built in to Redis 8; available as a module for Redis 7.
+Official docs: https://redis.io/docs/latest/develop/ai/search-and-query/
+
+Obtain an index handle with `RediSearchClient.getRediSearch(indexName)` or from `RediSearchBatch` for
+pipelining. Every method has an `*Async` twin.
+
+## Command mapping
+
+| Redis command | Java API | Notes |
+| --- | --- | --- |
+| FT.CREATE | `RediSearch.createIndex()` | `VECTOR` fields, `PARAMS` and `DIALECT` not supported yet |
+| FT.ALTER | `RediSearch.alterIndex()` | |
+| FT.DROPINDEX | — | not implemented; `dropIndex()` still sends the removed `FT.DROP` |
+| FT.INFO | `RediSearch.loadIndex()` | handles the deeper Redis 8 reply |
+| FT._LIST | `RediSearch.listIndexes()` | |
+| FT.SEARCH | `RediSearch.search()` | options via `SearchOptions` |
+| FT.AGGREGATE | `RediSearch.aggregate()` | options via `AggregateOptions`; `WITHCURSOR` not supported |
+| FT.CURSOR READ / DEL | — | not implemented |
+| FT.HYBRID | — | not implemented (Redis 8.4) |
+| FT.PROFILE | — | not implemented |
+| FT.EXPLAIN | `RediSearch.explain()` | |
+| FT.EXPLAINCLI | — | not implemented |
+| FT.ALIASADD | `RediSearch.addAlias()` | |
+| FT.ALIASUPDATE | `RediSearch.updateAlias()` | |
+| FT.ALIASDEL | `RediSearch.deleteAlias()` | |
+| FT.ALIASLIST | — | not implemented (Redis 8.10) |
+| FT.TAGVALS | `RediSearch.getTagVals()` | |
+| FT.SUGADD | `RediSearch.addSuggestion()` | |
+| FT.SUGGET | `RediSearch.getSuggestion()` | honours `WITHSCORES` / `WITHPAYLOADS` |
+| FT.SUGDEL | `RediSearch.deleteSuggestion()` | |
+| FT.SUGLEN | `RediSearch.getSuggestionLength()` | |
+| FT.SYNUPDATE | `RediSearch.updateSynonym()` | |
+| FT.SYNDUMP | `RediSearch.dumpSynonyms()` | |
+| FT.SPELLCHECK | `RediSearch.spellCheck()` | |
+| FT.DICTADD | `RediSearch.addDict()` | |
+| FT.DICTDEL | `RediSearch.deleteDict()` | |
+| FT.DICTDUMP | `RediSearch.dumpDict()` | |
+| FT.CONFIG SET / GET | `RediSearch.setConfig()`, `getConfig()` | removed in Redis 8; falls back to `CONFIG SET/GET search-*` automatically |
+| FT.CONFIG HELP | `RediSearch.getHelp()` | RediSearch 2.x only |
+
+### Removed upstream (RediSearch 1.x only)
+
+These commands were removed in RediSearch 2.0 and do not exist on Redis 8. They remain in the API for
+users of RediSearch 1.x and will be dropped in a future major release.
+
+| Redis command | Java API |
 | --- | --- |
-FT.CREATE | RediSearch.<br/>createIndex()<br/>createIndexAsync() |
-FT.ADD | RediSearch.<br/>addDocument()<br/>addDocumentAsync() |
-FT.ADDHASH | RediSearch.<br/>addHash()<br/>addHashAsync() |
-FT.ALTER | RediSearch.<br/>alterIndex()<br/>alterIndexAsync() |
-FT.ALIASADD | RediSearch.<br/>addAlias()<br/>addAliasAsync() |
-FT.ALIASUPDATE | RediSearch.<br/>updateAlias()<br/>updateAliasAsync() |
-FT.ALIASDEL | RediSearch.<br/>deleteAlias()<br/>deleteAliasAsync() |
-FT.INFO | RediSearch.<br/>loadIndex()<br/>loadIndexAsync() |
-FT.SEARCH | RediSearch.<br/>search()<br/>searchAsync() |
-FT.AGGREGATE | RediSearch.<br/>aggregate()<br/>aggregateAsync() |
-FT.EXPLAIN | RediSearch.<br/>explain()<br/>explainAsync() |
-FT.EXPLAINCLI | N/A |
-FT.DEL | RediSearch.<br/>deleteDocument()<br/>deleteDocumentAsync() |
-FT.GET | RediSearch.<br/>getDocument()<br/>getDocumentAsync() |
-FT.MGET | RediSearch.<br/>getDocuments()<br/>getDocumentsAsync() |
-FT.DROP | RediSearch.<br/>dropIndex()<br/>dropIndexAsync() |
-FT.TAGVALS | RediSearch.<br/>getTagVals()<br/>getTagValsAsync() |
-FT.SUGADD | RediSearch.<br/>addSuggestion()<br/>addSuggestionAsync() |
-FT.SUGGET | RediSearch.<br/>getSuggestion()<br/>getSuggestionAsync() |
-FT.SUGDEL | RediSearch.<br/>deleteSuggestion()<br/>deleteSuggestionAsync() |
-FT.SUGLEN | RediSearch.<br/>getSuggestionLength()<br/>getSuggestionLengthAsync() |
-FT.SYNADD | RediSearch.<br/>addSynonym()<br/>addSynonymAsync() |
-FT.SYNUPDATE | RediSearch.<br/>updateSynonym()<br/>updateSynonymAsync() |
-FT.SYNDUMP | RediSearch.<br/>dumpSynonyms()<br/>dumpSynonymsAsync() |
-FT.SPELLCHECK | RediSearch.<br/>spellCheck()<br/>spellCheckAsync() |
-FT.DICTADD | RediSearch.<br/>addDict()<br/>addDictAsync() |
-FT.DICTDEL | RediSearch.<br/>deleteDict()<br/>deleteDictAsync() |
-FT.DICTDUMP | RediSearch.<br/>dumpDict()<br/>dumpDictAsync() |
-FT.CONFIG | RediSearch.<br/>setConfig()<br/>setConfigAsync()<br/>getConfig()<br/>getConfigAsync()<br/>getHelp()<br/>getHelpAsync() |
+| FT.ADD | `RediSearch.addDocument()` |
+| FT.ADDHASH | `RediSearch.addHash()` |
+| FT.GET | `RediSearch.getDocument()` |
+| FT.MGET | `RediSearch.getDocuments()` |
+| FT.DEL | `RediSearch.deleteDocument()` |
+| FT.DROP | `RediSearch.dropIndex()` |
+| FT.SYNADD | `RediSearch.addSynonym()` |

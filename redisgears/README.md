@@ -1,22 +1,29 @@
-# Java Client for RedisGears 
-See https://oss.redislabs.com/redisgears/ for more details.
+# RedisGears Client
 
-## Redis commands mapping
-Redis command|Sync / Async Api|
-| --- | --- |
-RG.PYEXECUTE | RedisGears.<br/>pyExecute()<br/>pyExecuteAsync() |
-RG.ABORTEXECUTION | RedisGears.<br/>abortExecution()<br/>abortExecutionAsync() |
-RG.CONFIGGET | RedisGears.<br/>getConfig()<br/>getConfigAsync() |
-RG.CONFIGSET | RedisGears.<br/>setConfig()<br/>setConfigAsync() |
-RG.DROPEXECUTION | RedisGears.<br/>dropExecution()<br/>dropExecutionAsync() |
-RG.DUMPEXECUTIONS | N/A |
-RG.DUMPREGISTRATIONS | N/A |
-RG.GETEXECUTION | N/A |
-RG.GETRESULTS | N/A |
-RG.GETRESULTSBLOCKING | N/A |
-RG.INFOCLUSTER | RedisGears.<br/>clusterInfo()<br/>clusterInfoAsync() |
-RG.PYSTATS | RedisGears.<br/>pyStats()<br/>pyStatsAsync() |
-RG.PYDUMPREQS | N/A |
-RG.REFRESHCLUSTER | RedisGears.<br/>refreshCluster()<br/>refreshClusterAsync() |
-RG.TRIGGER | N/A |
-RG.UNREGISTER | RedisGears.<br/>unRegister()<br/>unRegisterAsync() |
+> **Deprecated.** RedisGears (the Python runtime, v1) reached end of life upstream and is not part of
+> Redis 8. This module is kept for existing users and will be removed in a future major release.
+
+Project: https://github.com/RedisGears/RedisGears
+
+Obtain `RedisGears` from `RedisGearsClient.getRedisGears()` or from `RedisGearsBatch` for pipelining.
+Every method has an `*Async` twin.
+
+## Command mapping
+
+| Redis command | Java API | Notes |
+| --- | --- | --- |
+| RG.PYEXECUTE | `RedisGears.pyExecute()` | |
+| RG.PYSTATS | `RedisGears.pyStats()` | |
+| RG.CONFIGGET | `RedisGears.getConfig()` | |
+| RG.CONFIGSET | `RedisGears.setConfig()` | |
+| RG.UNREGISTER | `RedisGears.unRegister()` | |
+| RG.ABORTEXECUTION | `RedisGears.abortExecution()` | |
+| RG.DROPEXECUTION | `RedisGears.dropExecution()` | |
+| RG.INFOCLUSTER | `RedisGears.clusterInfo()` | |
+| RG.REFRESHCLUSTER | `RedisGears.refreshCluster()` | |
+| RG.DUMPEXECUTIONS | — | not implemented |
+| RG.DUMPREGISTRATIONS | — | not implemented |
+| RG.GETEXECUTION | — | not implemented |
+| RG.GETRESULTS / RG.GETRESULTSBLOCKING | — | not implemented |
+| RG.PYDUMPREQS | — | not implemented |
+| RG.TRIGGER | — | not implemented |
